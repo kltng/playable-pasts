@@ -128,7 +128,7 @@ function nav(current) {
   ];
   return `<header class="masthead">
   <div class="masthead-inner">
-    <a class="wordmark" href="/">Playable <span>Past</span></a>
+    <a class="wordmark" href="/">Playable <span>Pasts</span></a>
     <nav aria-label="Main">
 ${items.map(([href, label, slug]) =>
     `      <a href="${href}"${slug === current ? ' aria-current="page"' : ''}>${label}</a>`).join('\n')}
@@ -139,7 +139,7 @@ ${items.map(([href, label, slug]) =>
 
 const FOOTER = `<footer class="site-footer">
   <div class="wrap cols">
-    <div><strong>Playable Past</strong><br>A gallery and checker for classroom history games.</div>
+    <div><strong>Playable Pasts</strong><br>A gallery and checker for classroom history games.</div>
     <div><a href="/start/">Make a game</a><br><a href="/check/">Check a game</a><br><a href="/games/">Gallery</a></div>
     <div><a href="/submit/">Share your game</a><br><a href="/for-agents/">For agents</a><br><a href="${GIST}">The workflow (gist)</a></div>
     <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
@@ -194,7 +194,7 @@ function gamePage(game, dir) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(game.title)} — Playable Past</title>
+<title>${escapeHtml(game.title)} — Playable Pasts</title>
 <meta name="description" content="${escapeHtml(game.summary)}">
 <link rel="stylesheet" href="/assets/css/site.css">
 </head>

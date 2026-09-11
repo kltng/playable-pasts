@@ -6,6 +6,19 @@ This is a plain static website. There is no framework, no bundler, no package.js
 dependencies. Do not add any. If a change seems to need a build step, it probably needs a
 simpler change.
 
+## The name
+
+**Playable Pasts** (plural) is this site: the gallery, the checker, this repository.
+
+**Playable Past** (singular) is the published instruction set in the
+[gist](https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276) that agents follow to
+build the games. It is a versioned, CC BY licensed document with that name, and the validator
+quotes its rules by number.
+
+So "the Playable Past workflow", "Playable Past hard rule 10", and "a Playable Past game" stay
+singular, while the masthead, page titles, and report headers are plural. This is deliberate —
+do not normalise one into the other.
+
 ## What this project is for
 
 Instructors who do not write code, whose agents do the work for them. Two consequences:

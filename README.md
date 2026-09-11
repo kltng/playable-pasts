@@ -1,4 +1,4 @@
-# Playable Past — gallery and checker
+# Playable Pasts — gallery and checker
 
 A static website that does the half the [Playable Past workflow](https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276) does not: it checks
 whether a finished classroom history game will survive a real classroom, and keeps the games
@@ -10,6 +10,13 @@ This site answers *"will it work, and can someone else use it?"*
 **The people using it do not write code.** They ask an agent to do the work. So every job this
 site needs doing — validating, packaging, submitting — is something an agent can do from
 [`agent.md`](agent.md), and the pages are written for the instructor reading over its shoulder.
+
+## A note on the name
+
+**Playable Pasts** is this site. **Playable Past** is the instruction set in the gist that
+agents follow to build the games — a separate, versioned document. The plural is the gallery of
+many games and many readings of the past; the singular is the workflow. Both spellings appear
+on purpose.
 
 ## What is here
 

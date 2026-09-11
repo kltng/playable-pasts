@@ -1,5 +1,5 @@
 /**
- * Playable Past — classroom-readiness validator.
+ * Playable Pasts — classroom-readiness validator.
  *
  * One module, two homes: the browser (assets/js/check-ui.js) and CI
  * (tools/validate.mjs). Plain ESM, no dependencies, no build step.

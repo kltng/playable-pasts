@@ -1,5 +1,5 @@
 /**
- * Playable Past — the checker page.
+ * Playable Pasts — the checker page.
  *
  * Two passes over the instructor's file:
  *   1. `validate()` from validator.js — a static read of the source.
@@ -392,7 +392,7 @@ function agentPrompt(report) {
 
 function downloadReport(report) {
   const lines = [];
-  lines.push(`Playable Past — classroom-readiness report`);
+  lines.push(`Playable Pasts — classroom-readiness report`);
   lines.push(`File: ${report.filename} (${formatBytes(report.bytes)})`);
   lines.push(`Checked: ${new Date().toISOString()}`);
   lines.push(`Result: ${VERDICT[report.verdict].label}`);

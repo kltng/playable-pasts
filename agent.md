@@ -1,11 +1,11 @@
-# Playable Past gallery — contract for agents
+# Playable Pasts — contract for agents
 
 You are reading this because an instructor asked you to check or submit a classroom history
 game. This file is the whole contract. It is stable, plain text, and needs no tools beyond the
 ones you already have.
 
-**Site:** https://playablepast.org
-**Repository:** https://github.com/kltng/playable-past-gallery
+**Site:** https://playablepasts.org
+**Repository:** https://github.com/kltng/playable-pasts
 **The workflow that builds these games:** https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276
 
 The instructor is not a programmer. Do not hand them git commands, JSON to edit, or a terminal.
@@ -60,8 +60,8 @@ Do not submit and hope. The same checker the website runs is a plain ES module w
 dependencies.
 
 ```
-git clone https://github.com/kltng/playable-past-gallery
-cd playable-past-gallery
+git clone https://github.com/kltng/playable-pasts
+cd playable-pasts
 node tools/validate.mjs path/to/game.html            # human-readable
 node tools/validate.mjs path/to/game.html --json     # machine-readable
 node tools/validate.mjs path/to/game.html --markdown # for a PR comment
@@ -73,7 +73,7 @@ The JSON has `blocking`, `warnings`, and `manual` arrays. Each finding carries `
 `plain` (an explanation written for the instructor), `fix` (what to change), and `evidence`
 with line numbers.
 
-If you cannot run Node, the instructor can drop the file on https://playablepast.org/check/ and
+If you cannot run Node, the instructor can drop the file on https://playablepasts.org/check/ and
 paste you the report. Do not guess at the result.
 
 ## 4. `game.json`
@@ -149,7 +149,7 @@ and open a pull request. Title it `Add game: <title>`. In the body, paste the va
 `--markdown` output and state plainly which human checks were run and which were not.
 
 **If you cannot:** open an issue using the `submit-game` template at
-https://github.com/kltng/playable-past-gallery/issues/new?template=submit-game.yml and attach the five files. A maintainer moves it in.
+https://github.com/kltng/playable-pasts/issues/new?template=submit-game.yml and attach the five files. A maintainer moves it in.
 
 **Either way:** CI runs the validator on the submitted file and posts the report. If it blocks,
 fix and push again — do not argue with the report. If you think a finding is wrong, say so in

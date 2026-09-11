@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Playable Past validator — command line.
+ * Playable Pasts validator — command line.
  *
  *   node tools/validate.mjs path/to/game.html [--json] [--markdown]
  *
