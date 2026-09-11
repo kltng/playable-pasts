@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share your game — Playable Past</title>
+<meta name="description" content="Add your classroom history game to the gallery. Your agent does the submitting; you do not need a GitHub account or any technical knowledge.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/">Playable <span>Past</span></a>
+    <nav aria-label="Main">
+      <a href="/start/">Make a game</a>
+      <a href="/check/">Check a game</a>
+      <a href="/games/">Gallery</a>
+      <a href="/submit/" aria-current="page">Share yours</a>
+      <a href="/for-agents/">For agents</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+<section>
+  <p class="eyebrow">Open to any instructor</p>
+  <h1>Add your game to the gallery.</h1>
+  <p class="lede">There is no upload form and no account to create, because there is no server
+  here — this site is static files. Submitting means opening a request on the project
+  repository, and that is a job for your agent, not for you.</p>
+</section>
+
+<section>
+  <h2>The easy way: ask your agent</h2>
+  <p class="prose">Paste this into the same conversation where the game was built. Your agent
+  already has the file and the documents.</p>
+
+  <div class="copybox" style="max-width:46rem">
+    <header>Paste this to your agent
+      <button class="btn small secondary" type="button" data-copy="#submit-prompt">Copy</button>
+    </header>
+    <pre id="submit-prompt">Please submit the finished game to the Playable Past gallery.
+
+Read the submission contract first: https://playablepast.org/agent.md
+It tells you what the gallery requires, how to run the validator yourself, and
+exactly how to open the submission.
+
+Before you submit:
+- Run the validator and fix anything blocking.
+- Fill in the test ledger honestly. Mark as untested anything you did not run.
+  Do not record a check as passed on my behalf.
+- Show me the game.json you are about to submit, and the licence and rights
+  line for my sources, and wait for me to confirm.</pre>
+  </div>
+
+  <div class="note">
+    <p><strong>That last instruction matters.</strong> You are publishing under your own name,
+    and the rights on your sources are yours to state. Read what the agent wrote before you say
+    yes.</p>
+  </div>
+</section>
+
+<section>
+  <h2>What your game needs to bring</h2>
+  <div class="table-scroll"><table>
+    <thead><tr><th>File</th><th>What it is</th><th>Required</th></tr></thead>
+    <tbody>
+      <tr><td><code>game.html</code></td><td>The game itself, one self-contained file</td><td>Yes</td></tr>
+      <tr><td><code>game.json</code></td><td>The listing: title, learning mode, length, licence, and what was tested by a person</td><td>Yes</td></tr>
+      <tr><td><code>teacher-guide.md</code></td><td>How to run one session, and the debrief questions</td><td>Yes</td></tr>
+      <tr><td><code>history-bible.md</code></td><td>The sources and the claims ledger — what is attested, interpreted, assumed, invented</td><td>Yes</td></tr>
+      <tr><td><code>test-ledger.md</code></td><td>What was checked, how, by whom, and what was left untested</td><td>Yes</td></tr>
+    </tbody>
+  </table></div>
+  <p class="prose small">Your agent produced all five while following the
+  <a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">Playable Past workflow</a>. If you are missing one, ask for it by name.</p>
+</section>
+
+<section>
+  <h2>What happens then</h2>
+  <ol class="steps" style="max-width:46rem">
+    <li>
+      <h3>The checker runs automatically</h3>
+      <p>The same validator you can run here runs on the submission and posts its report. A game
+      with blocking findings is not merged — but the report says exactly what to fix, and your
+      agent can fix it and push again.</p>
+    </li>
+    <li>
+      <h3>A person reads the history bible</h3>
+      <p>Not to grade your argument. To check that the claims ledger is filled in, that invented
+      content is marked as invented, that no source is used in a way its rights do not allow,
+      and that nothing is presented as attested when it came from a model's memory.</p>
+    </li>
+    <li>
+      <h3>It appears in the gallery</h3>
+      <p>With your name, your licence, and — plainly shown — whatever you left untested. The
+      gallery reports what you claimed; it does not launder it.</p>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <h2>What gets turned away</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>Games that need the internet</h3>
+      <p>Anything fetched during play, and anything that calls an AI model to work. The automated
+      check catches these before a human sees them.</p>
+    </div>
+    <div class="card">
+      <h3>Sources you cannot redistribute</h3>
+      <p>Licensed database content, archival material under permission, unpublished work,
+      anything about living people who did not agree. Use it to build your game; keep it out of
+      the file you publish, and keep the game behind your LMS instead.</p>
+    </div>
+    <div class="card">
+      <h3>Invented evidence presented as real</h3>
+      <p>Inventing documents is fine — the demo game is made of them. Not labelling them is not.
+      A fabricated citation, page number, or archive reference is the one thing that will get a
+      submission refused outright.</p>
+    </div>
+    <div class="card">
+      <h3>Suffering turned into points</h3>
+      <p>Games about atrocity and trauma are welcome and needed. Scoring systems that reward
+      causing harm, or that treat mass death as spectacle, are not.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>If you would rather do it by hand</h2>
+  <p class="prose">You do not need an agent. With a GitHub account you can
+  <a href="https://github.com/kltng/playable-past-gallery/issues/new?template=submit-game.yml">open a submission yourself</a> and attach
+  the five files by dragging them into the form. Everything after that is the same.</p>
+  <div class="btn-row">
+    <a class="btn secondary" href="/check/">Check your file first</a>
+    <a class="btn secondary" href="/for-agents/">Read the contract your agent follows</a>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong>Playable Past</strong><br>A gallery and checker for classroom history games.</div>
+    <div><a href="/start/">Make a game</a><br><a href="/check/">Check a game</a><br><a href="/games/">Gallery</a></div>
+    <div><a href="/submit/">Share your game</a><br><a href="/for-agents/">For agents</a><br><a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">The workflow (gist)</a></div>
+    <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
+  </div>
+</footer>
+<script>
+document.querySelectorAll('[data-copy]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = document.querySelector(btn.dataset.copy);
+    navigator.clipboard.writeText(pre.textContent).then(function () {
+      btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 2200);
+    });
+  });
+});
+</script>
+</body>
+</html>

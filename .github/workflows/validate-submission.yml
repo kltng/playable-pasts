@@ -1,0 +1,94 @@
+name: Check submitted games
+
+on:
+  pull_request:
+    paths:
+      - 'games/**'
+      - 'assets/js/validator.js'
+      - 'tools/**'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validator self-test
+        run: node --test tools/test-validator.mjs
+
+      - name: Check every game in the gallery
+        id: validate
+        run: |
+          status=0
+          : > report.md
+          shopt -s nullglob
+          for game in games/*/game.html; do
+            echo "::group::$game"
+            if ! node tools/validate.mjs "$game" --markdown >> report.md; then
+              status=1
+            fi
+            echo "" >> report.md
+            node tools/validate.mjs "$game" || true
+            echo "::endgroup::"
+          done
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit $status
+
+      - name: Gallery index is up to date
+        if: always()
+        run: |
+          node tools/build-index.mjs
+          if ! git diff --quiet -- games/; then
+            echo "::error::games/index.json or a game page is out of date."
+            echo "Run 'node tools/build-index.mjs' and commit the result."
+            git diff --stat -- games/
+            exit 1
+          fi
+
+      - name: Post the report on the pull request
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## Classroom-readiness check\n\n';
+            try {
+              body += fs.readFileSync('report.md', 'utf8');
+            } catch {
+              body += '_The validator did not produce a report. See the job log._';
+            }
+            body += '\n\n---\n_A pass means the **file** is sound: self-contained, accessible, '
+              + 'honest about its sources. It is not a judgement of the history or the teaching. '
+              + 'The checks listed above as needing a person stay unverified until someone '
+              + 'reports them in `test-ledger.md`._';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const mine = comments.find((c) =>
+              c.user.type === 'Bot' && c.body.startsWith('## Classroom-readiness check'));
+
+            if (mine) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                comment_id: mine.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: context.issue.number, body,
+              });
+            }

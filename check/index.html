@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check a game — Playable Past</title>
+<meta name="description" content="Drop your HTML game in and find out whether it will survive a real classroom. Runs entirely in your browser; nothing is uploaded.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/">Playable <span>Past</span></a>
+    <nav aria-label="Main">
+      <a href="/start/">Make a game</a>
+      <a href="/check/" aria-current="page">Check a game</a>
+      <a href="/games/">Gallery</a>
+      <a href="/submit/">Share yours</a>
+      <a href="/for-agents/">For agents</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="wrap">
+  <p class="eyebrow">Before you teach with it</p>
+  <h1>Will this game survive your classroom?</h1>
+  <p class="lede">Drop in the HTML file your agent gave you. We read it, then open it with every
+  outside request blocked — the way a room with no wifi behaves. You get plain English back, and
+  wording you can paste straight to your agent.</p>
+</section>
+
+<section class="wrap" style="padding-top:0">
+  <div class="dropzone" id="drop">
+    <h2>Drop your game file here</h2>
+    <p>One <code>.html</code> file. It never leaves your computer.</p>
+    <input type="file" id="file" accept=".html,.htm,text/html">
+    <label for="file">Choose a file</label>
+    <p class="privacy-line">
+      <span aria-hidden="true">🔒</span>
+      <span>Everything runs in this browser tab. There is no upload, no account, and no server.</span>
+    </p>
+  </div>
+</section>
+
+<div id="intro">
+<section class="wrap">
+  <h2>What gets checked</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>Read from the file</h3>
+      <p>Whether anything is fetched from the internet, whether the game needs an AI model or a
+      secret key, whether the <em>Sources &amp; assumptions</em> screen exists, whether controls
+      are real buttons, whether the content sits in an editable block, and a dozen more.</p>
+    </div>
+    <div class="card">
+      <h3>Measured by running it</h3>
+      <p>We open your game in a locked sandbox where every outside request is refused. If it
+      still reaches for a font, a script, or a server, the browser tells us and we show you
+      exactly what it asked for. That is evidence, not a guess.</p>
+    </div>
+    <div class="card">
+      <h3>Handed back to you</h3>
+      <p>Six things a validator cannot do: play the game, time it, use it by keyboard, open it on
+      your classroom computer, and judge whether the history is true. We list them instead of
+      pretending they passed.</p>
+    </div>
+    <div class="card">
+      <h3>Not judged at all</h3>
+      <p>Whether the game is good history or good teaching. A green result means the file is
+      sound. It says nothing about your argument, and we will not claim otherwise.</p>
+    </div>
+  </div>
+  <div class="note">
+    <p><strong>No file yet?</strong> <a href="/start/">Start with your agent</a> — one sentence to
+    copy, then answer its questions. Or try the checker on
+    <a href="/games/corroboration-demo/game.html" download>the demo game</a> to see what a
+    report looks like.</p>
+  </div>
+</section>
+</div>
+
+<div class="wrap"><div id="results" hidden></div></div>
+
+<div class="wrap"><section id="live-panel" hidden>
+  <h2>What happened when we ran it</h2>
+  <p class="prose">Your game is open below in a sandbox with the network cut off. Whatever it
+  tried to reach for is listed here.</p>
+  <div id="live-body"></div>
+  <div id="live-stage"></div>
+</section></div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong>Playable Past</strong><br>A gallery and checker for classroom history games.</div>
+    <div><a href="/start/">Make a game</a><br><a href="/check/">Check a game</a><br><a href="/games/">Gallery</a></div>
+    <div><a href="/submit/">Share your game</a><br><a href="/for-agents/">For agents</a><br><a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">The workflow (gist)</a></div>
+    <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
+  </div>
+</footer>
+<script type="module" src="/assets/js/check-ui.js"></script>
+<noscript>
+  <div class="wrap"><div class="note"><p><strong>The checker needs JavaScript.</strong> It runs
+  the check inside your browser so your file is never uploaded. If you cannot enable JavaScript,
+  an agent can run the same checks for you — see <a href="/for-agents/">instructions for
+  agents</a>.</p></div></div>
+</noscript>
+</body>
+</html>

@@ -1,0 +1,85 @@
+name: Submit a game to the gallery
+description: Add a classroom history game. Your agent can do this for you.
+title: "Add game: "
+labels: ["submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **You do not have to fill this in yourself.** Paste the prompt from
+        [the submit page](https://playablepast.org/submit/) to your AI agent and it
+        will do it for you.
+
+        Attach files by dragging them into any text box below.
+
+  - type: input
+    id: title
+    attributes:
+      label: Game title
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What is it
+      description: One or two sentences. What do students do, and what does it make them argue about?
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: The five files
+      description: |
+        Drag in `game.html`, `game.json`, `teacher-guide.md`, `history-bible.md`,
+        and `test-ledger.md`. GitHub may require the HTML to be zipped.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: validator
+    attributes:
+      label: Has the validator been run on this file?
+      options:
+        - "Yes — nothing blocking"
+        - "Yes — there are findings, described below"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: untested
+    attributes:
+      label: What has NOT been tested by a person
+      description: |
+        Be honest here. "Nobody has opened this on a classroom computer" and "no keyboard
+        test was run" are completely normal answers, and the gallery shows them as-is.
+        A false claim of testing is the one thing that gets a submission refused.
+      placeholder: e.g. No keyboard-only play-through. Not opened on the classroom projector yet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: rights
+    attributes:
+      label: Sources and rights
+      description: |
+        Where did the content come from, and what does its licence allow? If any source
+        cannot be redistributed, say so — it must not be inside the published file.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: No citation, quotation, date, or archival reference in this game is invented. Anything invented is labelled as invented in the game itself.
+          required: true
+        - label: The game runs with no internet connection and needs no AI model, account, or key.
+          required: true
+        - label: I have the right to publish everything inside the game file.
+          required: true
+        - label: The test ledger records what was actually run, and marks everything else as untested.
+          required: true

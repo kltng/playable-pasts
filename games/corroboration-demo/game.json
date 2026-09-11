@@ -1,0 +1,72 @@
+{
+  "slug": "corroboration-demo",
+  "title": "The Grain Shipment",
+  "subtitle": "A corroboration warm-up",
+  "emoji": "📜",
+  "summary": "Four accounts of one event disagree. Students work out which statement the evidence can carry — and meet a round where the honest answer is that it cannot be settled.",
+  "learning_mode": "Evidence & corroboration",
+  "game_form": "Document mystery",
+  "period": "Not period-specific",
+  "region": "Not place-specific",
+  "language": "en",
+  "level": "Any — intro survey upwards",
+  "session_minutes": 10,
+  "social_topology": "Individual copies, or pairs on one device",
+  "players_per_instance": 1,
+  "contributor": "Playable Past (demonstration)",
+  "contributed_at": "2026-09-10",
+  "license": "CC BY 4.0",
+  "sources_rights": "No real sources are used. Every document is invented for the exercise.",
+  "files": {
+    "game": "game.html",
+    "teacher_guide": "teacher-guide.md",
+    "history_bible": "history-bible.md",
+    "test_ledger": "test-ledger.md"
+  },
+  "validation": {
+    "verdict": "ready-for-your-tests",
+    "checked_at": "2026-09-11",
+    "blocking": 0,
+    "warnings": 0
+  },
+  "human_tests": [
+    {
+      "id": "manual-offline",
+      "status": "passed",
+      "note": "Opened as a file:// URL and played to the ending; the page loaded no resources beyond itself."
+    },
+    {
+      "id": "manual-keyboard",
+      "status": "passed",
+      "note": "Every control focused and activated without a pointer, with a visible focus outline at each step."
+    },
+    {
+      "id": "manual-timing",
+      "status": "untested",
+      "note": "Estimated at 3-5 minutes of reading from a 557-word path, not timed with a player."
+    },
+    {
+      "id": "manual-classroom-setup",
+      "status": "untested",
+      "note": "No classroom setup to test against. The instructor must do this."
+    },
+    {
+      "id": "manual-provenance-accuracy",
+      "status": "not-applicable",
+      "note": "There are no real sources to check against. The game states this on its Sources & assumptions screen."
+    },
+    {
+      "id": "manual-debrief",
+      "status": "passed",
+      "note": "Five debrief questions ship on the ending screen."
+    }
+  ],
+  "provenance_note": "This game uses no historical sources at all. Every document in it is invented to demonstrate the format and to carry a specific source-criticism problem. It is a method exercise, not a history lesson.",
+  "tags": [
+    "source criticism",
+    "warm-up",
+    "no sources needed",
+    "demonstration",
+    "10 minutes"
+  ]
+}

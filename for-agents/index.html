@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For agents — Playable Past</title>
+<meta name="description" content="The contract for AI agents building, checking, and submitting classroom history games on an instructor's behalf.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/">Playable <span>Past</span></a>
+    <nav aria-label="Main">
+      <a href="/start/">Make a game</a>
+      <a href="/check/">Check a game</a>
+      <a href="/games/">Gallery</a>
+      <a href="/submit/">Share yours</a>
+      <a href="/for-agents/" aria-current="page">For agents</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+<section>
+  <p class="eyebrow">Machine-readable</p>
+  <h1>If you are an agent, start here.</h1>
+  <p class="lede">The full contract is one plain-text file with no markup to fight through:
+  <a href="/agent.md"><code>playablepast.org/agent.md</code></a>. Everything below is the same
+  information for the human reading over your shoulder.</p>
+  <div class="btn-row">
+    <a class="btn" href="/agent.md">Read agent.md</a>
+    <a class="btn secondary" href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">The four-phase workflow</a>
+  </div>
+</section>
+
+<section>
+  <h2>The division of labour</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>The gist tells you how to build</h3>
+      <p>Interview the instructor, analyse the sources, design against a learning goal, build and
+      refine. Four phases, five companion files. That is the
+      <a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">Playable Past workflow</a>, and it is independent of this site.</p>
+    </div>
+    <div class="card">
+      <h3>This site tells you when you are done</h3>
+      <p>An executable version of the workflow's hard rules, a gallery that keeps the evidence
+      attached to the game, and a submission path that does not require the instructor to touch
+      GitHub.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Run the checker yourself</h2>
+  <p class="prose">It is a dependency-free ES module that runs the same checks in a browser and
+  in Node. Clone, run, read the JSON.</p>
+  <div class="copybox" style="max-width:46rem">
+    <header>Shell</header>
+    <pre>git clone https://github.com/kltng/playable-past-gallery
+cd playable-past-gallery
+node tools/validate.mjs path/to/game.html --json</pre>
+  </div>
+  <p class="prose">Exit status <code>0</code> means nothing is blocking. The JSON carries
+  <code>blocking</code>, <code>warnings</code>, and <code>manual</code> arrays; each finding has
+  a <code>plain</code> field written for the instructor and a <code>fix</code> field written for
+  you, with line numbers in <code>evidence</code>.</p>
+  <p class="prose">No Node available? Ask the instructor to drop the file on
+  <a href="/check/">the checker page</a> and paste you the report. Do not guess at the result
+  and do not tell them it probably passes.</p>
+</section>
+
+<section>
+  <h2>The three rules that get submissions refused</h2>
+  <div class="grid three">
+    <div class="card">
+      <h3>Claiming an untested check</h3>
+      <p>If you have no browser you did not test keyboard operation, offline behaviour, or
+      timing. Mark them untested. A submission full of honest "untested" rows is accepted; one
+      false "passed" is not.</p>
+    </div>
+    <div class="card">
+      <h3>Inventing provenance</h3>
+      <p>No fabricated quotation, citation, page number, or archive reference. Content from your
+      own memory is <em>model recall</em> — label it, and have the instructor verify it before
+      it drives a mechanic.</p>
+    </div>
+    <div class="card">
+      <h3>Submitting without showing</h3>
+      <p>The instructor publishes under their own name and states the rights on their own
+      sources. Show them the manifest and the licence line, and wait for a yes.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Remember who you are working for</h2>
+  <p class="prose">They teach history. They are not going to read a stack trace, edit JSON, or
+  run a git command, and asking them to is a failure on your part, not theirs. Do the mechanical
+  work. Bring them decisions — what the game argues, what it leaves out, what you could not
+  test — and keep the technical parts to yourself.</p>
+  <div class="note">
+    <p><strong>One exception.</strong> Never make the call on rights, framing of painful
+    material, or whether an unverified claim is true. Those are theirs, and you should ask
+    plainly rather than picking a sensible-looking default.</p>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong>Playable Past</strong><br>A gallery and checker for classroom history games.</div>
+    <div><a href="/start/">Make a game</a><br><a href="/check/">Check a game</a><br><a href="/games/">Gallery</a></div>
+    <div><a href="/submit/">Share your game</a><br><a href="/for-agents/">For agents</a><br><a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">The workflow (gist)</a></div>
+    <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
+  </div>
+</footer>
+</body>
+</html>

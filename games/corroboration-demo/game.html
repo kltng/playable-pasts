@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Grain Shipment — a corroboration warm-up</title>
+</head>
+<body>
+
+<!-- ==================================================================
+     GAME_DATA — everything a teacher might want to change is here.
+     Edit the text between the quotation marks. Do not remove the commas
+     or the brackets. Save the file and reopen it to see your changes.
+
+     Every document below is INVENTED for this demonstration. None of it
+     is a historical source. See the Sources & assumptions screen.
+     ================================================================== -->
+<script>
+const GAME_DATA = {
+  title: "The Grain Shipment",
+  subtitle: "A corroboration warm-up",
+  minutes: 10,
+  intro: "A grain convoy left the river port for the city. What happened to it? Four people wrote it down. They do not agree.\n\nYour job is not to find the exciting answer. It is to work out which statement the evidence can actually carry.",
+
+  rounds: [
+    {
+      question: "How many barges left the port?",
+      docs: [
+        { id: "A", label: "Harbour tally, kept by the port clerk",
+          kind: "Administrative record, written the same day",
+          text: "Eleven barges cleared the chain at first light. Two turned back leaking before the bend." },
+        { id: "B", label: "Letter from a merchant to his brother",
+          kind: "Private letter, written three days later",
+          text: "Nine barges got away, and I am told the rest are still at the quay arguing about the toll." },
+        { id: "C", label: "City chronicle",
+          kind: "Narrative account, compiled forty years later",
+          text: "A great fleet of twenty barges was sent, the largest ever seen upon that water." }
+      ],
+      options: [
+        { text: "Twenty barges — the chronicle describes the whole fleet.",
+          correct: false,
+          why: "The chronicle was written forty years after the event by someone with a reason to make the city sound impressive. It is the only account that says twenty, and it contradicts both records written at the time. A later, rounder, grander number is the classic shape of a story growing in the telling." },
+        { text: "Nine barges — the merchant is a first-hand witness.",
+          correct: false,
+          why: "Look at his own words: 'I am told'. He is repeating what reached him three days later, in another town. He is an eyewitness to the gossip, not to the departure." },
+        { text: "Eleven left, and nine continued — the tally and the letter agree once you read them carefully.",
+          correct: true,
+          why: "This is corroboration rather than agreement. The clerk counted eleven leaving and two turning back. The merchant heard that nine got away. Those are not two rival numbers; they are the same event described at different moments. The documents that were made closest to the event, for practical rather than flattering purposes, fit together." }
+      ]
+    },
+    {
+      question: "The convoy was attacked. Who attacked it?",
+      docs: [
+        { id: "D", label: "Petition from the bargemen to the city council",
+          kind: "Claim for compensation, written two weeks later",
+          text: "We were set upon by armed men of the Baron's household, who bear his colours, and who took the grain to his own stores." },
+        { id: "E", label: "The Baron's reply to the council",
+          kind: "Formal denial, written one month later",
+          text: "My people were nowhere near the water that day. The countryside is full of masterless men who will wear any colour that suits them." },
+        { id: "F", label: "Toll-house register",
+          kind: "Administrative record, entries made daily",
+          text: "No entries for the eighth or ninth. Keeper absent — sick." }
+      ],
+      options: [
+        { text: "The Baron's men. The bargemen saw his colours.",
+          correct: false,
+          why: "Perhaps. But notice what the bargemen were doing when they wrote: asking the council for money. Naming a rich and identifiable culprit makes their claim collectable. That does not make them liars — it makes their account interested. You would want something that is not paid for by the answer." },
+        { text: "Masterless men, as the Baron says.",
+          correct: false,
+          why: "The Baron is at least as interested as the bargemen, and in the opposite direction. His explanation is also unfalsifiable: anyone could have worn the colours, so no evidence could ever convict him. An argument that cannot fail is not strong; it is unfalsifiable." },
+        { text: "The surviving evidence cannot settle it — and the gap in the register is why.",
+          correct: true,
+          why: "Both accounts are interested, and the one record that was not written to win an argument is missing for exactly those two days. This is the honest answer, and it is the most useful one: it tells you what a new source would have to look like to change your mind. Historians spend more time here than students expect." }
+      ]
+    },
+    {
+      question: "A fourth document turns up. Which would change your mind most?",
+      docs: [
+        { id: "G", label: "A second chronicle, written fifty years later",
+          kind: "Narrative account",
+          text: "It names the Baron as the robber, in almost the same words as the city chronicle." },
+        { id: "H", label: "The Baron's household accounts for that month",
+          kind: "Internal financial record, not written for outside eyes",
+          text: "Entries for grain received, with quantities and dates." },
+        { id: "I", label: "A ballad about the robbery",
+          kind: "Song, first written down a century later",
+          text: "Names no one, but describes armed riders in bright colours." }
+      ],
+      options: [
+        { text: "The second chronicle — two accounts agreeing is corroboration.",
+          correct: false,
+          why: "Only if they are independent. It uses almost the same words as the first chronicle, which suggests one copied the other or both copied a third. Two copies of one claim are still one claim. This is the most common mistake in source work." },
+        { text: "The household accounts — they were never meant to be read by us.",
+          correct: true,
+          why: "A record kept for the household's own use has no reason to flatter or deny. If grain arrives in quantity on the ninth, that is powerful, because nobody wrote it to persuade you. Historians prize this kind of source: created for an internal purpose, indifferent to the question you are asking." },
+        { text: "The ballad — popular memory preserves what official records hide.",
+          correct: false,
+          why: "A ballad tells you what people later believed and enjoyed believing, which is a real historical question — just not this one. It is a century downstream and names nobody. Useful evidence about memory; weak evidence about the robbery." }
+      ]
+    }
+  ],
+
+  endings: {
+    high: { title: "You read like a historian",
+      text: "You went for what the evidence could carry rather than what made the better story. That is the whole skill." },
+    mid: { title: "A working start",
+      text: "You were right about some of it. Look back at where you went wrong and ask what the author of that document wanted." },
+    low: { title: "The stories won",
+      text: "The most vivid account is usually the least reliable, and that is not an accident. Play again and ask of each document: who made this, for whom, and what did they need the reader to believe?" }
+  },
+
+  debrief: [
+    "Which document did you trust first, and what made it feel trustworthy? Was that a good reason?",
+    "Round two had no right answer. Did that feel like a trick? Why does an archive so often refuse to settle a question?",
+    "Two accounts agreeing looked like strong evidence until we asked whether they were independent. Where else might that error be hiding?",
+    "The household accounts were persuasive because nobody wrote them for us. What does that suggest about which records survive, and which questions we can therefore ask?",
+    "This game rewards suspicion. What kind of historical question would that habit handle badly?"
+  ],
+
+  sources: {
+    statement: "Every document in this game is invented. There is no grain shipment, no Baron, and no chronicle. Nothing here is a historical source and nothing should be cited.",
+    reason: "The exercise teaches a method, not a period. The documents were written to carry the specific problems that method exists to handle: a later account inflating a number, two interested parties contradicting each other, a convenient gap in the one disinterested record, and two sources that look independent but are not.",
+    rows: [
+      ["Every document, name, and quantity", "Fictional connective tissue", "Invented for this demonstration. Not evidence of anything."],
+      ["The reasoning in each explanation", "Corroborated interpretation", "Standard source-criticism practice: weigh proximity to the event, the author's purpose and audience, and whether agreeing accounts are genuinely independent."],
+      ["The claim that later accounts tend to inflate numbers", "Corroborated interpretation", "A well-established tendency in narrative sources. Stated here as a habit of reading, not as a law."],
+      ["The idea that internal records are often more reliable", "Modeling assumption", "A useful rule of thumb, not a guarantee. Accounts were falsified too, and for the same reason anything else is: someone benefited."],
+      ["Scoring", "Modeling assumption", "Turning source criticism into right and wrong answers is a simplification the game makes so it can be played in ten minutes. Real source work is argued, not marked."]
+    ]
+  },
+
+  teacherNote: "Built as a demonstration of the Playable Past format. Use it as a ten-minute warm-up before students meet real conflicting sources, then ask them to redo round two with documents from your own unit."
+};
+</script>
+
+<style>
+  :root {
+    --paper: #f7f4ec;
+    --card: #fffdf8;
+    --ink: #1f1c16;
+    --soft: #5d5546;
+    --faint: #8d8574;
+    --rule: #ddd4c2;
+    --accent: #7d3a1f;
+    --accent-soft: #f3e6de;
+    --good: #2d6146;
+    --good-soft: #e6f1ea;
+    --bad: #9a3b2c;
+    --bad-soft: #fbeae6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #17150f; --card: #201d16; --ink: #ece6d7; --soft: #b2aa96;
+      --faint: #8a8272; --rule: #38342a; --accent: #e59a7d; --accent-soft: #2f201a;
+      --good: #87c9a3; --good-soft: #1b2a21; --bad: #ef9483; --bad-soft: #33201c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 0 20px 4rem;
+  }
+  .sheet { max-width: 44rem; margin: 0 auto; }
+  header.top {
+    padding: 2rem 0 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font: 600 clamp(1.7rem, 5vw, 2.4rem)/1.15 "Iowan Old Style", Palatino, Georgia, serif;
+    margin: 0 0 0.3rem;
+  }
+  .subtitle { color: var(--soft); margin: 0; }
+  h2 { font: 600 1.4rem/1.25 "Iowan Old Style", Palatino, Georgia, serif; margin: 0 0 0.8rem; }
+  h3 { font-size: 1.02rem; margin: 0 0 0.2rem; }
+  p { margin: 0 0 1rem; }
+  .progress {
+    display: flex; gap: 6px; align-items: center;
+    font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 1.4rem;
+  }
+  .pip { width: 9px; height: 9px; border-radius: 50%; background: var(--rule); display: inline-block; }
+  .pip.done { background: var(--accent); }
+  .pip.now { background: var(--accent); outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+  .doc {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    border-radius: 3px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .doc .kind { font-size: 0.8rem; color: var(--faint); margin: 0 0 0.5rem; }
+  .doc blockquote {
+    margin: 0;
+    font: italic 400 1.02rem/1.55 "Iowan Old Style", Palatino, Georgia, serif;
+    color: var(--ink);
+  }
+  .doc .tag {
+    font: 600 0.72rem/1 system-ui, sans-serif;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 3px 6px; border-radius: 3px; margin-right: 6px;
+  }
+  .options { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 10px; }
+  .options button {
+    width: 100%; text-align: left;
+    font: 400 16px/1.45 inherit;
+    background: var(--card); color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: 14px 16px; cursor: pointer;
+  }
+  .options button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .options button:disabled { cursor: default; opacity: 1; }
+  .options button.chosen.right { border-color: var(--good); background: var(--good-soft); }
+  .options button.chosen.wrong { border-color: var(--bad); background: var(--bad-soft); }
+  .options button.reveal { border-color: var(--good); }
+  .verdict {
+    margin-top: 1.4rem; padding: 16px 18px; border-radius: 4px;
+    border: 1px solid var(--rule); background: var(--card);
+  }
+  .verdict.right { border-color: var(--good); background: var(--good-soft); }
+  .verdict.wrong { border-color: var(--bad); background: var(--bad-soft); }
+  .verdict .label {
+    font: 600 0.78rem/1 system-ui, sans-serif; letter-spacing: 0.08em;
+    text-transform: uppercase; display: block; margin-bottom: 0.5rem;
+  }
+  .verdict.right .label { color: var(--good); }
+  .verdict.wrong .label { color: var(--bad); }
+  .btn {
+    font: 600 16px/1 inherit;
+    background: var(--accent); color: var(--paper);
+    border: 1px solid var(--accent); border-radius: 4px;
+    padding: 12px 20px; cursor: pointer;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+  .btn.ghost:hover { background: var(--accent-soft); }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.6rem; }
+  :where(button, a, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  h2[tabindex]:focus { outline: none; }
+  h2[tabindex]:focus-visible { outline: 2px dotted var(--accent); outline-offset: 4px; }
+  ol.debrief, ul.plain { padding-left: 1.3rem; }
+  ol.debrief li { margin-bottom: 0.7rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; margin-top: 1rem; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+  .notice {
+    border-left: 4px solid var(--accent); background: var(--accent-soft);
+    padding: 14px 16px; border-radius: 0 3px 3px 0; margin-bottom: 1.4rem;
+  }
+  .notice p:last-child { margin-bottom: 0; }
+  footer.bottom {
+    margin-top: 3rem; padding-top: 1.2rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.85rem; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center;
+  }
+  footer.bottom button {
+    font: 400 0.85rem/1 inherit; background: none; border: 0; padding: 0;
+    color: var(--accent); text-decoration: underline; cursor: pointer;
+  }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: no-preference) {
+    .verdict, .doc { transition: border-color 0.15s ease, background-color 0.15s ease; }
+  }
+</style>
+
+<div class="sheet">
+  <header class="top">
+    <h1 id="game-title">The Grain Shipment</h1>
+    <p class="subtitle" id="game-subtitle">A corroboration warm-up</p>
+  </header>
+
+  <main id="stage" aria-live="polite"></main>
+
+  <footer class="bottom">
+    <span>A Playable Past demonstration.</span>
+    <button type="button" id="to-sources">Sources &amp; assumptions</button>
+    <button type="button" id="to-restart">Play again</button>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const D = GAME_DATA;
+  const stage = document.getElementById("stage");
+  let round = 0;
+  let score = 0;
+  let answered = false;
+
+  document.title = D.title + " — " + D.subtitle;
+  document.getElementById("game-title").textContent = D.title;
+  document.getElementById("game-subtitle").textContent = D.subtitle;
+
+  function el(tag, props, children) {
+    const node = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function (k) {
+        if (k === "class") node.className = props[k];
+        else if (k === "text") node.textContent = props[k];
+        else node.setAttribute(k, props[k]);
+      });
+    }
+    (children || []).forEach(function (c) { if (c) node.appendChild(c); });
+    return node;
+  }
+
+  function paragraphs(text) {
+    return text.split("\n\n").map(function (p) { return el("p", { text: p }); });
+  }
+
+  function progress() {
+    const wrap = el("p", { class: "progress" });
+    wrap.appendChild(document.createTextNode("Document " + (round + 1) + " of " + D.rounds.length));
+    D.rounds.forEach(function (_, i) {
+      const cls = i < round ? "pip done" : i === round ? "pip now" : "pip";
+      wrap.appendChild(el("span", { class: cls, "aria-hidden": "true" }));
+    });
+    return wrap;
+  }
+
+  /* ---------------- screens ---------------- */
+
+  let firstPaint = true;
+
+  /**
+   * Move focus to the top of the new screen. Without this a keyboard or screen
+   * reader user is dropped back at the document start after every choice.
+   * Skipped on first load so the page is announced from its heading.
+   */
+  function focusScreen(node) {
+    if (firstPaint) { firstPaint = false; return; }
+    node.setAttribute("tabindex", "-1");
+    node.focus();
+  }
+
+  function showIntro() {
+    stage.replaceChildren();
+    const box = el("div", { class: "notice" }, [
+      el("p", { text: "Every document in this game is invented. It is a method exercise, not a history lesson about a real shipment." })
+    ]);
+    stage.appendChild(box);
+    paragraphs(D.intro).forEach(function (p) { stage.appendChild(p); });
+    const start = el("button", { class: "btn", type: "button", text: "Open the first file" });
+    start.addEventListener("click", function () { round = 0; score = 0; showRound(); });
+    stage.appendChild(el("div", { class: "row" }, [start]));
+    focusScreen(stage.firstElementChild);
+  }
+
+  function showRound() {
+    answered = false;
+    const r = D.rounds[round];
+    stage.replaceChildren();
+    stage.appendChild(progress());
+    const heading = el("h2", { text: r.question });
+    stage.appendChild(heading);
+
+    r.docs.forEach(function (doc) {
+      stage.appendChild(el("div", { class: "doc" }, [
+        el("h3", {}, [
+          el("span", { class: "tag", text: doc.id }),
+          document.createTextNode(doc.label)
+        ]),
+        el("p", { class: "kind", text: doc.kind }),
+        el("blockquote", { text: "“" + doc.text + "”" })
+      ]));
+    });
+
+    const list = el("ul", { class: "options" });
+    r.options.forEach(function (opt, i) {
+      const btn = el("button", { type: "button", text: opt.text });
+      btn.addEventListener("click", function () { choose(i, list); });
+      list.appendChild(el("li", {}, [btn]));
+    });
+    stage.appendChild(list);
+    focusScreen(heading);
+  }
+
+  function choose(index, list) {
+    if (answered) return;
+    answered = true;
+    const r = D.rounds[round];
+    const opt = r.options[index];
+    if (opt.correct) score += 1;
+
+    const buttons = list.querySelectorAll("button");
+    buttons.forEach(function (btn, i) {
+      btn.disabled = true;
+      if (i === index) btn.className = "chosen " + (opt.correct ? "right" : "wrong");
+      else if (r.options[i].correct) btn.className = "reveal";
+    });
+
+    const verdict = el("div", { class: "verdict " + (opt.correct ? "right" : "wrong") }, [
+      el("span", { class: "label", text: opt.correct ? "Well judged" : "Not quite" }),
+      el("p", { text: opt.why })
+    ]);
+    stage.appendChild(verdict);
+
+    const last = round === D.rounds.length - 1;
+    const next = el("button", {
+      class: "btn", type: "button",
+      text: last ? "See where you stand" : "Next file"
+    });
+    next.addEventListener("click", function () {
+      if (last) showEnding();
+      else { round += 1; showRound(); }
+    });
+    stage.appendChild(el("div", { class: "row" }, [next]));
+    next.focus();
+  }
+
+  function showEnding() {
+    const ending = score >= 3 ? D.endings.high : score >= 2 ? D.endings.mid : D.endings.low;
+    stage.replaceChildren();
+    const heading = el("h2", { text: ending.title });
+    stage.appendChild(heading);
+    stage.appendChild(el("p", { text: "You judged " + score + " of " + D.rounds.length + " the way the evidence supports." }));
+    stage.appendChild(el("p", { text: ending.text }));
+
+    stage.appendChild(el("h2", { text: "Questions for the discussion" }));
+    stage.appendChild(el("p", { text: "The argument after the game is the part that matters. These are the questions the game was built to raise." }));
+    const ol = el("ol", { class: "debrief" });
+    D.debrief.forEach(function (q) { ol.appendChild(el("li", { text: q })); });
+    stage.appendChild(ol);
+
+    const again = el("button", { class: "btn", type: "button", text: "Play again" });
+    again.addEventListener("click", showIntro);
+    const sources = el("button", { class: "btn ghost", type: "button", text: "Sources & assumptions" });
+    sources.addEventListener("click", showSources);
+    stage.appendChild(el("div", { class: "row" }, [again, sources]));
+    focusScreen(heading);
+  }
+
+  function showSources() {
+    stage.replaceChildren();
+    const heading = el("h2", { text: "Sources & assumptions" });
+    stage.appendChild(heading);
+    stage.appendChild(el("div", { class: "notice" }, [el("p", { text: D.sources.statement })]));
+    stage.appendChild(el("p", { text: D.sources.reason }));
+
+    const table = el("table");
+    const head = el("thead", {}, [el("tr", {}, [
+      el("th", { text: "Element" }), el("th", { text: "Status" }), el("th", { text: "Note" })
+    ])]);
+    const body = el("tbody");
+    D.sources.rows.forEach(function (row) {
+      body.appendChild(el("tr", {}, row.map(function (cell) { return el("td", { text: cell }); })));
+    });
+    table.appendChild(head);
+    table.appendChild(body);
+    stage.appendChild(table);
+
+    stage.appendChild(el("h2", { text: "For the instructor" }));
+    stage.appendChild(el("p", { text: D.teacherNote }));
+
+    const back = el("button", { class: "btn", type: "button", text: "Back to the game" });
+    back.addEventListener("click", showIntro);
+    stage.appendChild(el("div", { class: "row" }, [back]));
+    focusScreen(heading);
+  }
+
+  document.getElementById("to-sources").addEventListener("click", showSources);
+  document.getElementById("to-restart").addEventListener("click", showIntro);
+
+  showIntro();
+}());
+</script>
+
+</body>
+</html>

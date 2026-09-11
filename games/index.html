@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gallery — Playable Past</title>
+<meta name="description" content="Classroom history games built by AI agents and checked for classroom readiness. Every game ships with the evidence it was built from.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/">Playable <span>Past</span></a>
+    <nav aria-label="Main">
+      <a href="/start/">Make a game</a>
+      <a href="/check/">Check a game</a>
+      <a href="/games/" aria-current="page">Gallery</a>
+      <a href="/submit/">Share yours</a>
+      <a href="/for-agents/">For agents</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <section style="padding-bottom:1rem">
+    <p class="eyebrow">Take one, adapt it, teach with it</p>
+    <h1>Games other instructors have built</h1>
+    <p class="lede">Every game here is one HTML file that runs with the wifi off, and every one
+    carries the evidence it was built from. Read the sources before you use it — that is the
+    point of keeping them attached.</p>
+  </section>
+
+  <div class="filters">
+    <label for="q">Search</label>
+    <input type="search" id="q" placeholder="topic, period, mechanic…">
+    <label for="mode">Learning mode</label>
+    <select id="mode"><option value="">Any</option></select>
+    <label for="length">Length</label>
+    <select id="length">
+      <option value="">Any</option>
+      <option value="short">Warm-up (20 min or less)</option>
+      <option value="session">One class (20–90 min)</option>
+      <option value="long">Longer than a class</option>
+    </select>
+    <span class="small" id="count" aria-live="polite"></span>
+  </div>
+
+  <ul class="game-grid" id="grid">
+    <li class="empty-state"><p>Loading the gallery…</p></li>
+  </ul>
+
+  <section>
+    <h2>What a listing does and does not promise</h2>
+    <div class="grid two">
+      <div class="card">
+        <h3>Checked: the file</h3>
+        <p>Self-contained, nothing fetched during play, no AI needed to run it, no secret keys,
+        a <em>Sources &amp; assumptions</em> screen, real buttons. Re-checked automatically
+        whenever the gallery is rebuilt.</p>
+      </div>
+      <div class="card">
+        <h3>Reported: the human tests</h3>
+        <p>Whether a person opened it offline, played it by keyboard, and timed it. Shown as the
+        contributor reported it, including what they left untested.</p>
+      </div>
+      <div class="card">
+        <h3>Not checked: the history</h3>
+        <p>Nobody here vets whether a game's argument is sound. That is why the history bible
+        ships with every game — so you can judge it the way you would judge a reading.</p>
+      </div>
+      <div class="card">
+        <h3>Not checked: your classroom</h3>
+        <p>Your network, your LMS, your projector, your students. Download the file and open it
+        once on the real setup before class.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Built something?</h2>
+    <p class="prose">Games are added by anyone, through an agent. You do not need a GitHub
+    account or any technical knowledge — your agent does the submitting.</p>
+    <div class="btn-row">
+      <a class="btn" href="/submit/">Share your game</a>
+      <a class="btn secondary" href="/start/">Build one first</a>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong>Playable Past</strong><br>A gallery and checker for classroom history games.</div>
+    <div><a href="/start/">Make a game</a><br><a href="/check/">Check a game</a><br><a href="/games/">Gallery</a></div>
+    <div><a href="/submit/">Share your game</a><br><a href="/for-agents/">For agents</a><br><a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">The workflow (gist)</a></div>
+    <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
+  </div>
+</footer>
+<script src="/assets/js/gallery.js"></script>
+<noscript><div class="wrap"><div class="note"><p><strong>The gallery list needs JavaScript.</strong>
+The games themselves do not. You can browse the folders directly in the
+<a href="https://github.com/">project repository</a>.</p></div></div></noscript>
+</body>
+</html>
