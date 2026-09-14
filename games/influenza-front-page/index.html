@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Influenza Front Page — Playable Pasts</title>
+<meta name="description" content="Edit a retrospective front page of Philadelphia's Evening Public Ledger from eighteen readings of October 3-10, 1918, with three or six research checks to spend and exactly six columns to fill. Then meet the October 12 mortality figures and qualify, replace, or defend one story.">
+<link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="../../">Playable <span>Pasts</span></a>
+    <nav aria-label="Main">
+      <a href="../../start/">Make a game</a>
+      <a href="../../check/">Check a game</a>
+      <a href="../../games/" aria-current="page">Gallery</a>
+      <a href="../../submit/">Share yours</a>
+      <a href="../../for-agents/">For agents</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <section class="game-header">
+    <p class="eyebrow"><a href="../../games/">Gallery</a> · Evidence &amp; corroboration</p>
+    <h1>The Influenza Front Page</h1>
+    <p class="lede">Edit a retrospective front page of Philadelphia's Evening Public Ledger from eighteen readings of October 3-10, 1918, with three or six research checks to spend and exactly six columns to fill. Then meet the October 12 mortality figures and qualify, replace, or defend one story.</p>
+    <p class="game-meta">
+      <span>Newsroom page-building with a staged archive</span>
+      <span>60 minutes</span>
+      <span>Teams of three or four on one device; solo; or two independent pages for a debate</span>
+      <span>Intro survey upwards</span>
+      <span>Contributed by Playable Pasts (demonstration)</span>
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="game.html" download>Download the game file</a>
+      <a class="btn secondary" href="game.html">Open it full screen</a>
+    </div>
+  </section>
+
+  <div class="note">
+    <p><strong>Before you teach with it:</strong> this file has open findings from the automated check.
+    That is a statement about the <em>file</em> — self-contained, accessible, honest about its
+    sources. Whether the history is right and the lesson works is yours to judge. Read
+    <em>Sources &amp; evidence</em> below, then
+    <a href="../../check/">re-check the file</a> yourself.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-play" aria-controls="panel-play" aria-selected="true">Play</button>
+    <button role="tab" id="tab-guide" aria-controls="panel-guide" aria-selected="false">Teacher guide</button>
+    <button role="tab" id="tab-bible" aria-controls="panel-bible" aria-selected="false">Sources & evidence</button>
+    <button role="tab" id="tab-ledger" aria-controls="panel-ledger" aria-selected="false">What was tested</button>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-play" aria-labelledby="tab-play">
+    <iframe class="play-frame" src="game.html" title="The Influenza Front Page"
+      sandbox="allow-scripts allow-downloads"></iframe>
+    <p class="small">Running in a sandbox with no network access and no storage — the same
+    conditions as a locked-down classroom laptop.</p>
+  </div>
+  <div class="tabpanel" role="tabpanel" id="panel-guide" aria-labelledby="tab-guide" hidden>
+    <div class="prose" style="max-width:44rem">
+<blockquote><p><strong>Gallery copy.</strong> This guide is the version 2 teacher guide from the game's source project, reproduced here with file names changed to match the gallery folder: the game is <code>game.html</code>, the history bible is <code>history-bible.md</code> (which now also contains the historical-content audit), and the QA report has become <code>test-ledger.md</code>. The source project, with its build script and Playwright tests, is not part of the gallery folder. The game's content is also editable directly: it sits in a JSON block marked <code>GAME_DATA</code> near the top of <code>game.html</code>.</p></blockquote>
+<h2>The Influenza Front Page — Teacher Guide</h2>
+<p>Version 2 classroom rules · Usually 40–60 minutes · One offline HTML file</p>
+<h3>The learning task</h3>
+<p>Students edit a retrospective newspaper front page from reports available through October 10, 1918, then receive evidence from October 12. They must choose what deserves space, decide what each source can establish, identify an important omission, and explain one later editorial decision.</p>
+<p>This is a source-criticism game, not an epidemic simulator. Students do not save lives by selecting a hidden correct headline. Its constrained archive and rules are a teaching model, not a reconstruction of a particular historical newsroom. Several defensible pages can emerge from the same evidence.</p>
+<p>The selection contains 18 readings from Philadelphia's <em>Evening Public Ledger</em>, dated October 3–10, with an October 12 reveal. It is a small, deliberately selected corpus, not a representative survey of the city or its press. The camp dispatch and Chester report have different geographical settings; they cannot silently become evidence about Philadelphia civilians.</p>
+<h3>Prepare the classroom</h3>
+<p>Distribute <code>game.html</code>. Download the HTML from Canvas or your LMS and open it in a browser rather than relying on an LMS preview frame. The game is designed to operate offline; archive links need an internet connection.</p>
+<p>Rehearse the exact file on the classroom browser before class. Browser-local saving can depend on browser policy and the file's location. Ask students to export a JSON checkpoint before changing devices or moving the file; the checkpoint is a portable continuation file, not a finished assignment. The final text export is the editorial record. Print / save PDF is useful for comparing pages.</p>
+<p>Choose a difficulty and a playing method independently:</p>
+<div class="table-scroll"><table><thead><tr><th>Difficulty</th><th>Research allowance</th><th>Best starting use</th></tr></thead><tbody><tr><td>Guided</td><td>Six checks</td><td>First encounter with historical newspapers, accessibility-focused practice, or a discussion emphasizing detail</td></tr><tr><td>Newsroom</td><td>Three checks</td><td>A second playthrough or a class ready to discuss research tradeoffs</td></tr></tbody></table></div>
+<p>Both difficulties have the same three-dossier opening limit, six-unit page, chronology, and revision task. More checks increase access to research layers; they do not make one historical interpretation automatically correct.</p>
+<h3>Three ways to play</h3>
+<h4>Newsroom team: three or four students, one device</h4>
+<p>Assign roles and rotate at each stage. The person operating the device should not make every decision.</p>
+<ul><li>Managing editor: proposes the lead and allocates space; asks why a reader needs each item.</li><li>Evidence editor: requests research checks and distinguishes a report, a quotation, a paraphrase, and an inference.</li><li>Public-service editor: checks practical coverage, geographical scope, and whose lives are visible or absent.</li><li>Skeptic / recorder: challenges the strongest claim and records the team's unresolved question and omission. In a team of three, combine this role with managing editor.</li></ul>
+<p>Before an irreversible choice, each role gets one short contribution. For a dossier pull: “What question will this source help us answer?” For a research check: “What could this check change on our page?”</p>
+<h4>Solo: deliberate role-switching</h4>
+<p>Use Guided mode. Before filling the page, write a claim as managing editor, inspect it as evidence editor, then challenge it as skeptic. Make the omission decision last, after identifying the strongest story that did not fit. A solo player should not need to simulate a group conversation; the source notebook provides a record of these different passes.</p>
+<h4>Paired editorial debate: two independent pages</h4>
+<p>Each student or team plays its own session without coordinating selections. After locking both pages, compare the leads, the allocation of space, and the omitted stories before discussing the reveal. Each side must explain one defensible choice on the other page. Different browsers or exported checkpoints keep the sessions separate; avoid sharing one unsaved browser session.</p>
+<h3>Rules that matter</h3>
+<h4>Stage 1 — October 3: commit to three dossiers</h4>
+<p>Six source leads are available. Players can inspect their brief lead descriptions, but must choose exactly three permanent dossier pulls. A pull cannot be returned or traded for another. These are research-access choices, not yet the final front-page choices.</p>
+<p>Facilitation prompt: “Are you using all three pulls on the most prominent official account? What question might another page or genre answer?” Do not tell students which three to choose.</p>
+<h4>Stage 2 — October 4–7: investigate purposefully</h4>
+<p>The source pool expands to twelve. Research checks become available. Players may spend some now and reserve others for the next stage.</p>
+<p>One check buys one research layer for a source:</p>
+<div class="table-scroll"><table><thead><tr><th>Layer</th><th>What opens together</th><th>What it cannot establish by itself</th></tr></thead><tbody><tr><td>Reading</td><td>The editor's reading and an embedded scan crop, where a crop exists</td><td>That every word is an authenticated transcription, or that the newspaper's claim is true</td></tr><tr><td>Context</td><td>The surrounding-context teaching note</td><td>Independent corroboration of the account</td></tr><tr><td>Comparison</td><td>An available comparison with related earlier or same-date material</td><td>Independent corroboration merely because the same paper or official repeats a claim</td></tr></tbody></table></div>
+<p>Reading access pairs image and readable text so that a student does not pay an additional check simply to access the material in a different format. Not every source has every layer or an embedded image. Read a layer's description before purchasing it; a comparison may answer a different question from a scan.</p>
+<p>For each promising source, use the notebook's claim, uncertainty, and editorial-use fields. A useful note is specific: “The paper reports an order; our headline must not imply universal compliance.” A less useful note is “Seems reliable.”</p>
+<h4>Stage 3 — October 8–10: build a six-unit page</h4>
+<p>All eighteen sources enter the pool. Remaining research checks can still be spent here, including on newly arrived sources. The later arrivals are a reason to consider reserving checks, not a requirement to do so.</p>
+<p>The page must use exactly six column units and contain three to five stories:</p>
+<ul><li>Lead: two or three units.</li><li>Public-service item: one or two units; an editorial does not satisfy this requirement.</li><li>Philadelphia local item: one or two units; the Chester regional report does not satisfy this requirement.</li><li>Up to two secondary items: one unit each.</li></ul>
+<p>Possible layouts show the tradeoff between depth and breadth:</p>
+<div class="table-scroll"><table><thead><tr><th>Editorial choice</th><th>Lead</th><th>Service</th><th>Local</th><th>Secondary</th><th>Total stories</th></tr></thead><tbody><tr><td>A dominant lead</td><td>3</td><td>1</td><td>1</td><td>One at 1</td><td>4</td></tr><tr><td>More service detail</td><td>2</td><td>2</td><td>1</td><td>One at 1</td><td>4</td></tr><tr><td>Widest selection</td><td>2</td><td>1</td><td>1</td><td>Two at 1 each</td><td>5</td></tr><tr><td>Three substantial items</td><td>2</td><td>2</td><td>2</td><td>None</td><td>3</td></tr></tbody></table></div>
+<p>Students choose headlines, attribution, caveats, and an editorial stance. “Attributed” makes clear who claims something. “Tentative” marks an unresolved interpretation. “Established” is the team's stronger evidentiary commitment, not a synonym for “the newspaper printed it.” These are choices to justify, not automatic truth labels.</p>
+<p>Before locking the page, the game requires a lead-source claim of at least 12 characters, an editorial rationale of at least 40 characters, and an omitted story with a reason of at least 20 characters. These minimums prevent blank submissions; they do not assess quality. Ask for a substantive explanation in ordinary sentences.</p>
+<p>Model of a useful rationale: “We gave the closure notice prominence because readers needed to understand the announced restrictions. We paired it with local effects, but attributed the order and avoided claiming that everyone complied.” This illustrates a method, not the required editorial position.</p>
+<h4>After lock — October 12: revise transparently</h4>
+<p>Only after the original page is locked does the October 12 evidence appear. Players select the later evidence relevant to their decision: weekly mortality, reporting-lag considerations, or continuing restrictions. A reporting-lag consideration is an interpretive caution; it must not be mistaken for a quantified fact supplied by the newspaper.</p>
+<p>Choose one story and one action:</p>
+<ul><li>Qualify: make a genuine change to the selected item's presentation or claim.</li><li>Replace: use an unplaced source eligible for the selected role.</li><li>Affirm: retain the item and explain why the later evidence does not overturn its carefully limited claim.</li></ul>
+<p>Every action needs an original explanation of at least 30 characters. The record preserves the original page, new evidence, action, and reasoning. Affirmation is not a shortcut around reasoning, and revision is not an admission that a reasonable earlier judgment was dishonest.</p>
+<p>Prompt: “What exactly does the new material change: the event you reported, your interpretation, your wording, or its prominence? What remains supportable?”</p>
+<h3>A sixty-minute lesson</h3>
+<div class="table-scroll"><table><thead><tr><th>Minutes</th><th>Activity</th></tr></thead><tbody><tr><td>0–5</td><td>Frame the question: what could an editor responsibly say with incomplete evidence? Explain that historical health advice is not present-day guidance.</td></tr><tr><td>5–8</td><td>Choose difficulty and playing method; assign roles.</td></tr><tr><td>8–16</td><td>Stage 1: choose and explain three dossier pulls.</td></tr><tr><td>16–26</td><td>Stage 2: investigate and take source notes.</td></tr><tr><td>26–41</td><td>Stage 3: allocate space, write the rationale and omission, then lock the page.</td></tr><tr><td>41–48</td><td>Read the reveal; qualify, replace, or affirm one item with reasons.</td></tr><tr><td>48–60</td><td>Export and compare pages; discuss the strongest disagreement.</td></tr></tbody></table></div>
+<p>For forty minutes, introduce the roles and controls before class, use five minutes for dossier pulls, seven for research, twelve for building, six for revision, and ten for introduction and debrief combined. Shorten discussion, not access to necessary reading accommodations. The optional manual pace timer is a facilitation aid: it does not fail the game or grade speed.</p>
+<p>For twenty minutes, run a projected whole-class editorial conference in Guided mode. Let students vote on research questions, demonstrate one check, and jointly build one page. This is a guided demonstration, not a substitute for an independent full playthrough; allow the written rationale or reveal discussion to continue outside class if needed.</p>
+<p>For ninety minutes, use two independent pages and a debate. Add time to inspect the available crops, separate quotation from editorial reading, exchange source notebooks, and revisit one decision under the other difficulty. Require students to explain what the changed research allowance made possible and what it still could not prove.</p>
+<h3>Discussion and feedback, not a hidden grade</h3>
+<p>The game reports descriptive indicators for coverage, research checks, attribution, and caution. It does not award a historical-prediction score or compare students against concealed ideal certainty settings. More genres do not automatically mean more representative coverage; more checks do not automatically mean better reasoning.</p>
+<p>Use the following qualitative feedback guide alongside the exported record:</p>
+<div class="table-scroll"><table><thead><tr><th>Dimension</th><th>A developed response</th><th>A useful next question</th></tr></thead><tbody><tr><td>Evidence</td><td>Connects a specific claim to a source and explains what the check established</td><td>“Did you verify the wording, the event, or the interpretation?”</td></tr><tr><td>Calibration</td><td>Distinguishes an order, an estimate, an opinion, and an observed outcome</td><td>“Which word in your headline makes the strongest promise?”</td></tr><tr><td>Editorial judgment</td><td>Explains space allocation and the consequence of an omission</td><td>“What does your reader fail to learn because this item was left out?”</td></tr><tr><td>Scope and visibility</td><td>Names geographical limits and missing perspectives without inventing testimony</td><td>“Who appears only as a number, and who receives a name or quotation?”</td></tr><tr><td>Revision</td><td>Identifies relevant later evidence and gives a reason to alter or retain one item</td><td>“Would this still be a reasonable choice without hindsight?”</td></tr></tbody></table></div>
+<p>Further debrief questions:</p>
+<ol><li>Did an image, official title, confident headline, or fluent reading make a source seem more authoritative? Was that authority warranted?</li><li>Which research check changed an actual editorial decision? Which supplied information that was interesting but not decisive?</li><li>How did three versus six checks change the questions you asked?</li><li>What can these selected newspaper pages not tell us about Philadelphia?</li><li>Did the delayed reveal expose an unsupported claim or only the incompleteness of an earlier account?</li><li>What argument does the six-unit rule make? How would eight units or a different required category change the story?</li></ol>
+<h3>Source and accessibility cautions</h3>
+<p>The embedded archival images are selected crops, not full historical front pages. A crop can omit article continuations, neighboring material, and visual relationships. Some sources have no embedded crop. Source links and the History Bible help locate fuller archival context, but that additional online reading sits outside the offline research constraint unless the instructor explicitly allows it.</p>
+<p>Distinguish four layers: archival image; editor's reading or summary; retained legacy OCR exercise; and generated teaching prompts. Legacy OCR snippets in this project are not an authenticated raw-OCR corpus and must not be used to claim exact archival transcription provenance. Fluent editor readings are not automatically verbatim quotations. The revision includes a numerical/source audit, but only claims supported by that audit should be described as checked; consult the current History Bible for scope and unresolved limits.</p>
+<p>The reading view follows the current game stage so it does not expose all sources or the reveal in advance. Image and readable-text access are paired in a reading check. Rehearse zoom, keyboard access, screen-reader behavior, and print output with the accommodations your students actually use; a built-in reading view is not proof of compatibility with every browser's reading mode.</p>
+<p>No student should have to decipher a damaged image to access the basic reading. Image inspection is a source-analysis opportunity, not a visual-acuity test. Historical illness, death, and care may be sensitive topics; allow a student to focus on institutional reporting or editorial method rather than a personal-loss story.</p>
+<h3>Handoff and troubleshooting</h3>
+<p>Ask students to submit the full editorial text export. Add the printed page if layout itself is being assessed, and the checkpoint only if you need to reopen the session. The text record is the clearest place to inspect source notes, the rationale, the omission, and the before/after decision.</p>
+<ul><li>LMS preview blocked: download and open the HTML locally.</li><li>Reload or device change planned: export a JSON checkpoint first, then import it in the destination session.</li><li>State seems stale: preserve a checkpoint before attempting a restart. Restart is for beginning a new playthrough, not undoing an irreversible choice.</li><li>Small scan: use the paired editor reading and the zoom or reading controls; discuss the image only at a useful scale.</li><li>Print layout unexpected: inspect print preview before saving, and retain the text export as the audit record.</li></ul>
+<p>Version 2 passed the current Chromium regression suite: complete play, source locks, three- to five-story layouts, all revision choices, reloads, checkpoint import/export, invalid-save recovery, and print preparation. A separate complete playthrough used only keyboard navigation and text entry. Layout checks used emulated widths of 390, 768, and 1440 pixels; these are not real-device or universal assistive-technology certification. See <code>test-ledger.md</code> for exact scope. Instructors still need to test LMS behavior, screen readers, classroom legibility, and discussion pace on their own setup.</p>
+<h3>Editing and disclosure</h3>
+<p>The source files separate game content from generated teaching prompts and interface logic. Edit the source files, then use the project's build script to regenerate the standalone HTML files; do not treat an already built HTML file as the only editable copy. Preserve source IDs, dates, page references, and links when changing a reading. Label summaries honestly, record substantive corrections, and do not introduce a quotation without checking the original text.</p>
+<p>This AI-assisted teaching artifact includes generated rules, prompts, readings, and interface text alongside historical material. The source publication is not the author of those teaching layers. Consult the source repository, History Bible, and archival rights statements for provenance and reuse; this guide does not grant rights in material owned by others.</p>
+    </div>
+  </div>
+  <div class="tabpanel" role="tabpanel" id="panel-bible" aria-labelledby="tab-bible" hidden>
+    <div class="prose" style="max-width:44rem">
+<blockquote><p><strong>Gallery copy.</strong> This is the version 2 history bible from the game's source project, followed by the historical-content audit of 7 September 2026 that it refers to. File names have been changed to match the gallery folder; nothing else has been altered. The audit's references to <code>src/content.json</code> describe the source project, whose content is compiled into the <code>GAME_DATA</code> block of <code>game.html</code>.</p></blockquote>
+<h2>The Influenza Front Page — History Bible</h2>
+<p>Version 2 · Newspaper reports, October 3–12, 1918 · Revised September 7, 2026</p>
+<h3>Purpose and authority</h3>
+<p>The game asks how newspapers construct public knowledge during a changing crisis and how historians should evaluate their reporting. Players assemble a retrospective page using material released through October 10, then consider October 12 evidence. The page, newsroom roles, staged releases, investigation budget, and revision task are teaching models, not a reconstruction of a particular historical editorial meeting.</p>
+<p>This document supersedes the historical and provenance claims in the earlier v1 History Bible. That edition contained substantive numerical errors and overstated transcription verification. Current readings are in <code>src/content.json</code>; the audit below records the corrections and their limits. <code>teacher-guide.md</code> explains current play. Historical statements here mean <strong>what the newspaper reported</strong>, not that an independent investigation has established the underlying event or population-health measurement.</p>
+<h3>Corpus and source IDs</h3>
+<p>The source is Philadelphia’s <em>Evening Public Ledger</em>, published in this period as the <em>Evening Public Ledger and the Evening Telegraph</em>, Library of Congress Control Number <code>sn83045211</code>. The game selects eighteen editorial readings from October 3–10 and a delayed October 12 article. Eight embedded images are <strong>crops</strong>, not complete front-page facsimiles. Some inside-page readings have no embedded facsimile.</p>
+<div class="table-scroll"><table><thead><tr><th>ID</th><th>Newspaper issue or research aid</th><th>Role in this edition</th></tr></thead><tbody><tr><td>SRC-001</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-03/ed-1/">Evening Public Ledger, Oct. 3, 1918</a></td><td>NEWS-001–006; selected readings from pp. 1, 8, 9, and 12</td></tr><tr><td>SRC-002</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-04/ed-1/">Oct. 4, 1918</a></td><td>NEWS-007–010; pp. 1, 8, 12, and 17</td></tr><tr><td>SRC-003</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-05/ed-1/">Oct. 5, 1918</a></td><td>NEWS-011; Chester report on p. 1</td></tr><tr><td>SRC-004</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-07/ed-1/">Oct. 7, 1918</a></td><td>NEWS-012–014; pp. 1, 9, and 14</td></tr><tr><td>SRC-005</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-08/ed-1/">Oct. 8, 1918</a></td><td>NEWS-015–016; pp. 1 and 9</td></tr><tr><td>SRC-006</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-09/ed-1/">Oct. 9, 1918</a></td><td>NEWS-017; p. 1</td></tr><tr><td>SRC-007</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-10/ed-1/">Oct. 10, 1918</a></td><td>NEWS-018; p. 1</td></tr><tr><td>SRC-008</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-11/ed-1/">Oct. 11, 1918</a></td><td>Contextual source link; no independently audited game reading in this revision</td></tr><tr><td>SRC-009</td><td><a href="https://www.loc.gov/item/sn83045211/1918-10-12/ed-1/">Oct. 12, 1918</a></td><td>Delayed mortality/restrictions reveal; p. 1</td></tr><tr><td>SRC-011</td><td><a href="https://www.loc.gov/static/programs/teachers/professional-development/online-office-hours/documents/2020-03-26_Influenza-Pandemic-1918-Primary-Sources.pdf">Library of Congress influenza teaching/research material</a></td><td>Research aid, not independent corroboration of each game claim</td></tr></tbody></table></div>
+<p>SRC-010, a Washington comparison in v1, was removed from active content because its edition/page and passage were not independently verified. Source IDs have not been renumbered. Current comparison notes use earlier or same-date selected material; repeated reporting from one paper or official is not independent corroboration.</p>
+<p>The Library of Congress describes Chronicling America newspapers as public domain or having no known copyright restrictions. Consult each item’s rights statement when reusing material. This project supplies no new permission for separately owned material and does not claim to have audited a complete forty-page research corpus.</p>
+<h3>Verification scope and source layers</h3>
+<p>The September 2026 audit visually inspected all eight embedded crops and checked the relevant readings for NEWS-001, NEWS-002, NEWS-007, NEWS-011, NEWS-012, NEWS-015, NEWS-017, NEWS-018, and the reveal. It did not independently inspect every inside page or re-transcribe all eighteen cards. NEWS-003’s Water Bureau passage is outside the supplied October 3 crop; that image does not verify its 100-worker figure.</p>
+<div class="table-scroll"><table><thead><tr><th>Layer</th><th>Provenance and appropriate use</th></tr></thead><tbody><tr><td>Archival crop</td><td>Reproduction of part of a newspaper page. It supports visible wording and layout within the crop, but can omit continuations and surrounding material.</td></tr><tr><td>Editorial reading</td><td>AI-assisted teaching paraphrase or condensed reading. Notes distinguish crop-checked readings from retained readings not independently checked in this audit. It is not a diplomatic transcription and must not be quoted as exact newspaper wording.</td></tr><tr><td>Legacy OCR exercise</td><td>Retained v1 teaching extract, not authenticated against a preserved raw archive OCR response. Do not call it verbatim raw OCR or attribute its exact errors to the archive without further checking.</td></tr><tr><td>Context and comparison</td><td>Interpretive teaching notes, not additional historical witnesses.</td></tr><tr><td>Interface and student page</td><td>Generated rules/prompts and student decisions, not archival artifacts.</td></tr></tbody></table></div>
+<p>Opening a reading check records a player action; it does not certify a source as true. A citation identifies where to look, not what the source proves.</p>
+<h3>Source-reported chronology</h3>
+<p>These readings are supported by the embedded crops. Retain each number’s period, category, and estimate status.</p>
+<div class="table-scroll"><table><thead><tr><th>Newspaper date</th><th>What the selected printed material reports</th><th>Important limit</th></tr></thead><tbody><tr><td>Oct. 3</td><td>An immediate closing order for gathering places; <strong>666 new cases</strong>; downtown police stations assigned emergency medical work</td><td>An announced order is not measured compliance. A number repeated within an article is not independently corroborated.</td></tr><tr><td>Oct. 4</td><td>Liquor establishments ordered shut at 7 p.m.; Common Pleas Courts to suspend for two weeks; <strong>788 new cases in twenty-four hours</strong></td><td>Orders and notified cases do not measure all infections or universal compliance.</td></tr><tr><td>Oct. 5</td><td>Chester authorities report <strong>5,000 cases</strong> and overtaxed undertakers; public funerals discouraged, with enforcement threatened</td><td>This is <strong>Chester</strong>, not Philadelphia. The passage does not establish the case-count method.</td></tr><tr><td>Oct. 7</td><td><strong>5,561 new cases in forty-eight hours</strong> and an estimate of about <strong>175,000 still ill</strong>; official hope alongside emergency mobilization</td><td>The estimate concerns people still ill, not everyone ever infected. Its quantity differs from newly reported cases.</td></tr><tr><td>Oct. 8</td><td>Krusen’s “over top” assessment; <strong>3,831 cases in the preceding twenty-four hours</strong>; most described as discovered the prior day, with decline since midnight</td><td>The windows differ. The article also urges vigilance. Optimism remains an attributed assessment.</td></tr><tr><td>Oct. 9</td><td>Official confidence and limited Episcopal church uses: private prayer, small early communion groups, and relief meetings</td><td>Not unrestricted reopening of all churches. The article says the fight continues and describes emergency hospital work.</td></tr><tr><td>Oct. 10</td><td><strong>3,357 cases</strong>, versus <strong>4,013</strong> in the preceding twenty-four-hour period: a fall of <strong>656</strong>; <strong>514 deaths</strong>, attributed as <strong>363 influenza + 151 pneumonia</strong></td><td>The article does <strong>not</strong> label 514 as all-cause deaths. Cases and deaths count different events.</td></tr><tr><td>Oct. 12</td><td>Weekly <strong>all-cause deaths of 3,234</strong>, versus <strong>1,191</strong> the previous week; <strong>1,697 influenza</strong> and <strong>938 pneumonia</strong> deaths; restrictions retained alongside “under control” language</td><td>The two named causes account for about 81.48%; the paper rounds to 81%. Weekly deaths are not interchangeable with daily cases.</td></tr></tbody></table></div>
+<p>No independently audited Oct. 11 narrative is inserted here. Later mortality does not prove every earlier attributed report or order false. Reporting lag is an interpretive caution; its size and operation cannot be reconstructed from these excerpts alone.</p>
+<h3>People, places, and representation</h3>
+<p>Dr. Wilmer Krusen appears as Philadelphia’s health director and a recurring source of orders, assessments, and figures. His institutional position matters: an attributed statement establishes what the paper represents an official as saying, not that the underlying inference is settled.</p>
+<p>The selected reports also discuss police, hospitals, nurses, medical students, courts, liquor establishments, and clergy. The October 9 crop names Bishop Philip M. Rhinelander in its explanation of Episcopal practice. Reports can make institutions visible without showing everyone’s experience of them.</p>
+<p>The main setting is Philadelphia. NEWS-011 concerns Chester. NEWS-008 is identified in its retained reading as a Camp Meade dispatch, not a Philadelphia civilian report. Do not aggregate their numbers with Philadelphia figures or erase their geographical labels. The Nancy Wynne society readings invite questions about social selection, but this corpus cannot establish how frequently particular populations appeared across the entire newspaper.</p>
+<h3>Claims ledger</h3>
+<p><strong>Crop-checked</strong> means visible wording or numbers were checked, not the underlying claim independently proved. <strong>Retained reading</strong> means the previous source attribution remains but the particular passage was not independently checked against its printed page in this audit.</p>
+<div class="table-scroll"><table><thead><tr><th>Claim ID</th><th>Current claim or question</th><th>Source and status</th><th>Used by</th></tr></thead><tbody><tr><td>C-001</td><td>The paper reports an immediate closing order</td><td>SRC-001 p. 1; crop-checked</td><td>NEWS-001</td></tr><tr><td>C-002</td><td>Oct. 3 prints <strong>666</strong>, not 566, new cases</td><td>SRC-001 p. 1; crop-checked twice in the article</td><td>NEWS-001</td></tr><tr><td>C-003</td><td>Downtown stations are described as emergency medical offices</td><td>SRC-001 p. 1; crop-checked</td><td>NEWS-002</td></tr><tr><td>C-004</td><td>Patrol wagons may take patients to hospitals</td><td>SRC-001 p. 1; crop-checked</td><td>NEWS-002</td></tr><tr><td>C-005</td><td>Water Bureau illness threatens operations; earlier reading gives 100 workers</td><td>SRC-001 p. 1; retained reading, <strong>outside supplied crop</strong></td><td>NEWS-003</td></tr><tr><td>C-006</td><td>Advice concerns self-protection and crowded trolley cars</td><td>SRC-001 p. 8; retained reading, not current guidance</td><td>NEWS-004</td></tr><tr><td>C-007</td><td>Society readings describe sudden illness and personal loss</td><td>SRC-001 p. 9; SRC-004 p. 9; retained readings</td><td>NEWS-005, NEWS-013</td></tr><tr><td>C-008</td><td>Sports readings describe canceled games and continued practice</td><td>SRC-001 p. 12; SRC-002 p. 17; retained readings</td><td>NEWS-006, NEWS-010</td></tr><tr><td>C-009</td><td>Liquor establishments ordered shut; courts to suspend</td><td>SRC-002 p. 1; crop-checked</td><td>NEWS-007</td></tr><tr><td>C-010</td><td>Oct. 4 reports 788 new cases in twenty-four hours</td><td>SRC-002 p. 1; crop-checked</td><td>NEWS-007</td></tr><tr><td>C-011</td><td>Camp dispatch describes light work during convalescence</td><td>SRC-002 p. 8; retained reading</td><td>NEWS-008</td></tr><tr><td>C-012</td><td>Editorial frames doctors’ home-front work as patriotic service</td><td>SRC-002 p. 12; retained reading of opinion</td><td>NEWS-009</td></tr><tr><td>C-013</td><td>Chester authorities report 5,000 cases and overtaxed undertakers</td><td>SRC-003 p. 1; crop-checked; method not established</td><td>NEWS-011</td></tr><tr><td>C-014</td><td>5,561 new cases over forty-eight hours; about 175,000 estimated still ill</td><td>SRC-004 p. 1; crop-checked</td><td>NEWS-012 only</td></tr><tr><td>C-015</td><td>Oct. 8 attributes optimism to Krusen and prints 3,831 new cases</td><td>SRC-005 p. 1; crop-checked</td><td>NEWS-015</td></tr><tr><td>C-016</td><td>Society reading praises women’s hospital volunteering; framing invites analysis</td><td>SRC-005 p. 9; retained reading plus teaching interpretation</td><td>NEWS-016</td></tr><tr><td>C-017</td><td>Oct. 9 combines confidence with limited Episcopal uses and emergency work</td><td>SRC-006 p. 1; crop-checked</td><td>NEWS-017</td></tr><tr><td>C-018</td><td>Oct. 10 cases fall from 4,013 to 3,357: decrease 656</td><td>SRC-007 p. 1; crop-checked</td><td>NEWS-018</td></tr><tr><td>C-019</td><td>514 deaths: 363 influenza and 151 pneumonia</td><td>SRC-007 p. 1; crop-checked, not labeled all-cause</td><td>NEWS-018</td></tr><tr><td>C-020</td><td>Weekly all-cause deaths: 1,191 to 3,234; named causes: 1,697 and 938</td><td>SRC-009 p. 1; crop-checked</td><td>Reveal</td></tr><tr><td>C-021</td><td>Measures, periods, and institutional messages complicate comparisons</td><td>Teaching interpretation of SRC-004–009; not a quantified lag model</td><td>Comparison and debrief</td></tr><tr><td>C-022</td><td>Investigation checks model limited attention and labor</td><td>Modeling assumption: three in Newsroom, six in Guided</td><td>Research access</td></tr><tr><td>C-023</td><td>Six column units expose prominence and omission</td><td>Modeling assumption, not the paper’s actual production budget</td><td>Page building</td></tr><tr><td>C-024</td><td>Students justify a claim stance rather than match a concealed ideal</td><td>Pedagogical rule</td><td>Editorial reasoning</td></tr><tr><td>C-025</td><td>Different defensible editorial pages can coexist</td><td>Pedagogical principle; no historical-prediction winner</td><td>Debrief</td></tr></tbody></table></div>
+<p>NEWS-014’s financial-district reading retains its SRC-004 p. 14 citation. Its old link to C-014 was erroneous and is removed: citywide case figures do not substantiate that market-column account.</p>
+<h3>Mechanic rationale</h3>
+<p>Version 2 offers Guided and Newsroom budgets, with team, solo, or paired-debate methods. The first three dossier choices expose selection. Later checks can be saved for newly released sources. A reading check pairs text and available image so access to another format does not consume an extra check.</p>
+<p>Players allocate six units among a lead, public service, Philadelphia local coverage, and optional secondary stories. Discuss why these categories are required and what other rules would privilege. An editorial does not satisfy public service merely by sounding authoritative; Chester does not satisfy Philadelphia local coverage merely by being nearby.</p>
+<p>Before the reveal, players record a claim, rationale, and consequential omission. They later qualify, replace, or affirm one story with reasons; the original page and subsequent decision remain available for comparison. Descriptive indicators concern editorial practice, not lives saved, epidemic outcomes, or concealed ideal certainty ranks. See the Teacher Guide for exact rules. This Bible does not certify software behavior or completed accessibility tests.</p>
+<h3>Safeguards and unfinished research</h3>
+<ul><li>Distinguish orders, notified counts, estimates, opinions, and observed outcomes. Attribution is not independent corroboration.</li><li>The interface stages evidence for play without hindsight. The offline file contains all content; staging is a classroom design, not a secure anti-cheating barrier.</li><li>Ask whose experiences appear as names, institutions, or numbers, and whose cannot be recovered here. Do not invent testimony or infer archive-wide frequencies from this selection.</li><li>Illness and death do not generate points. Historical medical instructions are evidence, never modern guidance.</li><li>Crop inspection verifies visible wording, not administrative completeness. This selection cannot establish Philadelphia-wide press consensus, infection prevalence, or effects of closures.</li><li>Further work should retrieve inside pages, preserve original OCR responses, produce passage-level transcriptions and correction logs, and obtain fuller page images before stronger transcription/layout claims. A second local newspaper would broaden comparison, but must be researched rather than simulated.</li></ul>
+<p>The game supports rigorous discussion when these limits remain visible. Recognizing a source’s boundary is an intellectual achievement, not failure to find the game’s hidden answer.</p>
+<p>---</p>
+<h3>Historical-content audit — September 7, 2026</h3>
+<p>This audit checked all eight newspaper crops embedded in the earlier game and corrected <code>src/content.json</code>. It did <strong>not</strong> inspect the complete run of newspaper pages or independently re-transcribe every card. The images are article/page crops, not eight complete front-page facsimiles. The earlier edition is retained as an archive; its factual and provenance claims must not be treated as the current authority.</p>
+<h4>Confirmed corrections</h4>
+<div class="table-scroll"><table><thead><tr><th>Card</th><th>Earlier version</th><th>Reading supported by the printed crop</th></tr></thead><tbody><tr><td>NEWS-001, Oct. 3, p. 1</td><td>566 new cases</td><td><strong>666</strong>. The figure occurs in both the opening and a later paragraph.</td></tr><tr><td>NEWS-012, Oct. 7, p. 1</td><td>175,000 residents “had been stricken”</td><td>An estimate of about <strong>175,000 still ill</strong>, not a cumulative infection total. The separate <strong>5,561</strong> figure concerns newly reported cases over <strong>forty-eight hours</strong>.</td></tr><tr><td>NEWS-015, Oct. 8, p. 1</td><td>1,031 new cases</td><td><strong>3,831</strong>, printed in both headline and body. The article reports a twenty-four-hour total, says most cases were discovered the previous day, and describes a decline since midnight. These are distinct time windows.</td></tr><tr><td>NEWS-017, Oct. 9, p. 1</td><td>Broadly modified church closing, without details</td><td>The described directions are to <strong>Episcopal clergy</strong>: private prayer, early communion in groups of no more than twenty or twenty-five, and relief meetings with safeguards. They do not establish unrestricted reopening of every church.</td></tr><tr><td>NEWS-018, Oct. 10, p. 1</td><td>511 deaths “from all causes,” including 33 influenza and 151 pneumonia</td><td><strong>514 deaths</strong>, with <strong>363 attributed to influenza</strong> and <strong>151 to pneumonia</strong>. These sum to 514. The article does not identify this number as an all-cause total. Its case comparison is <strong>4,013 to 3,357</strong>, a decrease of <strong>656</strong>, across adjacent twenty-four-hour periods.</td></tr></tbody></table></div>
+<p>The Oct. 4 <strong>788</strong> new-case figure, Oct. 5 Chester <strong>5,000</strong> figure, Oct. 7 <strong>5,561</strong> figure, and Oct. 12 reveal figures were also checked in the embedded crops. The Oct. 12 article explicitly distinguishes <strong>3,234 all-cause deaths</strong> from <strong>1,697 attributed to influenza</strong> and <strong>938 to pneumonia</strong>; it compares the weekly total with <strong>1,191</strong> the previous week. Its 81-percent statement is rounded: <code>(1697 + 938) / 3234 ≈ 81.48%</code>.</p>
+<h4>Provenance and wording repairs</h4>
+<ul><li>All displayed readable passages are now labeled <strong>editorial readings/paraphrases</strong>, not diplomatic transcriptions. Several earlier “corrected” passages changed tense, inserted subjects, condensed paragraphs, or provided summaries. A blanket “human-checked transcript” claim was not supported.</li><li>The old <code>raw</code> strings are preserved for the OCR exercise but explicitly labeled <strong>legacy teaching extracts</strong>. This audit could not authenticate them against preserved raw archive OCR responses. They must not be presented as verbatim raw OCR or as proof that a particular error was produced by the archive.</li><li>Card-specific correction notes distinguish readings checked in the supplied crops from retained summaries that have not been independently checked in this audit. The Water Bureau passage (NEWS-003) is <strong>outside</strong> the supplied Oct. 3 crop. Its existing number must not be described as scan-verified.</li><li>Cards without an embedded facsimile say so. A nearby or same-date front-page crop cannot substantiate an inside-page passage.</li><li>The unverified Washington comparison link was removed from the active content; NEWS-001 now compares two portions of the same Oct. 3 article. The interface must explain that this is <strong>not independent corroboration</strong>.</li><li>NEWS-009 is an editorial, not an official notice. Its official-placement eligibility was removed. NEWS-011 concerns <strong>Chester</strong>, not Philadelphia; its local-placement eligibility was removed and its regional label strengthened.</li><li>NEWS-014’s unrelated C-014 claim reference was removed. Obsolete hidden <code>ideal</code> certainty labels were removed from all cards.</li><li>Ungrounded quotation-style headline options in unverified inside-page readings were replaced with attributed summaries. Historical health advice remains source evidence, never current guidance.</li></ul>
+<h4>Primary-source locations</h4>
+<p>These are the newspaper pages corresponding to the supplied archival crops. The numeric corrections above were made by reading those existing images, not by trusting machine OCR.</p>
+<ul><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-03/ed-1/?sp=1">Evening Public Ledger, October 3, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-04/ed-1/?sp=1">October 4, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-05/ed-1/?sp=1">October 5, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-07/ed-1/?sp=1">October 7, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-08/ed-1/?sp=1">October 8, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-09/ed-1/?sp=1">October 9, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-10/ed-1/?sp=1">October 10, 1918, p. 1</a></li><li><a href="https://www.loc.gov/resource/sn83045211/1918-10-12/ed-1/?sp=1">October 12, 1918, p. 1</a></li></ul>
+<h4>Remaining limits for instructors</h4>
+<p>The core corpus is one commercial newspaper. Repeated reports from it are not independent agreement across Philadelphia’s press. Numerical claims remain what the paper reported, not validated epidemiological measurements. The internally verified cards are NEWS-001, NEWS-002, NEWS-007, NEWS-011, NEWS-012, NEWS-015, NEWS-017, and NEWS-018, plus the reveal. The remaining editorial readings need a fresh page-level transcription audit before exact wording is used in scholarly quotation. Current labels expose that limitation rather than silently certifying it.</p>
+    </div>
+  </div>
+  <div class="tabpanel" role="tabpanel" id="panel-ledger" aria-labelledby="tab-ledger" hidden>
+    <div class="prose" style="max-width:44rem">
+<h2>Test ledger — The Influenza Front Page</h2>
+<p>Artifact: <code>game.html</code>, 4.8 MB, version 2 (&quot;Newsroom edition&quot;), built 2026-09-07; added to the gallery 2026-09-14. Identical to the source project's <code>influenza-front-page-v2.html</code> (SHA-256 begins <code>eed1ea60dbd9f6f0</code>).</p>
+<p>Statuses: <strong>passed</strong> (the check was run and it passed), <strong>untested</strong> (not run — not a pass), <strong>not applicable</strong> (with a reason).</p>
+<p>The rows below record two kinds of test: the game's own Playwright suites, written for the source project and <strong>re-run on 2026-09-14</strong> by the gallery agent against this exact file; and checks the gallery agent ran directly. The original QA report of 2026-09-07 is summarised at the end.</p>
+<div class="table-scroll"><table><thead><tr><th>#</th><th>Check</th><th>Method and environment</th><th>Result</th><th>Evidence</th><th>Tester</th></tr></thead><tbody><tr><td>1</td><td>Self-contained: no external scripts, styles, fonts, or images</td><td>Static analysis, <code>tools/validate.mjs</code></td><td>passed</td><td>0 blocking, 1 warning (file size, row 4). Two earlier findings were checker false positives, fixed in the same pull request: the screen is called &quot;Sources &amp; limitations&quot;, and the readings elide with &quot;...&quot;</td><td>Agent</td></tr><tr><td>2</td><td>No network requests during play</td><td>Static analysis for network APIs and remote URLs</td><td>passed</td><td>No fetch, XHR, WebSocket, EventSource, or remote resource. Archive links are ordinary anchors the player may follow online</td><td>Agent</td></tr><tr><td>3</td><td>Runs from disk</td><td>Opened as a <code>file://</code> URL in Chrome 141</td><td>passed</td><td><code>performance.getEntriesByType('resource')</code> returned an empty list; title, language, and the intro screen's eight controls rendered</td><td>Agent</td></tr><tr><td>4</td><td>File size</td><td><code>tools/validate.mjs</code></td><td>passed with a warning</td><td>4.8 MB, from eight embedded JPEG crops. Under the 10 MB limit, over the 3 MB comfort line. Slow on a lecture-hall network with thirty simultaneous downloads</td><td>Agent</td></tr><tr><td>5</td><td>No AI model or API key dependency</td><td>Static analysis and source read</td><td>passed</td><td>No provider endpoint, SDK, or key present</td><td>Agent</td></tr><tr><td>6</td><td>Sources screen present and reachable</td><td>Intro screen controls read in the browser</td><td>passed</td><td>&quot;Sources &amp; limitations&quot; button on the intro; &quot;Provenance &amp; limitations&quot; in the play interface</td><td>Agent</td></tr><tr><td>7</td><td>Browser storage guarded</td><td>Static analysis</td><td>passed</td><td>Storage use is wrapped; the game also exports a JSON checkpoint as its backup</td><td>Agent</td></tr><tr><td>8</td><td>Full regression suite: play path, chronology, checks, 3/4/5-story layouts, qualification, reload, exports, affirm/replace branches, invalid saves, canceled restart, responsive widths at 390, 768, and 1440 px, offline runtime</td><td><code>tests/test_game.py</code> from the source project, Playwright with headless Chromium, re-run 2026-09-14</td><td>passed</td><td>Two PASS lines, exit 0. This is an automated play-through, not a person</td><td>Agent</td></tr><tr><td>9</td><td>Keyboard-only play-through with dialog focus restoration</td><td><code>tests/test_keyboard.py</code> from the source project, re-run 2026-09-14</td><td>passed</td><td>PASS line, exit 0. Uses Tab, Enter, Escape, native select type-ahead, and typed text. No person has played it by keyboard</td><td>Agent</td></tr><tr><td>10</td><td>No console errors</td><td>Recorded by the Playwright suite during its play paths</td><td>passed</td><td>Suite asserts no console errors and no external requests</td><td>Agent</td></tr><tr><td>11</td><td>Full session fits the stated 60 minutes</td><td>—</td><td><strong>untested</strong></td><td>The teacher guide plans sixty minutes and offers forty- and ninety-minute variants. No class has been timed</td><td>—</td></tr><tr><td>12</td><td>Debrief delivered</td><td>Playwright suite reaches the debrief screen; teacher guide read</td><td>passed</td><td>Descriptive indicators and an exportable record on the ending screen; six discussion questions and a feedback rubric in the guide</td><td>Agent</td></tr><tr><td>13</td><td>Screen-reader play-through</td><td>—</td><td><strong>untested</strong></td><td>No screen reader was run. The original QA report says the same</td><td>—</td></tr><tr><td>14</td><td>Opens on the instructor's classroom computer and LMS</td><td>—</td><td><strong>untested</strong></td><td>Cannot be run from here. The guide asks for a rehearsal on the exact classroom browser and warns against LMS preview frames</td><td>—</td></tr><tr><td>15</td><td>Historical accuracy of readings against the newspaper pages</td><td>Audit of 2026-09-07 against the eight embedded crops (see the audit in <code>history-bible.md</code>)</td><td><strong>partly checked; recorded as untested</strong></td><td>Eight of eighteen readings plus the reveal were checked against the crops and five figures corrected. The remaining readings are labelled in the game as not independently checked. Nobody has read the Sources screen against the Library of Congress pages since</td><td>—</td></tr><tr><td>16</td><td>Print view and checkpoint import</td><td>Playwright suite</td><td>passed</td><td>Print preparation and JSON round-trip asserted by the suite. No physical printer or PDF pagination checked</td><td>Agent</td></tr></tbody></table></div>
+<h3>What the original QA report of 2026-09-07 adds</h3>
+<p>The source project's report records the same two suites passing on that date, visual review of screenshots at desktop and mobile widths, and these limits, which still stand: no real iOS or Android device, no Safari or Firefox, no specific screen reader, no LMS, no projector, and no student pilot.</p>
+<h3>Notes</h3>
+<p>Rows 11, 13, 14, and 15 are the ones that matter to anyone adopting this game. Rows 8 and 9 are strong evidence that the file works, but an automated browser is not a student, and a passing keyboard script is not a screen-reader session.</p>
+<p>Row 15 is the honest position on a game built from real sources. The history bible names each checked reading. If you will quote a reading in class as the newspaper's wording, check it against the linked page first.</p>
+<p>Re-run rows 1–10 after any edit to <code>game.html</code>. Editing the <code>GAME_DATA</code> block changes the answer material and the audit trail in <code>history-bible.md</code>, which must be updated to match.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Checks a person had to run</h2>
+    <p class="prose">A validator reads a file; it cannot play a game or stand in a classroom.
+    This is what the contributor reported, in their words.</p>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Check</th><th>Status</th><th>What they said</th></tr></thead>
+      <tbody><tr>
+      <td>Runs with the wifi off</td>
+      <td><span class="badge ok">Tested</span></td>
+      <td>Opened as a file:// URL in Chrome on 2026-09-14; the page loaded no resources beyond itself. The game's own Playwright suite, re-run the same day, also checks for network requests during a full play-through and found none.</td>
+    </tr><tr>
+      <td>Playable by keyboard alone</td>
+      <td><span class="badge ok">Tested</span></td>
+      <td>The game's Playwright keyboard test was re-run on 2026-09-14 and completed a full game with Tab, Enter, Escape, and typed text only, including dialog focus restoration. No person has played it by keyboard.</td>
+    </tr><tr>
+      <td>Fits the stated session length</td>
+      <td><span class="badge warn">Untested</span></td>
+      <td>The teacher guide gives a sixty-minute lesson plan and a forty-minute variant. Nobody has timed a class.</td>
+    </tr><tr>
+      <td>Opened on a real classroom setup</td>
+      <td><span class="badge warn">Untested</span></td>
+      <td>No classroom setup to test against. The guide asks instructors to rehearse the exact file on the classroom browser and to download rather than preview it in an LMS.</td>
+    </tr><tr>
+      <td>Sources checked against the material</td>
+      <td><span class="badge warn">Untested</span></td>
+      <td>An audit on 2026-09-07 checked eight of the eighteen readings and the reveal against the embedded newspaper crops and corrected five figures. The other readings are labelled in the game as not independently checked. Nobody has re-read the Sources screen against the Library of Congress pages since.</td>
+    </tr><tr>
+      <td>Debrief questions delivered</td>
+      <td><span class="badge ok">Tested</span></td>
+      <td>The ending screen has a debrief with descriptive indicators and an exportable editorial record; the teacher guide adds a feedback rubric and six discussion questions.</td>
+    </tr></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Sources and rights</h2>
+    <div class="prose">
+      <p>Built from a single newspaper, Philadelphia's Evening Public Ledger, October 3 to 12, 1918, via the Library of Congress. Eighteen editorial readings and eight page crops are embedded. The readings are AI-assisted paraphrases, not diplomatic transcriptions; an audit against the crops corrected five numbers and the history bible says exactly which readings were checked and which were not. The newsroom, the column budget, the research checks, and the staged release of sources are teaching models, not a reconstruction of any editorial meeting.</p>
+      <p class="small">Newspaper crops are from the Library of Congress Chronicling America collection (Evening Public Ledger, LCCN sn83045211), which the Library describes as public domain or having no known copyright restrictions. Consult each item's rights statement before reuse. The game's readings are editorial paraphrases, not transcriptions. Licence: CC BY 4.0.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Make it yours</h2>
+    <div class="prose">
+      <p>Download the file and hand it to your own agent with something like this:</p>
+    </div>
+    <div class="copybox" style="max-width:44rem">
+      <header>Paste this to your agent <button class="btn small secondary" type="button" id="copy-remix">Copy</button></header>
+      <pre id="remix-prompt">I am adapting a Playable Past game for my own course. Here is the game file and its
+documents. Follow https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276
+and keep the format rules: one self-contained HTML file, nothing fetched during play, no AI
+needed to run it, and an accurate Sources &amp; assumptions screen.
+
+What I want changed: [describe your course, your students, and your sources]
+
+Update the history bible and the test ledger to match, and tell me plainly which checks you
+actually ran and which I still need to run myself.</pre>
+    </div>
+  </section>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong>Playable Pasts</strong><br>A gallery and checker for classroom history games.</div>
+    <div><a href="../../start/">Make a game</a><br><a href="../../check/">Check a game</a><br><a href="../../games/">Gallery</a></div>
+    <div><a href="../../submit/">Share your game</a><br><a href="../../for-agents/">For agents</a><br><a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">The workflow (gist)</a></div>
+    <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
+  </div>
+</footer>
+<script>
+(function () {
+  var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(tab) {
+    tabs.forEach(function (t) {
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      var on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      panel.hidden = !on;
+    });
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { select(tab); });
+    tab.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      select(next);
+      next.focus();
+    });
+  });
+  select(tabs[0]);
+
+  var copy = document.getElementById('copy-remix');
+  copy.addEventListener('click', function () {
+    var pre = document.getElementById('remix-prompt');
+    navigator.clipboard.writeText(pre.textContent).then(function () {
+      copy.textContent = 'Copied';
+      setTimeout(function () { copy.textContent = 'Copy'; }, 2000);
+    });
+  });
+}());
+</script>
+</body>
+</html>

@@ -1,5 +1,81 @@
 [
   {
+    "slug": "influenza-front-page",
+    "title": "The Influenza Front Page",
+    "subtitle": "Newsroom edition",
+    "emoji": "🗞️",
+    "summary": "Edit a retrospective front page of Philadelphia's Evening Public Ledger from eighteen readings of October 3-10, 1918, with three or six research checks to spend and exactly six columns to fill. Then meet the October 12 mortality figures and qualify, replace, or defend one story.",
+    "learning_mode": "Evidence & corroboration",
+    "game_form": "Newsroom page-building with a staged archive",
+    "period": "October 1918",
+    "region": "Philadelphia, United States",
+    "language": "en",
+    "level": "Intro survey upwards",
+    "session_minutes": 60,
+    "social_topology": "Teams of three or four on one device; solo; or two independent pages for a debate",
+    "players_per_instance": 4,
+    "contributor": "Playable Pasts (demonstration)",
+    "contributed_at": "2026-09-14",
+    "license": "CC BY 4.0",
+    "sources_rights": "Newspaper crops are from the Library of Congress Chronicling America collection (Evening Public Ledger, LCCN sn83045211), which the Library describes as public domain or having no known copyright restrictions. Consult each item's rights statement before reuse. The game's readings are editorial paraphrases, not transcriptions.",
+    "files": {
+      "game": "game.html",
+      "teacher_guide": "teacher-guide.md",
+      "history_bible": "history-bible.md",
+      "test_ledger": "test-ledger.md"
+    },
+    "human_tests": [
+      {
+        "id": "manual-offline",
+        "status": "passed",
+        "note": "Opened as a file:// URL in Chrome on 2026-09-14; the page loaded no resources beyond itself. The game's own Playwright suite, re-run the same day, also checks for network requests during a full play-through and found none."
+      },
+      {
+        "id": "manual-keyboard",
+        "status": "passed",
+        "note": "The game's Playwright keyboard test was re-run on 2026-09-14 and completed a full game with Tab, Enter, Escape, and typed text only, including dialog focus restoration. No person has played it by keyboard."
+      },
+      {
+        "id": "manual-timing",
+        "status": "untested",
+        "note": "The teacher guide gives a sixty-minute lesson plan and a forty-minute variant. Nobody has timed a class."
+      },
+      {
+        "id": "manual-classroom-setup",
+        "status": "untested",
+        "note": "No classroom setup to test against. The guide asks instructors to rehearse the exact file on the classroom browser and to download rather than preview it in an LMS."
+      },
+      {
+        "id": "manual-provenance-accuracy",
+        "status": "untested",
+        "note": "An audit on 2026-09-07 checked eight of the eighteen readings and the reveal against the embedded newspaper crops and corrected five figures. The other readings are labelled in the game as not independently checked. Nobody has re-read the Sources screen against the Library of Congress pages since."
+      },
+      {
+        "id": "manual-debrief",
+        "status": "passed",
+        "note": "The ending screen has a debrief with descriptive indicators and an exportable editorial record; the teacher guide adds a feedback rubric and six discussion questions."
+      }
+    ],
+    "provenance_note": "Built from a single newspaper, Philadelphia's Evening Public Ledger, October 3 to 12, 1918, via the Library of Congress. Eighteen editorial readings and eight page crops are embedded. The readings are AI-assisted paraphrases, not diplomatic transcriptions; an audit against the crops corrected five numbers and the history bible says exactly which readings were checked and which were not. The newsroom, the column budget, the research checks, and the staged release of sources are teaching models, not a reconstruction of any editorial meeting.",
+    "tags": [
+      "1918 influenza",
+      "newspapers",
+      "Philadelphia",
+      "public health",
+      "source criticism",
+      "United States",
+      "60 minutes",
+      "team play"
+    ],
+    "validation": {
+      "verdict": "needs-work",
+      "checked_at": "2026-09-14",
+      "blocking": 0,
+      "warnings": 1,
+      "file_sha256": "eed1ea60dbd9f6f0102706939a5f82a9a167e9e53e75331f2182c65902bdfb63"
+    }
+  },
+  {
     "slug": "corroboration-demo",
     "title": "The Grain Shipment",
     "subtitle": "A corroboration warm-up",

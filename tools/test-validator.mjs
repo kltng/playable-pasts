@@ -171,6 +171,26 @@ test('placeholder text in the file warns', () => {
   assert.ok(ids(r.warnings).includes('placeholder-content'));
 });
 
+test('an ellipsis standing in for code warns, in a comment or alone on a line', () => {
+  assert.ok(ids(run(CLEAN.replace('const GAME_DATA', '  // ...\nconst GAME_DATA')).warnings).includes('placeholder-content'));
+  assert.ok(ids(run(CLEAN.replace('const GAME_DATA', '  ...\nconst GAME_DATA')).warnings).includes('placeholder-content'));
+  assert.ok(ids(run(CLEAN.replace('<h1>Test Game</h1>', '<h1>Test Game</h1>\n<!-- ... -->')).warnings).includes('placeholder-content'));
+});
+
+test('an ellipsis inside quoted game text is punctuation, not a placeholder (rule 6)', () => {
+  // Newspaper extracts, letters, and dialogue elide with "..." all the time.
+  const r = run(CLEAN.replace("{ q: 'One', a: 'Two' }",
+    "{ q: 'The city must close ... there were 666 new cases', a: 'Courts to suspend \u2026 two weeks' }"));
+  assert.ok(!ids(r.warnings).includes('placeholder-content'), `flagged: ${JSON.stringify(r.warnings.map((w) => w.evidence))}`);
+});
+
+test('a screen called Sources & limitations or Provenance & limitations satisfies rule 4', () => {
+  for (const name of ['Sources &amp; limitations', 'Provenance &amp; limitations', 'Sources and caveats']) {
+    const r = run(CLEAN.replace('Sources &amp; assumptions', name));
+    assert.ok(!ids(r.blocking).includes('no-sources-screen'), `"${name}" was not accepted`);
+  }
+});
+
 test('unguarded localStorage warns, guarded does not', () => {
   const r = run(CLEAN.replace("try { localStorage.getItem('x'); } catch (e) { /* storage blocked */ }",
     "localStorage.setItem('x', 1);"));

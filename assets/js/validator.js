@@ -501,8 +501,12 @@ function checkProvenance(ctx) {
   const { text } = ctx;
   const out = [];
 
-  const hasScreen = /sources?\s*(?:&|and|\+|·|\/)?\s*assumptions?/i.test(text)
-    || (/\bsources?\b/i.test(text) && /\bassumptions?\b/i.test(text));
+  // The build standard calls the screen "Sources & assumptions", but a game
+  // that names it "Sources & limitations" or "Provenance & limitations" has
+  // the same screen. Firing on a correct game teaches instructors to ignore
+  // the checker, so the synonyms are accepted.
+  const hasScreen = /(?:sources?|provenance)\s*(?:&|and|\+|·|\/|,)?\s*(?:assumptions?|limitations?|caveats?)/i.test(text)
+    || (/\b(?:sources?|provenance)\b/i.test(text) && /\b(?:assumptions?|limitations?)\b/i.test(text));
 
   if (!hasScreen) {
     out.push(finding(
@@ -519,7 +523,9 @@ function checkProvenance(ctx) {
     ));
   }
 
-  const labelsInvented = /\b(invented|fictional|fictionali[sz]ed|imagined|reconstructed|counterfactual|illustrative|assumption)\b/i.test(text);
+  // Any of the honest labels the workflow asks for, including the ones a
+  // source-based game uses for its own layers (paraphrase, teaching model).
+  const labelsInvented = /\b(invented|fictional|fictionali[sz]ed|imagined|reconstruct(?:ed|ion)|counterfactual|illustrative|assumption|paraphrases?d?|generated|teaching (?:model|prompts?|material)|interpretive|not (?:a )?(?:transcription|quotation))\b/i.test(text);
   if (hasScreen && !labelsInvented) {
     out.push(finding(
       'invented-content-unlabelled',
@@ -804,11 +810,23 @@ function checkStructure(ctx) {
     ));
   }
 
-  if (/\.\.\.|\[insert|insert earlier|rest of (?:the )?code|your code here|TODO|FIXME/i.test(source)) {
-    const re = /(\.\.\.|\[insert[^\]]*\]|insert earlier[^.\n]*|rest of (?:the )?code[^.\n]*|your code here|TODO|FIXME)/gi;
-    const hits = [];
+  // An ellipsis is a placeholder when it stands in for code: alone on a line,
+  // or inside a comment ("// ...", "/* ... */", "<!-- ... -->"). An ellipsis
+  // between words inside quoted text is punctuation — newspaper extracts and
+  // dialogue are full of them — and must not be flagged.
+  const placeholderPatterns = [
+    /^[ \t]*(?:\/\/|\/\*|<!--|#)?[ \t]*(?:\.\.\.|\u2026)[ \t]*(?:\*\/|-->)?[ \t]*$/gm,
+    /(?:\/\/|\/\*|<!--)[^\n]*?(?:\.\.\.|\u2026)/g,
+    /\[insert[^\]]*\]|insert earlier[^.\n]*|rest of (?:the )?code[^.\n]*|your code here/gi,
+    /\b(?:TODO|FIXME)\b/g, // case-sensitive: OCR noise such as "tOdO" is not a to-do marker
+  ];
+  const hits = [];
+  for (const re of placeholderPatterns) {
     let m;
-    while ((m = re.exec(source)) && hits.length < 6) hits.push({ offset: m.index, text: m[1] });
+    while ((m = re.exec(source)) && hits.length < 6) hits.push({ offset: m.index, text: m[0].trim() });
+  }
+  hits.sort((a, b) => a.offset - b.offset);
+  if (hits.length) {
     out.push(finding(
       'placeholder-content',
       SEVERITY.WARNING,
