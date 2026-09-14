@@ -10,7 +10,7 @@ const lengthFilter = document.getElementById('length');
 
 let games = [];
 
-fetch('/games/index.json')
+fetch('index.json')
   .then((r) => {
     if (!r.ok) throw new Error('index.json returned ' + r.status);
     return r.json();
@@ -51,7 +51,7 @@ function render() {
 
   if (!shown.length) {
     grid.innerHTML = `<li class="empty-state"><p>Nothing matches that.</p>
-      <p class="small">Try clearing the filters, or <a href="/submit/">add the game you were
+      <p class="small">Try clearing the filters, or <a href="../submit/">add the game you were
       looking for</a>.</p></li>`;
     return;
   }
@@ -67,7 +67,7 @@ function card(g) {
   return `<li class="game-card">
     <div class="thumb" aria-hidden="true">${g.emoji || '🎲'}</div>
     <div class="body">
-      <h3><a href="/games/${encodeURIComponent(g.slug)}/">${escapeHtml(g.title)}</a></h3>
+      <h3><a href="${encodeURIComponent(g.slug)}/">${escapeHtml(g.title)}</a></h3>
       <p class="meta">${escapeHtml(g.learning_mode || '')} · ${g.session_minutes} min ·
         ${escapeHtml(g.level || '')}</p>
       <p class="desc">${escapeHtml(g.summary)}</p>

@@ -4,7 +4,7 @@ You are reading this because an instructor asked you to check or submit a classr
 game. This file is the whole contract. It is stable, plain text, and needs no tools beyond the
 ones you already have.
 
-**Site:** https://playablepasts.org
+**Site:** https://kltng.github.io/playable-pasts
 **Repository:** https://github.com/kltng/playable-pasts
 **The workflow that builds these games:** https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276
 
@@ -73,7 +73,7 @@ The JSON has `blocking`, `warnings`, and `manual` arrays. Each finding carries `
 `plain` (an explanation written for the instructor), `fix` (what to change), and `evidence`
 with line numbers.
 
-If you cannot run Node, the instructor can drop the file on https://playablepasts.org/check/ and
+If you cannot run Node, the instructor can drop the file on https://kltng.github.io/playable-pasts/check/ and
 paste you the report. Do not guess at the result.
 
 ## 4. `game.json`

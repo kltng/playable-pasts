@@ -13,7 +13,8 @@
  * game, and commit what it writes.
  */
 import { readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { validate } from '../assets/js/validator.js';
 
@@ -118,17 +119,23 @@ function markdown(src) {
 
 const GIST = 'https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276';
 
-function nav(current) {
+/**
+ * Links are relative, never root-absolute, so the site works from a project
+ * page such as https://kltng.github.io/playable-pasts/ as well as from a
+ * custom domain or a folder on disk. `up` is the path from the current page
+ * back to the site root: '' at the root, '../' one level down, and so on.
+ */
+function nav(current, up) {
   const items = [
-    ['/start/', 'Make a game', 'start'],
-    ['/check/', 'Check a game', 'check'],
-    ['/games/', 'Gallery', 'games'],
-    ['/submit/', 'Share yours', 'submit'],
-    ['/for-agents/', 'For agents', 'agents'],
+    [`${up}start/`, 'Make a game', 'start'],
+    [`${up}check/`, 'Check a game', 'check'],
+    [`${up}games/`, 'Gallery', 'games'],
+    [`${up}submit/`, 'Share yours', 'submit'],
+    [`${up}for-agents/`, 'For agents', 'agents'],
   ];
   return `<header class="masthead">
   <div class="masthead-inner">
-    <a class="wordmark" href="/">Playable <span>Pasts</span></a>
+    <a class="wordmark" href="${up || './'}">Playable <span>Pasts</span></a>
     <nav aria-label="Main">
 ${items.map(([href, label, slug]) =>
     `      <a href="${href}"${slug === current ? ' aria-current="page"' : ''}>${label}</a>`).join('\n')}
@@ -137,11 +144,11 @@ ${items.map(([href, label, slug]) =>
 </header>`;
 }
 
-const FOOTER = `<footer class="site-footer">
+const footer = (up) => `<footer class="site-footer">
   <div class="wrap cols">
     <div><strong>Playable Pasts</strong><br>A gallery and checker for classroom history games.</div>
-    <div><a href="/start/">Make a game</a><br><a href="/check/">Check a game</a><br><a href="/games/">Gallery</a></div>
-    <div><a href="/submit/">Share your game</a><br><a href="/for-agents/">For agents</a><br><a href="${GIST}">The workflow (gist)</a></div>
+    <div><a href="${up}start/">Make a game</a><br><a href="${up}check/">Check a game</a><br><a href="${up}games/">Gallery</a></div>
+    <div><a href="${up}submit/">Share your game</a><br><a href="${up}for-agents/">For agents</a><br><a href="${GIST}">The workflow (gist)</a></div>
     <div>The workflow instructions are CC BY 4.0. Games in the gallery keep their own terms, and their sources keep theirs.</div>
   </div>
 </footer>`;
@@ -186,6 +193,7 @@ function gamePage(game, dir) {
     </tr>`;
   }).join('');
 
+  const up = '../../'; // games/<slug>/index.html is two levels below the root
   const v = game.validation || {};
   const clean = (v.blocking || 0) === 0 && (v.warnings || 0) === 0;
 
@@ -196,16 +204,16 @@ function gamePage(game, dir) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(game.title)} — Playable Pasts</title>
 <meta name="description" content="${escapeHtml(game.summary)}">
-<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="${up}assets/css/site.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-${nav('games')}
+${nav('games', up)}
 
 <main id="main">
 <div class="wrap">
   <section class="game-header">
-    <p class="eyebrow"><a href="/games/">Gallery</a> · ${escapeHtml(game.learning_mode || '')}</p>
+    <p class="eyebrow"><a href="${up}games/">Gallery</a> · ${escapeHtml(game.learning_mode || '')}</p>
     <h1>${escapeHtml(game.title)}</h1>
     <p class="lede">${escapeHtml(game.summary)}</p>
     <p class="game-meta">
@@ -228,7 +236,7 @@ ${nav('games')}
     That is a statement about the <em>file</em> — self-contained, accessible, honest about its
     sources. Whether the history is right and the lesson works is yours to judge. Read
     <em>Sources &amp; evidence</em> below, then
-    <a href="/check/">re-check the file</a> yourself.</p>
+    <a href="${up}check/">re-check the file</a> yourself.</p>
   </div>
 
   <div class="tabs" role="tablist">
@@ -282,7 +290,7 @@ actually ran and which I still need to run myself.</pre>
   </section>
 </div>
 </main>
-${FOOTER}
+${footer(up)}
 <script>
 (function () {
   var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
@@ -326,61 +334,91 @@ ${FOOTER}
  * Main
  * ------------------------------------------------------------------ */
 
-const entries = [];
-const problems = [];
-
-for (const slug of readdirSync(gamesDir)) {
-  const dir = join(gamesDir, slug);
-  if (!statSync(dir).isDirectory()) continue;
-  const manifestPath = join(dir, 'game.json');
-  if (!existsSync(manifestPath)) continue;
-
-  let game;
-  try {
-    game = JSON.parse(readFileSync(manifestPath, 'utf8'));
-  } catch (err) {
-    problems.push(`${slug}/game.json is not valid JSON: ${err.message}`);
-    continue;
+/**
+ * The validation record for a manifest. `checked_at` only moves when the
+ * game file or the result changes, so running this script twice writes the
+ * same bytes twice. A date that changed on every run made the CI step
+ * "gallery index is up to date" fail on any day after the last commit.
+ *
+ * The date therefore means "the result shown here was established on this
+ * day and the file has not changed since", not "the script last ran on".
+ */
+export function nextValidation(previous, report, fileHash, today) {
+  const next = {
+    verdict: report.verdict,
+    checked_at: today,
+    blocking: report.blocking.length,
+    warnings: report.warnings.length,
+    file_sha256: fileHash,
+  };
+  const p = previous || {};
+  const sameResult = p.verdict === next.verdict
+    && p.blocking === next.blocking
+    && p.warnings === next.warnings
+    && p.file_sha256 === next.file_sha256;
+  if (sameResult && typeof p.checked_at === 'string' && p.checked_at) {
+    next.checked_at = p.checked_at;
   }
+  return next;
+}
 
-  for (const field of ['slug', 'title', 'summary', 'files']) {
-    if (!game[field]) problems.push(`${slug}/game.json is missing "${field}"`);
-  }
-  if (game.slug && game.slug !== slug) {
-    problems.push(`${slug}/game.json says slug "${game.slug}" — it must match the folder name`);
-  }
+export const sha256 = (buf) => createHash('sha256').update(buf).digest('hex');
+const today = () => new Date().toISOString().slice(0, 10);
 
-  // Never publish a listing that claims a check the file no longer passes.
-  const gamePath = join(dir, game.files?.game || 'game.html');
-  if (existsSync(gamePath)) {
-    const report = validate(readFileSync(gamePath, 'utf8'), { filename: game.files.game, bytes: statSync(gamePath).size });
-    game.validation = {
-      ...(game.validation || {}),
-      verdict: report.verdict,
-      blocking: report.blocking.length,
-      warnings: report.warnings.length,
-      checked_at: new Date().toISOString().slice(0, 10),
-    };
-    if (report.blocking.length) {
-      problems.push(`${slug}: the game file has ${report.blocking.length} blocking finding(s) — `
-        + `run "node tools/validate.mjs ${gamePath}"`);
+export function build() {
+  const entries = [];
+  const problems = [];
+
+  for (const slug of readdirSync(gamesDir)) {
+    const dir = join(gamesDir, slug);
+    if (!statSync(dir).isDirectory()) continue;
+    const manifestPath = join(dir, 'game.json');
+    if (!existsSync(manifestPath)) continue;
+
+    let game;
+    try {
+      game = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    } catch (err) {
+      problems.push(`${slug}/game.json is not valid JSON: ${err.message}`);
+      continue;
     }
-    writeFileSync(manifestPath, JSON.stringify(game, null, 2) + '\n');
-  } else {
-    problems.push(`${slug}: ${game.files?.game || 'game.html'} not found`);
+
+    for (const field of ['slug', 'title', 'summary', 'files']) {
+      if (!game[field]) problems.push(`${slug}/game.json is missing "${field}"`);
+    }
+    if (game.slug && game.slug !== slug) {
+      problems.push(`${slug}/game.json says slug "${game.slug}" — it must match the folder name`);
+    }
+
+    // Never publish a listing that claims a check the file no longer passes.
+    const gamePath = join(dir, game.files?.game || 'game.html');
+    if (existsSync(gamePath)) {
+      const source = readFileSync(gamePath);
+      const report = validate(source.toString('utf8'), { filename: game.files.game, bytes: statSync(gamePath).size });
+      game.validation = nextValidation(game.validation, report, sha256(source), today());
+      if (report.blocking.length) {
+        problems.push(`${slug}: the game file has ${report.blocking.length} blocking finding(s) — `
+          + `run "node tools/validate.mjs ${gamePath}"`);
+      }
+      writeFileSync(manifestPath, JSON.stringify(game, null, 2) + '\n');
+    } else {
+      problems.push(`${slug}: ${game.files?.game || 'game.html'} not found`);
+    }
+
+    writeFileSync(join(dir, 'index.html'), gamePage(game, dir));
+    entries.push(game);
+    console.log(`  built games/${slug}/index.html`);
   }
 
-  writeFileSync(join(dir, 'index.html'), gamePage(game, dir));
-  entries.push(game);
-  console.log(`  built games/${slug}/index.html`);
+  entries.sort((a, b) => String(b.contributed_at).localeCompare(String(a.contributed_at)));
+  writeFileSync(join(gamesDir, 'index.json'), JSON.stringify(entries, null, 2) + '\n');
+  console.log(`\ngames/index.json — ${entries.length} game${entries.length === 1 ? '' : 's'}`);
+
+  if (problems.length) {
+    console.error('\nProblems:');
+    problems.forEach((p) => console.error('  - ' + p));
+    process.exit(1);
+  }
 }
 
-entries.sort((a, b) => String(b.contributed_at).localeCompare(String(a.contributed_at)));
-writeFileSync(join(gamesDir, 'index.json'), JSON.stringify(entries, null, 2) + '\n');
-console.log(`\ngames/index.json — ${entries.length} game${entries.length === 1 ? '' : 's'}`);
-
-if (problems.length) {
-  console.error('\nProblems:');
-  problems.forEach((p) => console.error('  - ' + p));
-  process.exit(1);
-}
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) build();

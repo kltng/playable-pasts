@@ -26,7 +26,7 @@ on purpose.
 | `assets/js/validator.js` | The classroom-readiness checker. One dependency-free ES module, used unchanged by the website, the CLI, and CI. |
 | `assets/js/check-ui.js` | The checker page: the static pass, plus a live pass that runs the game under a strict CSP and reports what the browser blocked. |
 | `tools/validate.mjs` | The checker on the command line. Exit 0 when nothing blocks, 1 when something does. |
-| `tools/test-validator.mjs` | 26 tests. Each names the rule it defends. |
+| `tools/test-validator.mjs`, `tools/test-build-index.mjs` | Tests. Each names the rule it defends. |
 | `tools/build-index.mjs` | Regenerates `games/index.json` and each game's page from its `game.json`. Authoring-time only. |
 | `games/<slug>/` | One game: the HTML file, its manifest, teacher guide, history bible, and test ledger. |
 | `agent.md` | The submission contract, in plain text, for agents. |
@@ -34,7 +34,7 @@ on purpose.
 ## Working on it
 
 ```sh
-node --test tools/test-validator.mjs          # run the tests
+node --test tools/test-*.mjs                # run the tests
 node tools/validate.mjs games/*/game.html     # check every game
 node tools/build-index.mjs                    # rebuild the gallery, then commit what changes
 python3 -m http.server 8765                   # serve it locally

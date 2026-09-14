@@ -45,7 +45,7 @@ and your own reports in this repo.
 
 **The validator** (`assets/js/validator.js`) is the heart of the project and runs in both the
 browser and Node, so keep it plain ESM with no imports. Every check needs a test in
-`tools/test-validator.mjs` naming the rule it defends. Run `node --test tools/test-validator.mjs`
+`tools/test-validator.mjs` naming the rule it defends. Run `node --test tools/test-*.mjs`
 before you finish.
 
 Watch for false positives. A finding that fires on a correct game is worse than a missing check,
@@ -67,7 +67,7 @@ readable. If you change navigation, change it in every page, including the templ
 ## Checking your work
 
 ```sh
-node --test tools/test-validator.mjs
+node --test tools/test-*.mjs
 node tools/validate.mjs games/*/game.html
 node tools/build-index.mjs && git diff --stat -- games/
 python3 -m http.server 8765

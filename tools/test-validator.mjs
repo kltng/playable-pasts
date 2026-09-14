@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Tests for the classroom-readiness validator.
- *   node --test tools/
+ *   node --test tools/test-*.mjs
  *
  * Each case states the Playable Past rule it defends, so a future maintainer
  * can tell an intentional rule change from a regression.
