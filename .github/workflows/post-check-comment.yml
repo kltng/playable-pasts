@@ -1,0 +1,91 @@
+name: Post the classroom check on the pull request
+
+# Runs after "Check submitted games" finishes. That workflow runs with a
+# read-only token (pull requests from forks always get one), so it cannot
+# comment. This one runs from the default branch with permission to comment.
+#
+# Safety rules for this file:
+#   - Never check out or run code from the pull request.
+#   - Treat everything in the artifact as untrusted text. It was written by a
+#     job that ran the pull request's code.
+#   - Only comment on the pull request whose head commit is the one that was
+#     checked.
+
+on:
+  workflow_run:
+    workflows: ['Check submitted games']
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the report
+        uses: actions/download-artifact@v4
+        with:
+          name: classroom-check-report
+          path: check-report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Post or update the comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const run = context.payload.workflow_run;
+            const { owner, repo } = context.repo;
+
+            const rawNumber = fs.readFileSync('check-report/pr-number.txt', 'utf8').trim();
+            if (!/^[1-9][0-9]{0,9}$/.test(rawNumber)) {
+              core.setFailed('The artifact did not contain a valid pull request number.');
+              return;
+            }
+            const issue_number = Number(rawNumber);
+
+            // The number came from untrusted output. Confirm it names the pull
+            // request whose head commit was actually checked.
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
+            if (pr.head.sha !== run.head_sha) {
+              core.setFailed(`Pull request #${issue_number} is not at the commit that was checked.`);
+              return;
+            }
+
+            const header = '## Classroom-readiness check';
+            let report;
+            try {
+              report = fs.readFileSync('check-report/report.md', 'utf8');
+            } catch {
+              report = '_The checker did not produce a report. See the job log._';
+            }
+            const MAX = 60000;
+            if (report.length > MAX) {
+              report = report.slice(0, MAX) + '\n\n_The report was too long and has been cut. See the job log._';
+            }
+
+            const outcome = run.conclusion === 'success'
+              ? 'The check passed.'
+              : `The check did not pass (result: \`${String(run.conclusion).replace(/[^a-z_]/g, '')}\`). See the [job log](${run.html_url}).`;
+
+            const body = `${header}\n\n${outcome}\n\n${report}`
+              + '\n\n---\n_A pass means the **file** is sound: self-contained, accessible, '
+              + 'honest about its sources. It is not a judgement of the history or the teaching. '
+              + 'The checks listed above as needing a person stay unverified until someone '
+              + 'reports them in `test-ledger.md`._';
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const mine = comments.find((c) =>
+              c.user && c.user.login === 'github-actions[bot]' && c.body && c.body.startsWith(header));
+
+            if (mine) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }

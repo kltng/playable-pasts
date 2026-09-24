@@ -26,7 +26,7 @@
 <section class="wrap">
   <p class="eyebrow">Before you teach with it</p>
   <h1>Will this game survive your classroom?</h1>
-  <p class="lede">Drop in the HTML file your agent gave you. We read it, then open it with every
+  <p class="lede">Drop in the HTML file your agent gave you. We read it, then open it for a few seconds with every
   outside request blocked — the way a room with no wifi behaves. You get plain English back, and
   wording you can paste straight to your agent.</p>
 </section>
@@ -56,15 +56,17 @@
     </div>
     <div class="card">
       <h3>Measured by running it</h3>
-      <p>We open your game in a locked sandbox where every outside request is refused. If it
-      still reaches for a font, a script, or a server, the browser tells us and we show you
-      exactly what it asked for. That is evidence, not a guess.</p>
+      <p>We open your game for a few seconds in a locked-down frame where every outside request
+      is refused. If it reaches for a font, a script, or a server as it opens, the browser tells
+      us and we show you exactly what it asked for. That is evidence, not a guess. It covers
+      only the opening, with nobody clicking.</p>
     </div>
     <div class="card">
       <h3>Handed back to you</h3>
-      <p>Six things a validator cannot do: play the game, time it, use it by keyboard, open it on
-      your classroom computer, and judge whether the history is true. We list them instead of
-      pretending they passed.</p>
+      <p>Six things a validator cannot do: open the game with the wifi off, play it using only
+      the keyboard, time a full play-through, try it on your classroom setup, read the
+      <em>Sources &amp; assumptions</em> screen against your own material, and check you have
+      the debrief questions. We list them instead of pretending they passed.</p>
     </div>
     <div class="card">
       <h3>Not judged at all</h3>
@@ -85,12 +87,20 @@
 
 <div class="wrap"><section id="live-panel" hidden>
   <h2>What happened when we ran it</h2>
-  <p class="prose">Your game is open below in a sandbox with the network cut off. Whatever it
-  tried to reach for is listed here.</p>
+  <p class="prose">We opened your game for a few seconds in a locked-down frame with the network
+  cut off, and watched without clicking anything. Whatever it tried to reach for is listed
+  here.</p>
+  <p class="small" id="live-status" role="status" aria-live="polite"></p>
   <div id="live-body"></div>
   <div id="live-stage"></div>
 </section></div>
 
+<noscript>
+  <div class="wrap"><div class="note"><p><strong>The checker needs JavaScript.</strong> It runs
+  the check inside your browser so your file is never uploaded. If you cannot enable JavaScript,
+  an agent can run the same checks for you — see <a href="../for-agents/">instructions for
+  agents</a>.</p></div></div>
+</noscript>
 </main>
 <footer class="site-footer">
   <div class="wrap cols">
@@ -101,11 +111,5 @@
   </div>
 </footer>
 <script type="module" src="../assets/js/check-ui.js"></script>
-<noscript>
-  <div class="wrap"><div class="note"><p><strong>The checker needs JavaScript.</strong> It runs
-  the check inside your browser so your file is never uploaded. If you cannot enable JavaScript,
-  an agent can run the same checks for you — see <a href="../for-agents/">instructions for
-  agents</a>.</p></div></div>
-</noscript>
 </body>
 </html>

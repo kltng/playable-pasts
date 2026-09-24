@@ -1,5 +1,9 @@
 name: Check submitted games
 
+# This workflow only reads. It never gets a write token, so it is safe to run on
+# pull requests from forks. It saves the report as an artifact; the separate
+# workflow in post-check-comment.yml posts that report on the pull request.
+
 on:
   pull_request:
     paths:
@@ -12,13 +16,14 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -27,14 +32,39 @@ jobs:
       - name: Validator self-test
         run: node --test tools/test-*.mjs
 
+      - name: Find the games this pull request changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch --no-tags --depth=1 origin "refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+          # On a pull request, HEAD is the merge of the PR into the base branch,
+          # so this diff is exactly what the PR changes.
+          git diff --name-only "origin/${BASE_REF}" HEAD -- games/ \
+            | awk -F/ 'NF >= 3 { print $2 }' | sort -u > changed-games.txt
+          echo "Games changed by this pull request:"
+          cat changed-games.txt
+
       - name: Check every game in the gallery
         id: validate
         run: |
           status=0
           : > report.md
+          touch changed-games.txt
+          if [ -s changed-games.txt ]; then
+            echo "**Games this pull request changes:** $(sed 's/.*/`&`/' changed-games.txt | paste -sd, - | sed 's/,/, /g')" >> report.md
+          elif [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            echo "**This pull request does not change any game.** Every game is checked anyway, because a change to the checker can affect all of them." >> report.md
+          fi
+          echo "" >> report.md
           shopt -s nullglob
           for game in games/*/game.html; do
+            slug="$(basename "$(dirname "$game")")"
             echo "::group::$game"
+            if grep -qxF "$slug" changed-games.txt; then
+              echo "_Changed in this pull request._" >> report.md
+              echo "" >> report.md
+            fi
             if ! node tools/validate.mjs "$game" --markdown >> report.md; then
               status=1
             fi
@@ -43,6 +73,51 @@ jobs:
             echo "::endgroup::"
           done
           echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit $status
+
+      # A pull request can change the checker as well as a game. So we also run
+      # the checker exactly as it is on the base branch against the PR's games.
+      # If the base checker blocks a game, the job fails, even if the PR's own
+      # (possibly weakened) checker passes it.
+      - name: Check the games with the base branch's checker
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          base=/tmp/base-checker
+          rm -rf "$base"
+          mkdir -p "$base/assets/js" "$base/tools"
+          # Same relative layout, so tools/validate.mjs finds ../assets/js/validator.js.
+          git show "origin/${BASE_REF}:assets/js/validator.js" > "$base/assets/js/validator.js"
+          git show "origin/${BASE_REF}:tools/validate.mjs" > "$base/tools/validate.mjs"
+
+          status=0
+          blocked=""
+          shopt -s nullglob
+          for game in games/*/game.html; do
+            echo "::group::$game (base branch checker)"
+            if ! node "$base/tools/validate.mjs" "$game"; then
+              status=1
+              blocked="$blocked $game"
+            fi
+            echo "::endgroup::"
+          done
+
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "### Checked again with the checker from \`${BASE_REF}\`"
+            echo ""
+            if [ "$status" -eq 0 ]; then
+              echo "The checker as it stands on \`${BASE_REF}\` finds nothing blocking in any game."
+            else
+              echo "The checker as it stands on \`${BASE_REF}\` finds something blocking in:"
+              for g in $blocked; do echo "- \`$g\`"; done
+              echo ""
+              echo "This counts even if this pull request changes the checker. See the job log for details."
+            fi
+          } >> report.md
           exit $status
 
       - name: Gallery index is up to date
@@ -56,39 +131,19 @@ jobs:
             exit 1
           fi
 
-      - name: Post the report on the pull request
+      - name: Save the report for the comment workflow
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p check-report
+          if [ -f report.md ]; then cp report.md check-report/report.md; fi
+          printf '%s\n' "$PR_NUMBER" > check-report/pr-number.txt
+
+      - name: Upload the report
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
         with:
-          script: |
-            const fs = require('fs');
-            let body = '## Classroom-readiness check\n\n';
-            try {
-              body += fs.readFileSync('report.md', 'utf8');
-            } catch {
-              body += '_The validator did not produce a report. See the job log._';
-            }
-            body += '\n\n---\n_A pass means the **file** is sound: self-contained, accessible, '
-              + 'honest about its sources. It is not a judgement of the history or the teaching. '
-              + 'The checks listed above as needing a person stay unverified until someone '
-              + 'reports them in `test-ledger.md`._';
-
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const mine = comments.find((c) =>
-              c.user.type === 'Bot' && c.body.startsWith('## Classroom-readiness check'));
-
-            if (mine) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner, repo: context.repo.repo,
-                comment_id: mine.id, body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner, repo: context.repo.repo,
-                issue_number: context.issue.number, body,
-              });
-            }
+          name: classroom-check-report
+          path: check-report/
+          retention-days: 7
