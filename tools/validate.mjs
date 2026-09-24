@@ -4,7 +4,8 @@
  *
  *   node tools/validate.mjs path/to/game.html [--json] [--markdown]
  *
- * Exit status: 0 when nothing is blocking, 1 when something is.
+ * Exit status: 0 when nothing is blocking, 1 when something is, 2 when a file
+ * could not be read or the command line was wrong (worst status wins).
  * Used by .github/workflows/validate-submission.yml and runnable by an agent
  * on an instructor's behalf. Same module as the website's checker.
  */
@@ -17,37 +18,64 @@ const VERDICT_LABEL = {
   'ready-for-your-tests': 'Passed every automated check',
 };
 
+const USAGE = 'usage: node tools/validate.mjs <game.html> [more.html ...] [--json | --markdown]';
+const KNOWN_FLAGS = new Set(['--json', '--markdown']);
+
 const args = process.argv.slice(2);
 const files = args.filter((a) => !a.startsWith('--'));
-const asJson = args.includes('--json');
-const asMarkdown = args.includes('--markdown');
+const flags = args.filter((a) => a.startsWith('--'));
+const unknown = flags.filter((a) => !KNOWN_FLAGS.has(a));
+const asJson = flags.includes('--json');
+const asMarkdown = flags.includes('--markdown');
 
+if (unknown.length) {
+  console.error(`unknown option${unknown.length === 1 ? '' : 's'}: ${unknown.join(' ')}`);
+  console.error(USAGE);
+  process.exit(2);
+}
+if (asJson && asMarkdown) {
+  console.error('choose one output format: --json or --markdown, not both');
+  console.error(USAGE);
+  process.exit(2);
+}
 if (!files.length) {
-  console.error('usage: node tools/validate.mjs <game.html> [--json] [--markdown]');
+  console.error(USAGE);
   process.exit(2);
 }
 
+// Exit status is the worst across all files: 2 (a file could not be read)
+// beats 1 (something is blocking) beats 0. One unreadable file does not stop
+// the others from being checked and printed.
 let worstExit = 0;
 const reports = [];
+const errors = [];
 
 for (const file of files) {
   let source;
+  let bytes;
   try {
     source = readFileSync(file, 'utf8');
+    bytes = statSync(file).size;
   } catch (err) {
-    console.error(`cannot read ${file}: ${err.message}`);
-    process.exit(2);
+    const message = `cannot read ${file}: ${err.message}`;
+    console.error(message);
+    errors.push({ filename: file, error: message });
+    worstExit = 2;
+    continue;
   }
-  const report = validate(source, { filename: file, bytes: statSync(file).size });
+  const report = validate(source, { filename: file, bytes });
   reports.push(report);
-  if (report.blocking.length) worstExit = 1;
+  if (report.blocking.length) worstExit = Math.max(worstExit, 1);
 }
 
 if (asJson) {
-  console.log(JSON.stringify(reports.length === 1 ? reports[0] : reports, null, 2));
+  const all = [...reports, ...errors];
+  console.log(JSON.stringify(files.length === 1 && reports.length === 1 ? reports[0] : all, null, 2));
 } else if (asMarkdown) {
-  console.log(reports.map(markdownReport).join('\n\n---\n\n'));
-} else {
+  const parts = reports.map(markdownReport)
+    .concat(errors.map((e) => `### Could not check \`${e.filename}\`\n\n${e.error}`));
+  if (parts.length) console.log(parts.join('\n\n---\n\n'));
+} else if (reports.length) {
   console.log(reports.map(textReport).join('\n\n'));
 }
 

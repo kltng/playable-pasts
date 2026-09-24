@@ -71,28 +71,260 @@ function stripComments(source) {
   return out;
 }
 
+/** Replace every character except newlines with a space, so offsets and lines survive. */
+function blankText(text) {
+  return text.replace(/[^\n]/g, ' ');
+}
+
 /**
- * Block and line comments, for JavaScript bodies only. A `//` that opens a
- * comment is never preceded by a colon or a quote — inside JS, a
- * protocol-relative URL is always quoted.
+ * Blank out HTML comments, but only in markup. Inside <script> and <style>
+ * a `<!--` is not an HTML comment, and treating it as one could swallow real
+ * code up to the next `-->`. Offsets are preserved.
  */
-function stripJsComments(code) {
-  const out = blankOut(code, /\/\*[\s\S]*?\*\//g);
-  return out.replace(
-    /(^|[^:"'`\\])\/\/[^\n]*/g,
-    (m, lead) => lead + ' '.repeat(m.length - lead.length),
-  );
+function blankHtmlComments(source) {
+  const open = /<!--|<(script|style)\b[^>]*>/gi;
+  let out = '';
+  let pos = 0;
+  let m;
+  while ((m = open.exec(source))) {
+    if (m[0] === '<!--') {
+      const end = source.indexOf('-->', m.index + 4);
+      const stop = end < 0 ? source.length : end + 3;
+      out += source.slice(pos, m.index) + blankText(source.slice(m.index, stop));
+      pos = stop;
+      open.lastIndex = stop;
+    } else {
+      const close = new RegExp(`</${m[1]}\\s*>`, 'gi');
+      close.lastIndex = open.lastIndex;
+      const c = close.exec(source);
+      open.lastIndex = c ? c.index + c[0].length : source.length;
+    }
+  }
+  return out + source.slice(pos);
+}
+
+/**
+ * CSS comments only. `//` is not a comment in CSS — it starts a
+ * protocol-relative URL, which is a real remote fetch — so CSS and JS need
+ * separate strippers.
+ */
+function stripCssComments(css) {
+  return blankOut(css, /\/\*[\s\S]*?\*\//g);
+}
+
+const REGEX_KEYWORDS = new Set(['return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete',
+  'void', 'throw', 'case', 'do', 'else', 'yield', 'await']);
+
+/**
+ * A small JavaScript scanner. It walks the code once, tracking strings,
+ * template literals (including `${...}` expressions), line and block
+ * comments, and regex literals (by the usual "what came before the slash"
+ * guess). Regular expressions over raw code cannot do this: `"a//b"` is not a
+ * comment and `"src/*.js"` does not open one.
+ *
+ * Returns three versions of the code, all the same length as the input so
+ * offsets stay valid:
+ *   noComments  — comments blanked, strings intact (for reading URLs)
+ *   codeOnly    — comments, string contents, and regex bodies blanked
+ *                 (for behaviour: game text saying "fetch (and pay for) grain"
+ *                 is not a network call)
+ *   stringsOnly — everything except string contents blanked
+ */
+function scanJs(code) {
+  const n = code.length;
+  const ranges = []; // [start, end, kind] in order, non-overlapping
+  const stack = []; // 'brace' | 'tpl'
+  let last = -1; // index of the last significant character
+  let i = 0;
+
+  const regexAllowed = () => {
+    if (last < 0) return true;
+    const ch = code[last];
+    if (/[)\]}"'`]/.test(ch)) return false;
+    if (/[\w$]/.test(ch)) {
+      let s = last;
+      while (s > 0 && /[\w$]/.test(code[s - 1])) s--;
+      return REGEX_KEYWORDS.has(code.slice(s, last + 1));
+    }
+    return true;
+  };
+
+  // Called with i just past a backtick, or just past the `}` closing `${`.
+  const readTemplate = () => {
+    const start = i;
+    while (i < n) {
+      const ch = code[i];
+      if (ch === '\\') { i += 2; continue; }
+      if (ch === '`') {
+        ranges.push([start, i, 'string']);
+        last = i;
+        i++;
+        return;
+      }
+      if (ch === '$' && code[i + 1] === '{') {
+        ranges.push([start, i, 'string']);
+        i += 2;
+        last = i - 1;
+        stack.push('tpl');
+        return;
+      }
+      i++;
+    }
+    ranges.push([start, n, 'string']);
+  };
+
+  while (i < n) {
+    const c = code[i];
+    const d = code[i + 1];
+    if (c === '/' && d === '/') {
+      const e = code.indexOf('\n', i);
+      const end = e < 0 ? n : e;
+      ranges.push([i, end, 'comment']);
+      i = end;
+      continue;
+    }
+    if (c === '/' && d === '*') {
+      const e = code.indexOf('*/', i + 2);
+      const end = e < 0 ? n : e + 2;
+      ranges.push([i, end, 'comment']);
+      i = end;
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      let j = i + 1;
+      while (j < n && code[j] !== c && code[j] !== '\n') j += code[j] === '\\' ? 2 : 1;
+      j = Math.min(j, n);
+      ranges.push([i + 1, j, 'string']);
+      last = j;
+      i = j + 1;
+      continue;
+    }
+    if (c === '`') {
+      i++;
+      readTemplate();
+      continue;
+    }
+    if (c === '/' && regexAllowed()) {
+      let j = i + 1;
+      let inClass = false;
+      while (j < n && code[j] !== '\n') {
+        const ch = code[j];
+        if (ch === '\\') { j += 2; continue; }
+        if (ch === '[') inClass = true;
+        else if (ch === ']') inClass = false;
+        else if (ch === '/' && !inClass) break;
+        j++;
+      }
+      if (j < n && code[j] === '/') {
+        ranges.push([i + 1, j, 'regex']);
+        j++;
+        while (j < n && /[a-z]/i.test(code[j])) j++;
+        last = j - 1;
+        i = j;
+        continue;
+      }
+      // No closing slash on the line: it was division after all.
+    }
+    if (c === '{') {
+      stack.push('brace');
+    } else if (c === '}' && stack.pop() === 'tpl') {
+      i++;
+      readTemplate();
+      continue;
+    }
+    if (!/\s/.test(c)) last = i;
+    i++;
+  }
+
+  const assemble = (keep) => {
+    let out = '';
+    let pos = 0;
+    for (const [s, e, kind] of ranges) {
+      if (s > pos) {
+        const gap = code.slice(pos, s);
+        out += keep.has('code') ? gap : blankText(gap);
+      }
+      const piece = code.slice(s, e);
+      out += keep.has(kind) ? piece : blankText(piece);
+      pos = Math.max(pos, e);
+    }
+    if (pos < n) out += keep.has('code') ? code.slice(pos) : blankText(code.slice(pos));
+    return out;
+  };
+
+  return {
+    noComments: assemble(new Set(['code', 'string', 'regex'])),
+    codeOnly: assemble(new Set(['code'])),
+    stringsOnly: assemble(new Set(['string'])),
+  };
+}
+
+/**
+ * The contents of the string literal that opens at `quoteAt` in `text`
+ * (a template literal is read up to its first `${`).
+ */
+function readLiteral(text, quoteAt) {
+  const q = text[quoteAt];
+  let j = quoteAt + 1;
+  while (j < text.length && text[j] !== q && text[j] !== '\n') {
+    if (q === '`' && text[j] === '$' && text[j + 1] === '{') break;
+    j += text[j] === '\\' ? 2 : 1;
+  }
+  return text.slice(quoteAt + 1, j);
+}
+
+const NAMED_ENTITIES = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", colon: ':', sol: '/', bsol: '\\',
+  period: '.', tab: '\t', newline: '\n', nbsp: ' ', lpar: '(', rpar: ')',
+  num: '#', percnt: '%', quest: '?', equals: '=',
+};
+
+/**
+ * Decode character references in an attribute value, the way the browser
+ * does before it fetches anything: `src="https&#58;//cdn/x.js"` is a remote
+ * script.
+ */
+function decodeEntities(value) {
+  if (!value.includes('&')) return value;
+  return value.replace(/&(?:#(\d+);?|#x([0-9a-f]+);?|([a-z]+);)/gi, (m, dec, hex, name) => {
+    if (dec || hex) {
+      const cp = dec ? parseInt(dec, 10) : parseInt(hex, 16);
+      return cp > 0 && cp <= 0x10ffff ? String.fromCodePoint(cp) : '�';
+    }
+    const k = name.toLowerCase();
+    return Object.prototype.hasOwnProperty.call(NAMED_ENTITIES, k) ? NAMED_ENTITIES[k] : m;
+  });
+}
+
+/**
+ * Normalise a URL the way the browser's URL parser does: it ignores tabs
+ * and newlines anywhere, and leading or trailing spaces.
+ */
+function normaliseUrl(url) {
+  return String(url).replace(/[\t\n\r]/g, '').trim();
 }
 
 /** Is this URL fetched from somewhere other than the file itself? */
 function isRemote(url) {
-  const u = String(url).trim();
-  return /^(https?:)?\/\//i.test(u) || /^(ftp|ws|wss):/i.test(u);
+  const u = normaliseUrl(url);
+  return /^[/\\]{2}/.test(u) || /^(?:https?|ftp|wss?):/i.test(u);
 }
 
 /** Inline data that costs nothing at play time. */
 function isInline(url) {
-  return /^(data:|blob:|#|javascript:|about:)/i.test(String(url).trim());
+  return /^(data:|blob:|#|javascript:|about:)/i.test(normaliseUrl(url));
+}
+
+/**
+ * A reference to another file that sits next to the HTML file (or on the
+ * author's own disk). Values that are clearly built by code at run time
+ * (`${...}`, `{{...}}`) are skipped: we cannot know what they become.
+ */
+function isLocalFile(url) {
+  const u = normaliseUrl(url);
+  if (!u || isRemote(u) || isInline(u)) return false;
+  if (/\$\{|\{\{|^["'+]/.test(u)) return false;
+  return true;
 }
 
 /* ------------------------------------------------------------------ *
@@ -107,22 +339,45 @@ function parseAttrs(raw) {
   let m;
   while ((m = re.exec(raw))) {
     const value = m[3] ?? m[4] ?? m[5] ?? '';
-    attrs[m[1].toLowerCase()] = value;
+    const key = m[1].toLowerCase();
+    // As in the browser, the first occurrence of a repeated attribute wins.
+    if (!(key in attrs)) attrs[key] = decodeEntities(value);
   }
   return attrs;
 }
 
-/** Every tag in the document, with attributes and byte offset. */
+/** Offset ranges of every <script> and <style> body. */
+function rawTextRanges(source) {
+  const ranges = [];
+  const re = /<(script|style)\b[^>]*>([\s\S]*?)<\/\1\s*>/gi;
+  let m;
+  while ((m = re.exec(source))) {
+    const start = m.index + m[0].indexOf('>') + 1;
+    ranges.push([start, start + m[2].length]);
+  }
+  return ranges;
+}
+
+/**
+ * Every tag in the document, with attributes and byte offset. Run it on the
+ * source with HTML comments blanked, so a commented-out <script src> is not
+ * reported. Tags found inside a <script> or <style> body (HTML built by code)
+ * are marked `embedded`.
+ */
 function scanTags(source) {
+  const raw = rawTextRanges(source);
   const tags = [];
+  let r = 0;
   let m;
   TAG_RE.lastIndex = 0;
   while ((m = TAG_RE.exec(source))) {
+    while (r < raw.length && raw[r][1] <= m.index) r++;
     tags.push({
       name: m[1].toLowerCase(),
       attrs: parseAttrs(m[2] || ''),
       offset: m.index,
       raw: m[0],
+      embedded: r < raw.length && raw[r][0] <= m.index,
     });
   }
   return tags;
@@ -130,12 +385,12 @@ function scanTags(source) {
 
 /** Text content with all tags removed — what a player can actually read. */
 function visibleText(source) {
-  return source
+  return decodeEntities(source
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<!--[\s\S]*?-->/g, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
+    .replace(/<[^>]+>/g, ' '))
+    .replace(/ /g, ' ')
     .replace(/\s+/g, ' ');
 }
 
@@ -157,7 +412,10 @@ function readableText(source) {
       if (value.length > 1) strings.push(value);
     }
   }
-  return (visibleText(source) + ' ' + strings.join(' ')).replace(/\s+/g, ' ');
+  // Each string literal stays on its own line, so a check that needs two
+  // words "in the same label" does not join the end of one string to the
+  // start of the next.
+  return [visibleText(source), ...strings.map((s) => s.replace(/\s+/g, ' '))].join('\n');
 }
 
 /** Contents of every <script> block, for code-only checks. */
@@ -168,7 +426,21 @@ function scriptBodies(source) {
   while ((m = re.exec(source))) {
     const attrs = parseAttrs(m[1] || '');
     if (attrs.src) continue; // external, handled elsewhere
-    bodies.push({ code: m[2], offset: m.index + m[0].indexOf(m[2]) });
+    const type = (attrs.type || '').trim().toLowerCase();
+    // Only these types run. A JSON data block or a text/template is inert.
+    const isJs = !type || type === 'module' || /(?:java|ecma)script|jscript|livescript|babel/.test(type);
+    let scanned = null;
+    bodies.push({
+      code: m[2],
+      offset: m.index + m[0].indexOf('>') + 1,
+      isJs,
+      // Scanned lazily, inside the checks, so a scanner failure is reported
+      // as a checker error rather than crashing the whole report.
+      get js() {
+        if (!scanned) scanned = scanJs(this.code);
+        return scanned;
+      },
+    });
   }
   return bodies;
 }
@@ -202,56 +474,101 @@ const ASSET_TAGS = {
   object: ['data'],
   input: ['src'],
   use: ['href', 'xlink:href'],
+  body: ['background'],
+  table: ['background'],
+  td: ['background'],
+  th: ['background'],
 };
 
+function srcsetUrls(value) {
+  return value.split(',').map((s) => s.trim().split(/\s+/)[0]).filter(Boolean);
+}
+
+function evidenceAt(ctx, offset, text) {
+  return { line: ctx.lineAt(offset), text, snippet: snippet(ctx.source, offset) };
+}
+
 function checkSelfContained(ctx) {
-  const { tags, lineAt, source } = ctx;
+  const { tags } = ctx;
   const out = [];
 
   const externalScripts = [];
   const externalStyles = [];
   const externalAssets = [];
   const externalPreloads = [];
+  const localFiles = [];
+  const navigation = [];
 
-  for (const tag of tags) {
+  // A local file is only reported for tags written in the page itself. Tags
+  // inside a <script> body are HTML built by code, and their values are
+  // usually assembled at run time.
+  const visit = (tag, offset, via, depth) => {
     const a = tag.attrs;
+    const inside = via ? ` inside ${via}` : '';
+    const local = (url, what) => {
+      if (!tag.embedded && isLocalFile(url)) localFiles.push({ offset, url, what: what + inside });
+    };
 
-    if (tag.name === 'script' && a.src && isRemote(a.src)) {
-      externalScripts.push({ tag, url: a.src });
-      continue;
+    if (tag.name === 'script') {
+      if (a.src && isRemote(a.src)) externalScripts.push({ offset, url: a.src });
+      else if (a.src) local(a.src, '<script src>');
+      return;
     }
 
     if (tag.name === 'link') {
       const rel = (a.rel || '').toLowerCase();
       const href = a.href || '';
-      if (!href || isInline(href)) continue;
+      if (!href || isInline(href)) return;
       if (isRemote(href)) {
-        if (/stylesheet/.test(rel)) externalStyles.push({ tag, url: href });
+        if (/stylesheet/.test(rel)) externalStyles.push({ offset, url: href });
         else if (/preload|prefetch|modulepreload|preconnect|dns-prefetch/.test(rel)) {
-          externalPreloads.push({ tag, url: href });
+          externalPreloads.push({ offset, url: href });
         } else if (/icon|manifest/.test(rel)) {
-          externalAssets.push({ tag, url: href, what: `link rel="${rel}"` });
+          externalAssets.push({ offset, url: href, what: `link rel="${rel}"${inside}` });
         }
+      } else if (/stylesheet/.test(rel)) {
+        // A missing favicon or preload breaks nothing a student sees; a
+        // missing stylesheet does.
+        local(href, `<link rel="${rel}">`);
       }
-      continue;
+      return;
+    }
+
+    if (tag.name === 'base') {
+      if (a.href && isRemote(a.href)) navigation.push({ offset, url: a.href, what: `<base href>${inside}` });
+      return;
+    }
+
+    if (tag.name === 'meta') {
+      if ((a['http-equiv'] || '').trim().toLowerCase() !== 'refresh') return;
+      const m = /url\s*=\s*['"]?\s*([^'";\s]+)/i.exec(a.content || '');
+      if (!m) return;
+      if (isRemote(m[1])) navigation.push({ offset, url: m[1], what: `<meta http-equiv="refresh">${inside}` });
+      else local(m[1], '<meta http-equiv="refresh">');
+      return;
+    }
+
+    if (tag.name === 'iframe' && a.srcdoc && depth < 3) {
+      // srcdoc is a whole page written into an attribute; what it loads, the game loads.
+      for (const inner of scanTags(blankHtmlComments(a.srcdoc))) {
+        visit({ ...inner, embedded: tag.embedded || inner.embedded }, offset, 'an iframe srcdoc', depth + 1);
+      }
     }
 
     const attrNames = ASSET_TAGS[tag.name];
-    if (!attrNames) continue;
+    if (!attrNames) return;
     for (const name of attrNames) {
       const value = a[name];
       if (!value || isInline(value)) continue;
-      // srcset holds a comma-separated candidate list
-      const urls = name === 'srcset'
-        ? value.split(',').map((s) => s.trim().split(/\s+/)[0])
-        : [value];
+      const urls = name === 'srcset' ? srcsetUrls(value) : [value];
       for (const url of urls) {
-        if (url && isRemote(url)) {
-          externalAssets.push({ tag, url, what: `<${tag.name} ${name}>` });
-        }
+        if (isRemote(url)) externalAssets.push({ offset, url, what: `<${tag.name} ${name}>${inside}` });
+        else local(url, `<${tag.name} ${name}>`);
       }
     }
-  }
+  };
+
+  for (const tag of tags) visit(tag, tag.offset, '', 0);
 
   if (externalScripts.length) {
     out.push(finding(
@@ -262,11 +579,7 @@ function checkSelfContained(ctx) {
         + 'network that blocks it — or with the wifi off — the game will not start at all.',
       'Ask your agent: "Inline every external script directly into the HTML file so '
         + 'the game has no <script src> pointing at a website."',
-      externalScripts.map(({ tag, url }) => ({
-        line: lineAt(tag.offset),
-        text: url,
-        snippet: snippet(source, tag.offset),
-      })),
+      externalScripts.map(({ offset, url }) => evidenceAt(ctx, offset, url)),
     ));
   }
 
@@ -279,11 +592,7 @@ function checkSelfContained(ctx) {
         + 'looks broken — usually unreadable on a projector.',
       'Ask your agent: "Move all CSS into a <style> block inside the file and remove '
         + 'every <link rel=stylesheet> that points at a website."',
-      externalStyles.map(({ tag, url }) => ({
-        line: lineAt(tag.offset),
-        text: url,
-        snippet: snippet(source, tag.offset),
-      })),
+      externalStyles.map(({ offset, url }) => evidenceAt(ctx, offset, url)),
     ));
   }
 
@@ -296,11 +605,37 @@ function checkSelfContained(ctx) {
         + 'placeholders, and the source may vanish or change without warning.',
       'Ask your agent: "Replace remote images with inline SVG, emoji, or small data: '
         + 'URIs so nothing is fetched during play."',
-      externalAssets.map(({ tag, url, what }) => ({
-        line: lineAt(tag.offset),
-        text: `${what} → ${url}`,
-        snippet: snippet(source, tag.offset),
-      })),
+      externalAssets.map(({ offset, url, what }) => evidenceAt(ctx, offset, `${what} → ${url}`)),
+    ));
+  }
+
+  if (localFiles.length) {
+    out.push(finding(
+      'local-file',
+      SEVERITY.BLOCKING,
+      'The game needs other files sitting next to it',
+      'The page loads a script, stylesheet, picture, or sound from a separate file instead '
+        + 'of carrying it inside. It may work on the computer where it was made, but when '
+        + 'you send students the HTML file, or upload it to your LMS, that other file is '
+        + 'not there: the game may not start, may look unstyled, or may show broken pictures.',
+      'Ask your agent: "Put everything the game needs inside the one HTML file: paste '
+        + 'scripts into <script> blocks and CSS into a <style> block, and turn pictures and '
+        + 'sounds into inline SVG or data: URIs. Nothing should load from a separate file."',
+      localFiles.map(({ offset, url, what }) => evidenceAt(ctx, offset, `${what} → ${url}`)),
+    ));
+  }
+
+  if (navigation.length) {
+    out.push(finding(
+      'remote-navigation',
+      SEVERITY.BLOCKING,
+      'The page sends the browser to another website',
+      'As it opens, the file either redirects to another website or tells the browser to '
+        + 'look up its links and pictures on one. With the wifi off, or on a school network '
+        + 'that blocks that site, the game goes blank or its pictures and links break.',
+      'Ask your agent: "Remove any <meta http-equiv=refresh> redirect and any <base href> '
+        + 'that points at a website, so the game runs from this file alone."',
+      navigation.map(({ offset, url, what }) => evidenceAt(ctx, offset, `${what} → ${url}`)),
     ));
   }
 
@@ -312,30 +647,77 @@ function checkSelfContained(ctx) {
       'A preload or preconnect hint reaches out to a server as the page opens. It '
         + 'will not break play, but it means the file is not truly self-contained.',
       'Ask your agent: "Remove all preload, prefetch, preconnect, and dns-prefetch links."',
-      externalPreloads.map(({ tag, url }) => ({
-        line: lineAt(tag.offset),
-        text: url,
-        snippet: snippet(source, tag.offset),
-      })),
+      externalPreloads.map(({ offset, url }) => evidenceAt(ctx, offset, url)),
     ));
   }
 
   return out;
 }
 
+/**
+ * Where CSS can live: <style> bodies, style="" attributes, and strings in
+ * scripts (style text set from code). Visible prose is not CSS — a sources
+ * screen that quotes "url(https://archive.org/...)" fetches nothing.
+ * Computed once per report.
+ */
+function cssRegions(ctx) {
+  if (ctx.cssRegionsCache) return ctx.cssRegionsCache;
+  const regions = [];
+  const re = /<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi;
+  let m;
+  while ((m = re.exec(ctx.markup))) {
+    regions.push({ kind: 'style', text: stripCssComments(m[1]), offset: m.index + m[0].indexOf('>') + 1 });
+  }
+  for (const tag of ctx.tags) {
+    if (tag.attrs.style) regions.push({ kind: 'attr', text: tag.attrs.style, offset: tag.offset, fixed: true });
+  }
+  for (const s of ctx.scripts) {
+    if (s.isJs) regions.push({ kind: 'string', text: s.js.stringsOnly, offset: s.offset });
+  }
+  ctx.cssRegionsCache = regions;
+  return regions;
+}
+
+const CSS_REMOTE = [
+  [/@import\s+(?:url\(\s*)?["']?\s*((?:https?:)?\/\/[^"')\s]+)/gi, '@import'],
+  [/url\(\s*["']?\s*((?:https?:)?\/\/[^"')\s]+)/gi, 'url()'],
+];
+
+/** Quoted remote candidates in every image-set(...) — which needs no url(). */
+function imageSetUrls(text) {
+  const found = [];
+  const re = /(?:-webkit-)?image-set\(/gi;
+  let m;
+  while ((m = re.exec(text))) {
+    let depth = 1;
+    let j = re.lastIndex;
+    while (j < text.length && depth > 0 && j - re.lastIndex < 4000) {
+      if (text[j] === '(') depth++;
+      else if (text[j] === ')') depth--;
+      j++;
+    }
+    const inner = text.slice(re.lastIndex, j);
+    const q = /["']\s*((?:https?:)?\/\/[^"']+)["']/g;
+    let u;
+    while ((u = q.exec(inner))) found.push({ index: m.index, url: u[1] });
+  }
+  return found;
+}
+
 function checkRemoteCss(ctx) {
-  const { clean, lineAt, source } = ctx;
   const out = [];
   const hits = [];
 
-  const imports = /@import\s+(?:url\(\s*)?["']?((?:https?:)?\/\/[^"')\s]+)/gi;
-  let m;
-  while ((m = imports.exec(clean))) {
-    hits.push({ offset: m.index, url: m[1], kind: '@import' });
-  }
-  const urls = /url\(\s*["']?((?:https?:)?\/\/[^"')\s]+)/gi;
-  while ((m = urls.exec(clean))) {
-    hits.push({ offset: m.index, url: m[1], kind: 'url()' });
+  for (const region of cssRegions(ctx)) {
+    const at = (i) => (region.fixed ? region.offset : region.offset + i);
+    for (const [re, kind] of CSS_REMOTE) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(region.text))) hits.push({ offset: at(m.index), url: m[1], kind });
+    }
+    for (const { index, url } of imageSetUrls(region.text)) {
+      hits.push({ offset: at(index), url, kind: 'image-set()' });
+    }
   }
 
   // An `@import url(...)` matches both patterns above; keep one row per resource.
@@ -345,7 +727,7 @@ function checkRemoteCss(ctx) {
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
-  });
+  }).sort((a, b) => a.offset - b.offset);
 
   if (unique.length) {
     const fonts = unique.filter((h) => /fonts\.(googleapis|gstatic)\.com|\.woff2?|\.ttf|\.otf/i.test(h.url));
@@ -362,11 +744,7 @@ function checkRemoteCss(ctx) {
         ? 'Ask your agent: "Remove the web font and use a system font stack instead. For '
           + 'Chinese, Japanese, or Korean text use the system CJK stack, do not embed a font."'
         : 'Ask your agent: "Inline this resource as a data: URI or remove it."',
-      unique.map((h) => ({
-        line: lineAt(h.offset),
-        text: `${h.kind} → ${h.url}`,
-        snippet: snippet(source, h.offset),
-      })),
+      unique.map((h) => evidenceAt(ctx, h.offset, `${h.kind} → ${h.url}`)),
     ));
   }
 
@@ -376,34 +754,65 @@ function checkRemoteCss(ctx) {
 /**
  * Rule 12 & the build standard: no network calls at play time, and no
  * dependency on an AI provider.
+ *
+ * These run on code with comments AND string contents blanked, so game text
+ * such as "Send a servant to fetch (and pay for) grain" is not a call. The
+ * call itself — `fetch(` — is outside the string, so it is still seen.
  */
+const GLOBAL = '(?:(?:window|self|globalThis)\\s*\\.\\s*)?';
 const NETWORK_APIS = [
   ['fetch', /\bfetch\s*\(/g, 'fetch()'],
-  ['xhr', /\bnew\s+XMLHttpRequest\b/g, 'XMLHttpRequest'],
-  ['websocket', /\bnew\s+WebSocket\b/g, 'WebSocket'],
-  ['eventsource', /\bnew\s+EventSource\b/g, 'EventSource'],
+  ['xhr', new RegExp(`\\bnew\\s+${GLOBAL}XMLHttpRequest\\b`, 'g'), 'XMLHttpRequest'],
+  ['websocket', new RegExp(`\\bnew\\s+${GLOBAL}WebSocket\\b`, 'g'), 'WebSocket'],
+  ['eventsource', new RegExp(`\\bnew\\s+${GLOBAL}EventSource\\b`, 'g'), 'EventSource'],
   ['beacon', /navigator\s*\.\s*sendBeacon\s*\(/g, 'navigator.sendBeacon()'],
   ['importscripts', /\bimportScripts\s*\(/g, 'importScripts()'],
-  ['dynamic-import', /\bimport\s*\(\s*["'](?:https?:)?\/\//g, 'dynamic import() of a URL'],
+];
+
+/**
+ * Calls that load whatever address they are given. Each pattern ends just
+ * before the opening quote; the address is then read from the code with its
+ * strings intact, and only a web address counts.
+ */
+const URL_LOADERS = [
+  [/\bimport\s*\(\s*(?=["'`])/g, () => 'dynamic import() of a web address'],
+  [/\bimport\s*(?=["'`])/g, () => 'import of a web address'],
+  [/\b(?:import|export)\b[^;"'`()]*?\bfrom\s*(?=["'`])/g, () => 'import of a web address'],
+  [new RegExp(`\\bnew\\s+${GLOBAL}(Image|Audio|Worker|SharedWorker)\\s*\\(\\s*(?=["'\`])`, 'g'),
+    (m) => `new ${m[1]}() of a web address`],
+  [/\.src\s*=\s*(?=["'`])/g, () => '.src set to a web address'],
 ];
 
 function checkNoNetwork(ctx) {
-  const { scripts, lineAt, source } = ctx;
+  const { scripts } = ctx;
   const out = [];
   const hits = [];
 
-  for (const { code, offset } of scripts) {
-    const clean = stripJsComments(code);
+  for (const script of scripts) {
+    if (!script.isJs) continue;
+    const { codeOnly, noComments } = script.js;
     for (const [, re, label] of NETWORK_APIS) {
       re.lastIndex = 0;
       let m;
-      while ((m = re.exec(clean))) {
-        hits.push({ offset: offset + m.index, label });
+      while ((m = re.exec(codeOnly))) hits.push({ offset: script.offset + m.index, label });
+    }
+    for (const [re, label] of URL_LOADERS) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(codeOnly))) {
+        const url = readLiteral(noComments, m.index + m[0].length);
+        if (isRemote(url)) hits.push({ offset: script.offset + m.index, label: label(m) });
       }
     }
   }
 
-  if (hits.length) {
+  // `new Image().src = "..."` can match twice; one row per place in the file.
+  const seen = new Set();
+  const unique = hits
+    .sort((a, b) => a.offset - b.offset)
+    .filter((h) => (seen.has(h.offset) ? false : seen.add(h.offset)));
+
+  if (unique.length) {
     out.push(finding(
       'network-during-play',
       SEVERITY.BLOCKING,
@@ -413,11 +822,7 @@ function checkNoNetwork(ctx) {
         + 'or a room with no wifi.',
       'Ask your agent: "Remove all network calls. Move whatever the game was fetching '
         + 'into the inline data block so it ships inside the file."',
-      hits.map((h) => ({
-        line: lineAt(h.offset),
-        text: h.label,
-        snippet: snippet(source, h.offset),
-      })),
+      unique.map((h) => evidenceAt(ctx, h.offset, h.label)),
     ));
   }
 
@@ -473,7 +878,8 @@ function checkNoModelDependency(ctx) {
   for (const [re, label] of KEY_SIGNALS) {
     re.lastIndex = 0;
     let m;
-    while ((m = re.exec(clean))) keyHits.push({ offset: m.index, label });
+    // The raw source, not `clean`: a key inside a comment is just as readable.
+    while ((m = re.exec(source))) keyHits.push({ offset: m.index, label });
   }
   if (keyHits.length) {
     out.push(finding(
@@ -505,8 +911,14 @@ function checkProvenance(ctx) {
   // that names it "Sources & limitations" or "Provenance & limitations" has
   // the same screen. Firing on a correct game teaches instructors to ignore
   // the checker, so the synonyms are accepted.
-  const hasScreen = /(?:sources?|provenance)\s*(?:&|and|\+|·|\/|,)?\s*(?:assumptions?|limitations?|caveats?)/i.test(text)
-    || (/\b(?:sources?|provenance)\b/i.test(text) && /\b(?:assumptions?|limitations?)\b/i.test(text));
+  //
+  // The two words must sit together — in one heading, button label, or short
+  // phrase — not merely somewhere in the file. "Source: my notes. Limitations
+  // apply to shipping." is not a sources screen. So: within about 40
+  // characters of each other, in either order, with no sentence break between.
+  const SRC = '\\b(?:sources?|provenance)\\b';
+  const LIM = '\\b(?:assumptions?|limitations?|caveats?)\\b';
+  const hasScreen = new RegExp(`${SRC}[^.!?\\n]{0,40}?${LIM}|${LIM}[^.!?\\n]{0,40}?${SRC}`, 'i').test(text);
 
   if (!hasScreen) {
     out.push(finding(
@@ -562,10 +974,13 @@ function checkAccessibility(ctx) {
     ));
   }
 
-  const hasCharset = tags.some(
+  // Browsers accept "utf8" as well as "utf-8", and a byte-order mark at the
+  // very start of the file settles the encoding with no <meta> at all.
+  // (Callers must keep the mark when decoding; check-ui.js does.)
+  const hasCharset = source.charCodeAt(0) === 0xfeff || tags.some(
     (t) => t.name === 'meta'
-      && ((t.attrs.charset || '').toLowerCase().includes('utf-8')
-        || /charset=utf-8/i.test(t.attrs.content || '')),
+      && (/^\s*utf-?8\s*$/i.test(t.attrs.charset || '')
+        || /charset\s*=\s*["']?\s*utf-?8\b/i.test(t.attrs.content || '')),
   );
   const nonAscii = /[^\x00-\x7F]/.test(source);
   if (!hasCharset) {
@@ -643,7 +1058,12 @@ function checkAccessibility(ctx) {
     ));
   }
 
-  const animates = /@keyframes|animation\s*:|transition\s*:/i.test(clean);
+  // `transition: none` switches animation off; it is not animation. Prose is
+  // not CSS, so only style blocks, style attributes, and (more strictly,
+  // needing a duration) style text in script strings are read.
+  const ANIM_CSS = /@keyframes|\b(?:animation|transition)\s*:\s*(?!(?:none|initial|unset|inherit)\s*(?:!important\s*)?[;}"']|(?:none|initial|unset|inherit)\s*$)[^;}\s]/im;
+  const ANIM_STRING = /@keyframes\s+[\w-]+\s*\{|\b(?:animation|transition)\s*:[^;}"'`\n]*\d(?:\.\d+)?m?s\b/i;
+  const animates = cssRegions(ctx).some((r) => (r.kind === 'string' ? ANIM_STRING : ANIM_CSS).test(r.text));
   const respectsMotion = /prefers-reduced-motion/i.test(clean);
   if (animates && !respectsMotion) {
     out.push(finding(
@@ -692,22 +1112,51 @@ function checkAccessibility(ctx) {
   return out;
 }
 
+/**
+ * Offsets of storage uses that are not inside an open `try { ... }` block.
+ * Walks the code (strings and comments already blanked) counting braces:
+ * a try block that has already closed does not protect a later call.
+ */
+function unguardedStorage(code) {
+  const re = /\b(?:localStorage|sessionStorage|indexedDB)\b/g;
+  const uses = [];
+  let m;
+  while ((m = re.exec(code))) uses.push(m.index);
+  if (!uses.length) return [];
+
+  const stack = []; // true for a brace that opened a try block
+  let openTries = 0;
+  let u = 0;
+  const unguarded = [];
+  for (let i = 0; i < code.length && u < uses.length; i++) {
+    while (u < uses.length && uses[u] === i) {
+      if (openTries === 0) unguarded.push(i);
+      u++;
+    }
+    const c = code[i];
+    if (c === '{') {
+      const isTry = /\btry\s*$/.test(code.slice(Math.max(0, i - 12), i));
+      stack.push(isTry);
+      if (isTry) openTries++;
+    } else if (c === '}') {
+      if (stack.pop()) openTries--;
+    }
+  }
+  return unguarded;
+}
+
 /** Build standard: robustness and instructor ownership. */
 function checkRobustness(ctx) {
   const { scripts, clean, text, lineAt, source, tags } = ctx;
   const out = [];
 
   const storageHits = [];
-  for (const { code, offset } of scripts) {
-    const stripped = stripJsComments(code);
-    const re = /\b(?:localStorage|sessionStorage|indexedDB)\b/g;
-    let m;
-    while ((m = re.exec(stripped))) {
-      // Look backwards for a try block that plausibly wraps this call.
-      const before = stripped.slice(Math.max(0, m.index - 400), m.index);
-      if (!/\btry\s*\{[^}]*$/.test(before) && !/\btry\s*\{/.test(before)) {
-        storageHits.push({ offset: offset + m.index });
-      }
+  for (const script of scripts) {
+    if (!script.isJs) continue;
+    // Strings blanked: 'localStorage' in window, or game text that mentions
+    // localStorage, is not a storage call.
+    for (const index of unguardedStorage(script.js.codeOnly)) {
+      storageHits.push({ offset: script.offset + index });
     }
   }
   if (storageHits.length) {
@@ -728,7 +1177,12 @@ function checkRobustness(ctx) {
     ));
   }
 
-  const hasRestart = /\b(?:restart|play again|start over|new game|reset|try again|again)\b/i.test(text)
+  // "Again" alone is not a control: "The plague struck again" is prose. It
+  // counts in a phrase such as "play again", or as a whole button label.
+  const buttonLabels = [...ctx.markup.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button\s*>/gi)]
+    .map((m) => m[1].replace(/<[^>]+>/g, ' ').trim());
+  const hasRestart = /\b(?:restart|replay|play again|play another|start over|start again|begin again|go again|new game|reset|try again)\b/i.test(text)
+    || buttonLabels.some((label) => /^again\b/i.test(label))
     // CJK has no word boundaries, so those terms are matched without \b.
     || /再玩|重新開始|重新开始|重玩|やり直|다시\s?시작|إعادة/.test(text);
   if (!hasRestart) {
@@ -744,7 +1198,11 @@ function checkRobustness(ctx) {
     ));
   }
 
-  const hasContentBlock = /GAME_?DATA|GAME_?CONTENT|CONTENT\s*=|EDIT (?:THIS|HERE|BELOW)|edit(?:able)? (?:this )?(?:content|data|block)|questions\s*[:=]\s*\[/i.test(clean);
+  // Read the raw source: the markers the build standard asks for ("EDIT
+  // HERE") usually sit in comments. `CONTENT =` is matched case-sensitively
+  // and only in script code, or every <meta content="..."> would count.
+  const hasContentBlock = /GAME_?DATA|GAME_?CONTENT|EDIT (?:THIS|HERE|BELOW)|edit(?:able)? (?:this )?(?:content|data|block)|questions\s*[:=]\s*\[/i.test(source)
+    || scripts.some((s) => /\bCONTENT\s*=/.test(s.code));
   if (!hasContentBlock) {
     out.push(finding(
       'no-content-block',
@@ -760,11 +1218,12 @@ function checkRobustness(ctx) {
   }
 
   const debuggerHits = [];
-  for (const { code, offset } of scripts) {
+  for (const script of scripts) {
+    if (!script.isJs) continue;
+    // Strings blanked: "The debugger of the ship" is game text, not a statement.
     const re = /\bdebugger\b/g;
     let m;
-    const stripped = stripJsComments(code);
-    while ((m = re.exec(stripped))) debuggerHits.push({ offset: offset + m.index });
+    while ((m = re.exec(script.js.codeOnly))) debuggerHits.push({ offset: script.offset + m.index });
   }
   if (debuggerHits.length) {
     out.push(finding(
@@ -816,7 +1275,10 @@ function checkStructure(ctx) {
   // dialogue are full of them — and must not be flagged.
   const placeholderPatterns = [
     /^[ \t]*(?:\/\/|\/\*|<!--|#)?[ \t]*(?:\.\.\.|\u2026)[ \t]*(?:\*\/|-->)?[ \t]*$/gm,
-    /(?:\/\/|\/\*|<!--)[^\n]*?(?:\.\.\.|\u2026)/g,
+    // A `//` right after a colon, slash, word character, quote, `=`, or `(` is
+    // part of a URL ("https://...", url(//host)), not a comment. A block comment only counts if the
+    // ellipsis comes before it closes.
+    /(?<![:/\w"'`=(])\/\/[^\n]*?(?:\.\.\.|\u2026)|\/\*(?:(?!\*\/)[^\n])*?(?:\.\.\.|\u2026)|<!--(?:(?!-->)[^\n])*?(?:\.\.\.|\u2026)/g,
     /\[insert[^\]]*\]|insert earlier[^.\n]*|rest of (?:the )?code[^.\n]*|your code here/gi,
     /\b(?:TODO|FIXME)\b/g, // case-sensitive: OCR noise such as "tOdO" is not a to-do marker
   ];
@@ -870,7 +1332,7 @@ function checkStructure(ctx) {
  * Playable Past hard rule 10. These are the checks a static read genuinely
  * cannot make. They are returned as work for a human, never as passes.
  */
-export const MANUAL_CHECKS = [
+export const MANUAL_CHECKS = Object.freeze([
   {
     id: 'manual-offline',
     title: 'Open the file with the wifi off',
@@ -914,7 +1376,7 @@ export const MANUAL_CHECKS = [
       + 'ask students to criticise the game as an interpretation of the past.',
     minutes: 2,
   },
-];
+].map((check) => Object.freeze(check)));
 
 /* ------------------------------------------------------------------ *
  * Public API
@@ -951,29 +1413,42 @@ const CHECKS = [
  */
 export function validate(source, meta = {}) {
   const bytes = meta.bytes ?? byteLength(source);
+  // HTML comments are blanked (offsets kept) before tags and scripts are
+  // read, so a commented-out <script src> or <img> is not reported.
+  const markup = blankHtmlComments(source);
   const ctx = {
     source,
-    clean: stripComments(source),
-    tags: scanTags(source),
-    scripts: scriptBodies(source),
-    text: readableText(source),
+    markup,
+    clean: stripComments(markup),
+    tags: scanTags(markup),
+    scripts: scriptBodies(markup),
+    text: readableText(markup),
     lineAt: lineIndex(source),
     bytes,
   };
 
+  // `meta.checks` exists so the tests can prove that a failing check is
+  // reported; normal callers never pass it.
+  const checks = meta.checks || CHECKS;
   const findings = [];
-  for (const check of CHECKS) {
+  for (const check of checks) {
     try {
       findings.push(...check(ctx));
     } catch (err) {
+      // Honesty rule: a check that did not finish did not pass. Its findings
+      // are lost, so the file cannot be called ready — this is blocking.
+      const area = CHECK_AREAS[check.name] || 'one part of the file';
       findings.push(finding(
         'checker-error',
-        SEVERITY.WARNING,
-        'One check could not finish',
-        `The validator hit an internal error while running ${check.name}. The rest of the `
-          + 'report is still valid, but treat this area as unchecked.',
-        'Please report this file (or its shape) as a validator bug.',
-        [{ line: 0, text: String(err && err.message || err), snippet: '' }],
+        SEVERITY.BLOCKING,
+        'The checker failed on part of this file',
+        `The checker itself broke while looking at ${area}, so that part was not checked. `
+          + 'Do not treat it as passed: the problems it looks for may still be there. '
+          + 'This is a fault in the checker, not necessarily in your game.',
+        'Test that part by hand for now, and report the file (or its shape) to the Playable '
+          + 'Pasts maintainers as a checker bug. You can ask your agent: "Run the Playable '
+          + 'Pasts checker on this file again and tell me which part it could not check."',
+        [{ line: 0, text: `${check.name || 'check'}: ${String((err && err.message) || err)}`, snippet: '' }],
       ));
     }
   }
@@ -986,29 +1461,61 @@ export function validate(source, meta = {}) {
   else if (warnings.length) verdict = 'needs-work';
   else verdict = 'ready-for-your-tests';
 
+  const unchecked = blocking.filter((f) => f.id === 'checker-error').length;
+
   return {
     filename: meta.filename || 'game.html',
     bytes,
     blocking,
     warnings,
-    manual: MANUAL_CHECKS,
+    // A fresh copy per report: changing one report must never erase the
+    // manual checks from the next one.
+    manual: MANUAL_CHECKS.map((check) => ({ ...check })),
     verdict,
-    summary: summarise(verdict, blocking.length, warnings.length),
+    summary: summarise(verdict, blocking.length - unchecked, warnings.length, unchecked),
   };
 }
 
-function summarise(verdict, nBlocking, nWarnings) {
+/** Plain names for each check, used when one of them fails. */
+const CHECK_AREAS = {
+  checkStructure: 'whether the file is a complete page',
+  checkSelfContained: 'files the page loads',
+  checkRemoteCss: 'files the styling loads',
+  checkNoNetwork: 'network use during play',
+  checkNoModelDependency: 'AI model use and secret keys',
+  checkProvenance: 'the Sources & assumptions screen',
+  checkAccessibility: 'accessibility',
+  checkRobustness: 'saving, restarting, and editing the game',
+};
+
+const NUMBER_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+  'nine', 'ten', 'eleven', 'twelve'];
+
+function manualCount() {
+  const n = MANUAL_CHECKS.length;
+  return `${NUMBER_WORDS[n] ?? n} test${n === 1 ? '' : 's'}`;
+}
+
+function summarise(verdict, nBlocking, nWarnings, nUnchecked = 0) {
   if (verdict === 'blocked') {
-    return `${nBlocking} problem${nBlocking === 1 ? '' : 's'} will stop this game working in a `
-      + 'classroom. Fix those first — the wording below is written to paste straight to your agent.';
+    const parts = [];
+    if (nBlocking) {
+      parts.push(`${nBlocking} problem${nBlocking === 1 ? '' : 's'} will stop this game working in a `
+        + 'classroom. Fix those first — the wording below is written to paste straight to your agent.');
+    }
+    if (nUnchecked) {
+      parts.push(`The checker failed on ${nUnchecked === 1 ? 'one part' : `${nUnchecked} parts`} `
+        + 'of this file, so that part was not checked. Do not treat this game as passed until it has been.');
+    }
+    return parts.join(' ');
   }
   if (verdict === 'needs-work') {
     return `Nothing here will stop the game running, but ${nWarnings} thing`
       + `${nWarnings === 1 ? '' : 's'} would make it better for your students. `
-      + 'Then run the six tests only you can do.';
+      + `Then run the ${manualCount()} only you can do.`;
   }
   return 'Every automated check passed. That means the file is self-contained and structurally '
-    + 'sound — it does not mean the game is good history or good teaching. Run the six tests below.';
+    + `sound — it does not mean the game is good history or good teaching. Run the ${manualCount()} below.`;
 }
 
 function byteLength(str) {
