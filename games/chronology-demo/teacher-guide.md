@@ -1,6 +1,6 @@
 # Teacher guide — The Mill Fire
 
-**One file. Fifteen minutes. No accounts, no wifi needed.**
+**One file. About fifteen minutes of play, thirty minutes with the briefing and debrief. No accounts, no wifi needed.**
 
 ## What the game argues
 
@@ -18,7 +18,9 @@ is sometimes the lazy answer rather than the honest one.
 Three rounds.
 
 1. **Order four papers.** A carpenter's bill, a lease, a private letter, and parish minutes.
-   None is dated. Each one assumes something another one describes happening. Students move
+   None is dated. Each one assumes something another one describes happening: the bill is
+   still unpaid and does not know who the tenant will be, and the lease says the carpenter has
+   been paid. Students move
    the cards up and down and check their order; the game marks each card and explains the
    clue that fixes its place.
 2. **Order three more, and meet the trap.** A petition, a rent roll, and a town chronicle. The

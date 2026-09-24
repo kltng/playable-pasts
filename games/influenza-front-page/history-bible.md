@@ -1,6 +1,7 @@
 > **Gallery copy.** This is the version 2 history bible from the game's source project, followed
 > by the historical-content audit of 7 September 2026 that it refers to. File names have been
-> changed to match the gallery folder; nothing else has been altered. The audit's references to
+> changed to match the gallery folder. The gallery changes of 24 September 2026 are listed at
+> the end, under "Gallery changes"; nothing else has been altered. The audit's references to
 > `src/content.json` describe the source project, whose content is compiled into the `GAME_DATA`
 > block of `game.html`.
 
@@ -37,7 +38,7 @@ The Library of Congress describes Chronicling America newspapers as public domai
 
 ## Verification scope and source layers
 
-The September 2026 audit visually inspected all eight embedded crops and checked the relevant readings for NEWS-001, NEWS-002, NEWS-007, NEWS-011, NEWS-012, NEWS-015, NEWS-017, NEWS-018, and the reveal. It did not independently inspect every inside page or re-transcribe all eighteen cards. NEWS-003’s Water Bureau passage is outside the supplied October 3 crop; that image does not verify its 100-worker figure.
+The September 2026 audit visually inspected all eight embedded crops and checked the relevant readings for NEWS-001, NEWS-002, NEWS-007, NEWS-011, NEWS-012, NEWS-015, NEWS-017, NEWS-018, and the reveal. It did not independently inspect every inside page or re-transcribe all eighteen cards. NEWS-003’s Water Bureau passage is outside the supplied October 3 crop; that image does not verify its 100-worker figure. Since 24 September 2026 the game no longer attaches the October 3 crop to NEWS-003 (`scanId` is `null`), so the card shows the “no image is embedded” notice instead.
 
 | Layer | Provenance and appropriate use |
 |---|---|
@@ -68,7 +69,7 @@ No independently audited Oct. 11 narrative is inserted here. Later mortality doe
 
 ## People, places, and representation
 
-Dr. Wilmer Krusen appears as Philadelphia’s health director and a recurring source of orders, assessments, and figures. His institutional position matters: an attributed statement establishes what the paper represents an official as saying, not that the underlying inference is settled.
+Dr. Wilmer Krusen (the game’s readings give only “Dr. Krusen” or “Director Krusen”; the first name is model recall, unverified, see C-029) appears as Philadelphia’s health director and a recurring source of orders, assessments, and figures. His institutional position matters: an attributed statement establishes what the paper represents an official as saying, not that the underlying inference is settled.
 
 The selected reports also discuss police, hospitals, nurses, medical students, courts, liquor establishments, and clergy. The October 9 crop names Bishop Philip M. Rhinelander in its explanation of Episcopal practice. Reports can make institutions visible without showing everyone’s experience of them.
 
@@ -76,7 +77,7 @@ The main setting is Philadelphia. NEWS-011 concerns Chester. NEWS-008 is identif
 
 ## Claims ledger
 
-**Crop-checked** means visible wording or numbers were checked, not the underlying claim independently proved. **Retained reading** means the previous source attribution remains but the particular passage was not independently checked against its printed page in this audit.
+**Crop-checked** means visible wording or numbers were checked, not the underlying claim independently proved. **Retained reading** means the previous source attribution remains but the particular passage was not independently checked against its printed page in this audit. **Model recall (unverified)** means background the agent supplied from its own knowledge, not from any listed source. The game labels these sentences in the text itself. An instructor should check them before teaching them as fact.
 
 | Claim ID | Current claim or question | Source and status | Used by |
 |---|---|---|---|
@@ -105,6 +106,10 @@ The main setting is Philadelphia. NEWS-011 concerns Chester. NEWS-008 is identif
 | C-023 | Six column units expose prominence and omission | Modeling assumption, not the paper’s actual production budget | Page building |
 | C-024 | Students justify a claim stance rather than match a concealed ideal | Pedagogical rule | Editorial reasoning |
 | C-025 | Different defensible editorial pages can coexist | Pedagogical principle; no historical-prediction winner | Debrief |
+| C-026 | In 1918 many physicians were away in military service, so home-front doctors were in short supply | **Model recall (unverified).** Not in the retained NEWS-009 reading or any listed source. Labelled in the card's context note | NEWS-009 context |
+| C-027 | “Over the top” was First World War slang for leaving the trenches to attack | **Model recall (unverified).** Not stated in any listed source. Labelled in the card's context note | NEWS-015 context |
+| C-028 | The epidemic reduced trading activity in the financial district | **Model recall (unverified).** The retained NEWS-014 reading mentions only absences. Labelled in the card's context note | NEWS-014 context |
+| C-029 | The health director's first name was Wilmer | **Model recall (unverified).** The game's readings name only “Krusen”. Used in this bible only, not in the game | This file |
 
 NEWS-014’s financial-district reading retains its SRC-004 p. 14 citation. Its old link to C-014 was erroneous and is removed: citywide case figures do not substantiate that market-column account.
 
@@ -173,3 +178,28 @@ These are the newspaper pages corresponding to the supplied archival crops. The 
 ### Remaining limits for instructors
 
 The core corpus is one commercial newspaper. Repeated reports from it are not independent agreement across Philadelphia’s press. Numerical claims remain what the paper reported, not validated epidemiological measurements. The internally verified cards are NEWS-001, NEWS-002, NEWS-007, NEWS-011, NEWS-012, NEWS-015, NEWS-017, and NEWS-018, plus the reveal. The remaining editorial readings need a fresh page-level transcription audit before exact wording is used in scholarly quotation. Current labels expose that limitation rather than silently certifying it.
+
+---
+
+## Gallery changes — 24 September 2026
+
+These changes were made to the gallery copy. They do not come from the source project.
+
+- **Images recompressed.** The eight embedded crops were scaled to 80% of their earlier pixel
+  size (for example 900 to 720 pixels wide) and saved again as progressive JPEG at quality 60.
+  This brought `game.html` from 5.06 MB to about 2.88 MB. The September 7 audit above was done
+  on the earlier, larger images. The agent compared crops of the October 10 and October 12
+  figures at both sizes (see `test-ledger.md`); a full re-reading of every crop at the new size
+  has not been done.
+- **NEWS-003 no longer shows an image.** Its passage is outside the October 3 crop, so the crop
+  was removed from that card.
+- **Model recall labelled.** Three context notes (NEWS-009, NEWS-014, NEWS-015) contained
+  background not supported by any listed source. Each is now labelled "model recall
+  (unverified)" in the game, and recorded as C-026 to C-028 above. C-029 records the same for
+  the health director's first name in this file. Other context notes were not re-audited
+  against the crops in this pass.
+- **Timings.** The in-game "How to play" stage times now match the teacher guide's sixty-minute
+  plan (8, 10, 15, 7, 12 minutes).
+- **Sources screen.** It referred to a `HISTORY-AUDIT.md` file that is not in the gallery folder.
+  It now points to this file.
+

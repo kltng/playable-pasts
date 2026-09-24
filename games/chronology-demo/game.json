@@ -3,14 +3,14 @@
   "title": "The Mill Fire",
   "subtitle": "A chronology and causation warm-up",
   "emoji": "🔥",
-  "summary": "Seven undated papers about a mill that burned. Students put them in the order they were written, using only what each one takes for granted, then decide how much the sequence lets them say about why it burned.",
+  "summary": "Seven undated papers about a mill that burned. In about fifteen minutes of play, students put them in the order they were written, using only what each one takes for granted, then decide how much the sequence lets them say about why it burned.",
   "learning_mode": "Chronology & causation",
   "game_form": "Card-ordering puzzle",
   "period": "Not period-specific",
   "region": "Not place-specific",
   "language": "en",
   "level": "Any — intro survey upwards",
-  "session_minutes": 15,
+  "session_minutes": 30,
   "social_topology": "Individual copies, or pairs on one device",
   "players_per_instance": 1,
   "contributor": "Playable Pasts (demonstration)",
@@ -27,17 +27,19 @@
     {
       "id": "manual-offline",
       "status": "passed",
-      "note": "Opened as a file:// URL and played to the ending; the page loaded no resources beyond itself."
+      "note": "Opened as a file:// URL and played to the ending; the page loaded no resources beyond itself.",
+      "tested_by": "agent"
     },
     {
       "id": "manual-keyboard",
       "status": "passed",
-      "note": "Rounds one and three were played with Tab and Enter only. Every control was reachable, focus stayed on the moved card's button after each move, and a visible outline showed at each step."
+      "note": "Rounds one and three were played with Tab and Enter only on 2026-09-14. On 2026-09-24, after the fixes, round one and the Sources screen round trip were played again with Tab, Shift+Tab, and Enter only in Chrome. Every control was reachable, focus stayed on the moved card's button after each move, and a visible outline showed at each step. An agent ran these, not a person.",
+      "tested_by": "agent"
     },
     {
       "id": "manual-timing",
       "status": "untested",
-      "note": "Estimated at 5-8 minutes from an 870-word path plus the ordering moves, not timed with a player."
+      "note": "Estimated at 5-8 minutes of play from an 870-word path plus the ordering moves, not timed with a player. session_minutes (30) is the full plan with briefing and debrief."
     },
     {
       "id": "manual-classroom-setup",
@@ -52,7 +54,8 @@
     {
       "id": "manual-debrief",
       "status": "passed",
-      "note": "Five debrief questions ship on the ending screen."
+      "note": "Five debrief questions ship on the ending screen.",
+      "tested_by": "agent"
     }
   ],
   "provenance_note": "This game uses no historical sources at all. Every paper in it is invented to carry two specific problems: dating undated documents from their internal cross-references, and separating the date a document was written from the date of what it describes. It is a method exercise, not a history lesson.",
@@ -63,13 +66,13 @@
     "warm-up",
     "no sources needed",
     "demonstration",
-    "15 minutes"
+    "30 minutes"
   ],
   "validation": {
     "verdict": "ready-for-your-tests",
-    "checked_at": "2026-09-14",
+    "checked_at": "2026-09-24",
     "blocking": 0,
     "warnings": 0,
-    "file_sha256": "0cf2df17a39fbeb6f0766954f1cf6a945cafdc6574c1c61af9d97749e2efc029"
+    "file_sha256": "a0ad0e6e5780d9a6c127fabc96d03a40f505af8ac5a0a5e0e49996989cd8db07"
   }
 }

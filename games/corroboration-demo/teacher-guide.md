@@ -1,6 +1,6 @@
 # Teacher guide — The Grain Shipment
 
-**One file. Ten minutes. No accounts, no wifi needed.**
+**One file. About ten minutes of play, twenty-five minutes with the briefing and debrief. No accounts, no wifi needed.**
 
 ## What the game argues
 

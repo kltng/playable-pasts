@@ -34,12 +34,12 @@ const GAME_DATA = {
       docs: [
         { id: "A", label: "Carpenter's bill",
           kind: "Invoice, addressed to the mill",
-          text: "For a new wheel, hung at the mill this spring as the widow ordered after her husband's death: six pounds. The bearing must be greased each week, else it will run hot.",
-          clue: "It describes the wheel being hung. Every other paper here treats the new wheel as already there." },
+          text: "For a new wheel, hung at the mill this spring as the widow ordered after her husband's death: six pounds, not yet paid. The bearing must be greased each week, else it will run hot. Whoever takes the mill should be told.",
+          clue: "The carpenter is still waiting to be paid, and nobody yet knows who will take the mill ('whoever takes the mill'). The lease names the tenant and says the carpenter has been paid, so the bill comes first." },
         { id: "B", label: "Lease of the mill",
           kind: "Legal agreement between the widow and a new tenant",
-          text: "The widow lets the mill to Thomas the miller, with the wheel newly hung this spring, for seven years. Thomas shall keep the sluice full and the wheel greased.",
-          clue: "The wheel is 'newly hung', so this comes after the bill. Thomas is only now becoming the tenant, and nothing has burned." },
+          text: "The widow lets the mill to Thomas the miller, with the wheel newly hung this spring and the carpenter paid for it, for seven years. Thomas shall keep the sluice full and the wheel greased.",
+          clue: "The carpenter has been paid, so this comes after his bill. Thomas is only now becoming the tenant, and nothing has burned." },
         { id: "C", label: "Letter from the miller's wife to her sister",
           kind: "Private letter",
           text: "The fire took the roof and half the wheel in the night. It started at the wheel-side wall. The neighbours press us to ask the parish for help, but Thomas will not ask yet.",
@@ -49,7 +49,7 @@ const GAME_DATA = {
           text: "Agreed: a collection for Thomas the miller and his family, burned out. Some say he was drunk and careless with his lamp. He denies it.",
           clue: "The parish is now acting on a request the letter says had not yet been made. Last." }
       ],
-      why: "The bill hangs the wheel; the lease calls it new; the letter reports the fire but says the parish has not been asked; the minutes record the parish helping. No paper carries a date, but each one takes for granted something another one describes happening. That chain is the whole method."
+      why: "The bill is still unpaid and does not know who the tenant will be; the lease names the tenant and says the carpenter is paid; the letter reports the fire but says the parish has not been asked; the minutes record the parish helping. No paper carries a date, but each one takes for granted something another one describes happening. That chain is the whole method."
     },
     {
       type: "order",
@@ -58,7 +58,7 @@ const GAME_DATA = {
       docs: [
         { id: "E", label: "Petition from Thomas to the lord of the manor",
           kind: "Formal request",
-          text: "Your tenant Thomas begs timber from the wood to rebuild the mill roof, the fire having left him with a wheel and no house over it.",
+          text: "Your tenant Thomas begs timber from the wood to rebuild the mill roof, the fire having left him half a wheel and no roof over it.",
           clue: "The mill is burned and not yet rebuilt. This is asking for the timber." },
         { id: "F", label: "The lord's rent roll",
           kind: "Internal financial record",
@@ -91,7 +91,7 @@ const GAME_DATA = {
           why: "Two documents repeat it; neither witnessed it. The minutes say 'some say', which is the parish recording a rumour, not a finding. The chronicle was written decades later from memory, in a town where that rumour had been circulating since the minutes. Put in order, the chronicle is downstream of the gossip, not independent of it. That is one claim, not two." },
         { text: "The evidence points to the wheel running hot, but that is an inference from three papers, not something any of them says.",
           correct: true,
-          why: "The carpenter warned that the bearing would run hot without grease. The lease made greasing the tenant's duty. The wife, the only person writing from inside the mill within days, places the fire at the wheel-side wall at night, when nobody would be working there with a lamp. None of these was written to explain the fire, which is exactly why they are worth more than the two that were. It is still an inference. State it as one." },
+          why: "The carpenter warned that the bearing would run hot without grease. The lease made greasing the tenant's duty. The wife, the only person writing from inside the mill within days, says the fire started at the wheel-side wall, which is where the bearing is. That fits a hot bearing. It does not rule out a lamp, but no paper written close to the fire puts a lamp at that wall. None of these was written to explain the fire, which is exactly why they are worth more than the two that were. It is still an inference. State it as one." },
         { text: "Nothing here can tell us the cause. Every account is second-hand or interested.",
           correct: false,
           why: "This is the over-correction. It is true that no paper states the cause and that the parish and chronicle are repeating hearsay. But the carpenter, the lease, and the letter were written for other purposes, by different people, at different times, and they fit a single mechanism. Historians do not need a confession to argue a probable cause. They need independent pieces that fit, and they need to say 'probably'." }
@@ -139,7 +139,7 @@ const GAME_DATA = {
     --card: #fffefa;
     --ink: #1d1b17;
     --soft: #585245;
-    --faint: #88816f;
+    --faint: #6b6555;
     --rule: #dcd6c7;
     --accent: #375c73;
     --accent-soft: #e4ecf1;
@@ -151,7 +151,7 @@ const GAME_DATA = {
   @media (prefers-color-scheme: dark) {
     :root {
       --paper: #14161a; --card: #1c1f24; --ink: #e8e6df; --soft: #aeaa9e;
-      --faint: #85826f; --rule: #33373e; --accent: #8fb6cf; --accent-soft: #1f2b34;
+      --faint: #9a9682; --rule: #33373e; --accent: #8fb6cf; --accent-soft: #1f2b34;
       --good: #87c9a3; --good-soft: #1b2a21; --bad: #ef9483; --bad-soft: #33201c;
     }
   }
@@ -207,7 +207,7 @@ const GAME_DATA = {
   .options { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 10px; }
   .options button {
     width: 100%; text-align: left;
-    font: 400 16px/1.45 inherit;
+    font-family: inherit; font-size: 1rem; font-weight: 400; line-height: 1.45;
     background: var(--card); color: var(--ink);
     border: 1px solid var(--rule); border-radius: 4px;
     padding: 14px 16px; cursor: pointer;
@@ -224,14 +224,14 @@ const GAME_DATA = {
   .verdict.right .label { color: var(--good); }
   .verdict.wrong .label { color: var(--bad); }
   .btn {
-    font: 600 16px/1 inherit;
+    font-family: inherit; font-size: 1rem; font-weight: 600; line-height: 1;
     background: var(--accent); color: var(--paper);
     border: 1px solid var(--accent); border-radius: 4px;
     padding: 12px 20px; cursor: pointer;
   }
   .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
   .btn.ghost:hover:not(:disabled) { background: var(--accent-soft); }
-  .btn.small { font-size: 14px; padding: 8px 12px; }
+  .btn.small { font-size: 1rem; padding: 8px 12px; }
   .btn:disabled { opacity: 0.45; cursor: default; }
   .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.6rem; }
   :where(button, a, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -250,7 +250,7 @@ const GAME_DATA = {
     font-size: 0.85rem; color: var(--faint);
     display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center;
   }
-  footer.bottom button { font: 400 0.85rem/1 inherit; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
+  footer.bottom button { font-family: inherit; font-size: 1rem; font-weight: 400; line-height: 1.2; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: no-preference) {
     .verdict, .doc { transition: border-color 0.15s ease, background-color 0.15s ease; }
@@ -269,7 +269,7 @@ const GAME_DATA = {
   <footer class="bottom">
     <span>A Playable Pasts demonstration.</span>
     <button type="button" id="to-sources">Sources &amp; assumptions</button>
-    <button type="button" id="to-restart">Play again</button>
+    <button type="button" id="to-restart">Restart from the beginning</button>
   </footer>
 </div>
 
@@ -284,6 +284,8 @@ const GAME_DATA = {
   let score = 0;
   let order = [];       // for ordering rounds: indexes into r.docs, in the player's current order
   let answered = false;
+  let savedScreen = null;   // the screen the student left to read Sources & assumptions
+  let onSources = false;
 
   document.title = D.title + " — " + D.subtitle;
   document.getElementById("game-title").textContent = D.title;
@@ -358,6 +360,8 @@ const GAME_DATA = {
   /* ---------------- screens ---------------- */
 
   function showIntro() {
+    onSources = false;
+    savedScreen = null;
     stage.replaceChildren();
     stage.appendChild(el("div", { class: "notice" }, [
       el("p", { text: "Every paper in this game is invented. It is a method exercise, not a history lesson about a real mill." })
@@ -531,6 +535,10 @@ const GAME_DATA = {
   }
 
   function showSources() {
+    // Keep the screen the student was on, with its state, so "Back to the game"
+    // returns there instead of restarting. Opening Sources twice keeps the first one.
+    if (!onSources) savedScreen = Array.from(stage.childNodes);
+    onSources = true;
     stage.replaceChildren();
     const heading = el("h2", { text: "Sources & assumptions" });
     stage.appendChild(heading);
@@ -552,9 +560,18 @@ const GAME_DATA = {
     stage.appendChild(el("p", { text: D.teacherNote }));
 
     const back = el("button", { class: "btn", type: "button", text: "Back to the game" });
-    back.addEventListener("click", showIntro);
+    back.addEventListener("click", backToGame);
     stage.appendChild(el("div", { class: "row" }, [back]));
     focusScreen(heading);
+  }
+
+  function backToGame() {
+    const saved = savedScreen;
+    onSources = false;
+    savedScreen = null;
+    if (!saved || !saved.length) { showIntro(); return; }
+    stage.replaceChildren.apply(stage, saved);
+    focusScreen(stage.querySelector("h2") || stage.firstElementChild);
   }
 
   document.getElementById("to-sources").addEventListener("click", showSources);

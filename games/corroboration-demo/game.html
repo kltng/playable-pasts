@@ -42,7 +42,7 @@ const GAME_DATA = {
           why: "The chronicle was written forty years after the event by someone with a reason to make the city sound impressive. It is the only account that says twenty, and it contradicts both records written at the time. A later, rounder, grander number is the classic shape of a story growing in the telling." },
         { text: "Nine barges — the merchant is a first-hand witness.",
           correct: false,
-          why: "Look at his own words: 'I am told'. He is repeating what reached him three days later, in another town. He is an eyewitness to the gossip, not to the departure." },
+          why: "Look at his own words: 'I am told'. He is repeating what reached him, and he wrote three days later. He is an eyewitness to the gossip, not to the departure." },
         { text: "Eleven left, and nine continued — the tally and the letter agree once you read them carefully.",
           correct: true,
           why: "This is corroboration rather than agreement. The clerk counted eleven leaving and two turning back. The merchant heard that nine got away. Those are not two rival numbers; they are the same event described at different moments. The documents that were made closest to the event, for practical rather than flattering purposes, fit together." }
@@ -67,7 +67,7 @@ const GAME_DATA = {
           why: "Perhaps. But notice what the bargemen were doing when they wrote: asking the council for money. Naming a rich and identifiable culprit makes their claim collectable. That does not make them liars — it makes their account interested. You would want something that is not paid for by the answer." },
         { text: "Masterless men, as the Baron says.",
           correct: false,
-          why: "The Baron is at least as interested as the bargemen, and in the opposite direction. His explanation is also unfalsifiable: anyone could have worn the colours, so no evidence could ever convict him. An argument that cannot fail is not strong; it is unfalsifiable." },
+          why: "The Baron is at least as interested as the bargemen, and in the opposite direction. His explanation also cannot be tested: anyone could have worn the colours, so no evidence could ever convict him. An explanation that nothing could disprove is not strong. It is simply out of reach of the evidence." },
         { text: "The surviving evidence cannot settle it — and the gap in the register is why.",
           correct: true,
           why: "Both accounts are interested, and the one record that was not written to win an argument is missing for exactly those two days. This is the honest answer, and it is the most useful one: it tells you what a new source would have to look like to change your mind. Historians spend more time here than students expect." }
@@ -139,7 +139,7 @@ const GAME_DATA = {
     --card: #fffdf8;
     --ink: #1f1c16;
     --soft: #5d5546;
-    --faint: #8d8574;
+    --faint: #6b6353;
     --rule: #ddd4c2;
     --accent: #7d3a1f;
     --accent-soft: #f3e6de;
@@ -151,7 +151,7 @@ const GAME_DATA = {
   @media (prefers-color-scheme: dark) {
     :root {
       --paper: #17150f; --card: #201d16; --ink: #ece6d7; --soft: #b2aa96;
-      --faint: #8a8272; --rule: #38342a; --accent: #e59a7d; --accent-soft: #2f201a;
+      --faint: #9d9583; --rule: #38342a; --accent: #e59a7d; --accent-soft: #2f201a;
       --good: #87c9a3; --good-soft: #1b2a21; --bad: #ef9483; --bad-soft: #33201c;
     }
   }
@@ -207,7 +207,7 @@ const GAME_DATA = {
   .options { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 10px; }
   .options button {
     width: 100%; text-align: left;
-    font: 400 16px/1.45 inherit;
+    font-family: inherit; font-size: 1rem; font-weight: 400; line-height: 1.45;
     background: var(--card); color: var(--ink);
     border: 1px solid var(--rule); border-radius: 4px;
     padding: 14px 16px; cursor: pointer;
@@ -230,7 +230,7 @@ const GAME_DATA = {
   .verdict.right .label { color: var(--good); }
   .verdict.wrong .label { color: var(--bad); }
   .btn {
-    font: 600 16px/1 inherit;
+    font-family: inherit; font-size: 1rem; font-weight: 600; line-height: 1;
     background: var(--accent); color: var(--paper);
     border: 1px solid var(--accent); border-radius: 4px;
     padding: 12px 20px; cursor: pointer;
@@ -260,9 +260,10 @@ const GAME_DATA = {
     display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center;
   }
   footer.bottom button {
-    font: 400 0.85rem/1 inherit; background: none; border: 0; padding: 0;
+    font-family: inherit; font-size: 1rem; font-weight: 400; line-height: 1.2; background: none; border: 0; padding: 0;
     color: var(--accent); text-decoration: underline; cursor: pointer;
   }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: no-preference) {
     .verdict, .doc { transition: border-color 0.15s ease, background-color 0.15s ease; }
@@ -275,12 +276,13 @@ const GAME_DATA = {
     <p class="subtitle" id="game-subtitle">A corroboration warm-up</p>
   </header>
 
-  <main id="stage" aria-live="polite"></main>
+  <main id="stage"></main>
+  <p id="announce" class="visually-hidden" aria-live="polite"></p>
 
   <footer class="bottom">
     <span>A Playable Pasts demonstration.</span>
     <button type="button" id="to-sources">Sources &amp; assumptions</button>
-    <button type="button" id="to-restart">Play again</button>
+    <button type="button" id="to-restart">Restart from the beginning</button>
   </footer>
 </div>
 
@@ -290,9 +292,12 @@ const GAME_DATA = {
 
   const D = GAME_DATA;
   const stage = document.getElementById("stage");
+  const announce = document.getElementById("announce");
   let round = 0;
   let score = 0;
   let answered = false;
+  let savedScreen = null;   // the screen the student left to read Sources & assumptions
+  let onSources = false;
 
   document.title = D.title + " — " + D.subtitle;
   document.getElementById("game-title").textContent = D.title;
@@ -311,13 +316,16 @@ const GAME_DATA = {
     return node;
   }
 
+  /** Short status messages for screen readers. Focus movement handles the rest. */
+  function say(text) { announce.textContent = ""; announce.textContent = text; }
+
   function paragraphs(text) {
     return text.split("\n\n").map(function (p) { return el("p", { text: p }); });
   }
 
   function progress() {
     const wrap = el("p", { class: "progress" });
-    wrap.appendChild(document.createTextNode("Document " + (round + 1) + " of " + D.rounds.length));
+    wrap.appendChild(document.createTextNode("Round " + (round + 1) + " of " + D.rounds.length));
     D.rounds.forEach(function (_, i) {
       const cls = i < round ? "pip done" : i === round ? "pip now" : "pip";
       wrap.appendChild(el("span", { class: cls, "aria-hidden": "true" }));
@@ -341,6 +349,8 @@ const GAME_DATA = {
   }
 
   function showIntro() {
+    onSources = false;
+    savedScreen = null;
     stage.replaceChildren();
     const box = el("div", { class: "notice" }, [
       el("p", { text: "Every document in this game is invented. It is a method exercise, not a history lesson about a real shipment." })
@@ -365,7 +375,7 @@ const GAME_DATA = {
       stage.appendChild(el("div", { class: "doc" }, [
         el("h3", {}, [
           el("span", { class: "tag", text: doc.id }),
-          document.createTextNode(doc.label)
+          document.createTextNode(" " + doc.label)
         ]),
         el("p", { class: "kind", text: doc.kind }),
         el("blockquote", { text: "“" + doc.text + "”" })
@@ -405,7 +415,7 @@ const GAME_DATA = {
     const last = round === D.rounds.length - 1;
     const next = el("button", {
       class: "btn", type: "button",
-      text: last ? "See where you stand" : "Next file"
+      text: last ? "See where you stand" : "Next round"
     });
     next.addEventListener("click", function () {
       if (last) showEnding();
@@ -413,6 +423,7 @@ const GAME_DATA = {
     });
     stage.appendChild(el("div", { class: "row" }, [next]));
     next.focus();
+    say((opt.correct ? "Well judged." : "Not quite.") + " The explanation is above the " + (last ? "See where you stand" : "Next round") + " button.");
   }
 
   function showEnding() {
@@ -438,6 +449,10 @@ const GAME_DATA = {
   }
 
   function showSources() {
+    // Keep the screen the student was on, with its state, so "Back to the game"
+    // returns there instead of restarting. Opening Sources twice keeps the first one.
+    if (!onSources) savedScreen = Array.from(stage.childNodes);
+    onSources = true;
     stage.replaceChildren();
     const heading = el("h2", { text: "Sources & assumptions" });
     stage.appendChild(heading);
@@ -460,9 +475,18 @@ const GAME_DATA = {
     stage.appendChild(el("p", { text: D.teacherNote }));
 
     const back = el("button", { class: "btn", type: "button", text: "Back to the game" });
-    back.addEventListener("click", showIntro);
+    back.addEventListener("click", backToGame);
     stage.appendChild(el("div", { class: "row" }, [back]));
     focusScreen(heading);
+  }
+
+  function backToGame() {
+    const saved = savedScreen;
+    onSources = false;
+    savedScreen = null;
+    if (!saved || !saved.length) { showIntro(); return; }
+    stage.replaceChildren.apply(stage, saved);
+    focusScreen(stage.querySelector("h2") || stage.firstElementChild);
   }
 
   document.getElementById("to-sources").addEventListener("click", showSources);

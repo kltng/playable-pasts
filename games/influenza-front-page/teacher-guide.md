@@ -4,10 +4,17 @@
 > audit), and the QA report has become `test-ledger.md`. The source project, with its build
 > script and Playwright tests, is not part of the gallery folder. The game's content is also
 > editable directly: it sits in a JSON block marked `GAME_DATA` near the top of `game.html`.
+>
+> On 24 September 2026 the gallery copy was changed: the embedded images were recompressed to
+> bring the file under 3 MB, NEWS-003 no longer shows an image, three context notes label model
+> recall, and the in-game stage times now match the sixty-minute plan below. This guide was
+> updated to match. See `test-ledger.md` and the end of `history-bible.md`.
 
 # The Influenza Front Page — Teacher Guide
 
 Version 2 classroom rules · Usually 40–60 minutes · One offline HTML file
+
+The gallery listing gives 60 minutes: the full lesson below, with briefing and debrief. The in-game "How to play" screen uses the same stage times as this plan.
 
 ## The learning task
 
@@ -129,6 +136,8 @@ Prompt: “What exactly does the new material change: the event you reported, yo
 | 41–48 | Read the reveal; qualify, replace, or affirm one item with reasons. |
 | 48–60 | Export and compare pages; discuss the strongest disagreement. |
 
+The in-game "How to play" screen gives the same stage times: 8, 10, 15, 7, and 12 minutes, after about 8 minutes of briefing and setup.
+
 For forty minutes, introduce the roles and controls before class, use five minutes for dossier pulls, seven for research, twelve for building, six for revision, and ten for introduction and debrief combined. Shorten discussion, not access to necessary reading accommodations. The optional manual pace timer is a facilitation aid: it does not fail the game or grade speed.
 
 For twenty minutes, run a projected whole-class editorial conference in Guided mode. Let students vote on research questions, demonstrate one check, and jointly build one page. This is a guided demonstration, not a substitute for an independent full playthrough; allow the written rationale or reveal discussion to continue outside class if needed.
@@ -149,7 +158,12 @@ Use the following qualitative feedback guide alongside the exported record:
 | Scope and visibility | Names geographical limits and missing perspectives without inventing testimony | “Who appears only as a number, and who receives a name or quotation?” |
 | Revision | Identifies relevant later evidence and gives a reason to alter or retain one item | “Would this still be a reasonable choice without hindsight?” |
 
-Further debrief questions:
+There are two sets of discussion questions. They are different on purpose, and neither replaces the other.
+
+- **In the game (five questions).** The ending screen has a panel called "Hold the editorial conference". Its five questions are about the team's own page: which check changed your wording, which omitted source another team would print, what the revision did, whose experience is still invisible, and how the six-column limit and the check budget shaped the argument.
+- **In this guide only (six questions).** The list below is for the instructor to lead a whole-class discussion. Students do not see it in the game.
+
+Further debrief questions (this guide only):
 
 1. Did an image, official title, confident headline, or fluent reading make a source seem more authoritative? Was that authority warranted?
 2. Which research check changed an actual editorial decision? Which supplied information that was interesting but not decisive?
@@ -178,10 +192,14 @@ Ask students to submit the full editorial text export. Add the printed page if l
 - Small scan: use the paired editor reading and the zoom or reading controls; discuss the image only at a useful scale.
 - Print layout unexpected: inspect print preview before saving, and retain the text export as the audit record.
 
-Version 2 passed the current Chromium regression suite: complete play, source locks, three- to five-story layouts, all revision choices, reloads, checkpoint import/export, invalid-save recovery, and print preparation. A separate complete playthrough used only keyboard navigation and text entry. Layout checks used emulated widths of 390, 768, and 1440 pixels; these are not real-device or universal assistive-technology certification. See `test-ledger.md` for exact scope. Instructors still need to test LMS behavior, screen readers, classroom legibility, and discussion pace on their own setup.
+Version 2 passed the source project's automated Chromium regression suite: complete play, source locks, three- to five-story layouts, all revision choices, reloads, checkpoint import/export, invalid-save recovery, and print preparation. A separate automated script (the source project's keyboard test) completed a full playthrough using only keyboard input and typed text; no person has played it by keyboard. These test scripts are not included in the gallery folder, so their results cannot be re-run from here. Layout checks used emulated widths of 390, 768, and 1440 pixels; these are not real-device or universal assistive-technology certification. See `test-ledger.md` for exact scope. Instructors still need to test LMS behavior, screen readers, classroom legibility, and discussion pace on their own setup.
+
+## Licence and rights
+
+The game layer, meaning its code, rules, prompts, readings, and other text, is licensed CC BY 4.0. The eight newspaper crops are not covered by that licence. They come from 1918 issues of the *Evening Public Ledger* in the Library of Congress Chronicling America collection (LCCN sn83045211), and are public domain: the Library describes these newspapers as public domain or having no known copyright restrictions. Check each item's rights statement before reusing it elsewhere.
 
 ## Editing and disclosure
 
-The source files separate game content from generated teaching prompts and interface logic. Edit the source files, then use the project's build script to regenerate the standalone HTML files; do not treat an already built HTML file as the only editable copy. Preserve source IDs, dates, page references, and links when changing a reading. Label summaries honestly, record substantive corrections, and do not introduce a quotation without checking the original text.
+The gallery folder contains only the finished file, `game.html`. The source project's separate files and its build script are not included. To change the content, open `game.html` in a plain text editor and edit the JSON block marked `GAME_DATA` near the top. Change only the text between quotation marks, keep every comma, bracket, and quotation mark, save, and reopen the file to check it. The images are long `data:` strings inside that block; leave them alone unless you are replacing an image. Preserve source IDs, dates, page references, and links when changing a reading. Label summaries honestly, record substantive corrections, and do not introduce a quotation without checking the original text.
 
 This AI-assisted teaching artifact includes generated rules, prompts, readings, and interface text alongside historical material. The source publication is not the author of those teaching layers. Consult the source repository, History Bible, and archival rights statements for provenance and reuse; this guide does not grant rights in material owned by others.

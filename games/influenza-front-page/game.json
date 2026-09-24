@@ -15,8 +15,8 @@
   "players_per_instance": 4,
   "contributor": "Playable Pasts (demonstration)",
   "contributed_at": "2026-09-14",
-  "license": "CC BY 4.0",
-  "sources_rights": "Newspaper crops are from the Library of Congress Chronicling America collection (Evening Public Ledger, LCCN sn83045211), which the Library describes as public domain or having no known copyright restrictions. Consult each item's rights statement before reuse. The game's readings are editorial paraphrases, not transcriptions.",
+  "license": "CC BY 4.0 for the game layer (code, rules, readings, and other text). The newspaper crops are public domain and are not covered by this licence",
+  "sources_rights": "The eight newspaper crops are from 1918 issues of the Evening Public Ledger in the Library of Congress Chronicling America collection (LCCN sn83045211). They are public domain: the Library describes these newspapers as public domain or having no known copyright restrictions. Consult each item's rights statement before reuse. The game's readings are editorial paraphrases, not transcriptions.",
   "files": {
     "game": "game.html",
     "teacher_guide": "teacher-guide.md",
@@ -27,17 +27,19 @@
     {
       "id": "manual-offline",
       "status": "passed",
-      "note": "Opened as a file:// URL in Chrome on 2026-09-14; the page loaded no resources beyond itself. The game's own Playwright suite, re-run the same day, also checks for network requests during a full play-through and found none."
+      "note": "Opened as a file:// URL in Chrome on 2026-09-14; the page loaded no resources beyond itself. The game's own Playwright suite, re-run the same day, also checks for network requests during a full play-through and found none. That suite is not included in this repository, so its result cannot be reproduced from here.",
+      "tested_by": "agent"
     },
     {
       "id": "manual-keyboard",
       "status": "passed",
-      "note": "The game's Playwright keyboard test was re-run on 2026-09-14 and completed a full game with Tab, Enter, Escape, and typed text only, including dialog focus restoration. No person has played it by keyboard."
+      "note": "The game's Playwright keyboard test was re-run on 2026-09-14 and completed a full game with Tab, Enter, Escape, and typed text only, including dialog focus restoration. That test is not included in this repository, so its result cannot be reproduced from here. On 2026-09-24 an agent drove one stage of the recompressed file by keyboard in Chrome (see test-ledger.md). No person has played it by keyboard.",
+      "tested_by": "automated script"
     },
     {
       "id": "manual-timing",
       "status": "untested",
-      "note": "The teacher guide gives a sixty-minute lesson plan and a forty-minute variant. Nobody has timed a class."
+      "note": "The teacher guide gives a sixty-minute lesson plan and a forty-minute variant; session_minutes is the full sixty-minute lesson. The in-game How to play stage times now match that plan. Nobody has timed a class."
     },
     {
       "id": "manual-classroom-setup",
@@ -52,7 +54,8 @@
     {
       "id": "manual-debrief",
       "status": "passed",
-      "note": "The ending screen has a debrief with descriptive indicators and an exportable editorial record; the teacher guide adds a feedback rubric and six discussion questions."
+      "note": "The ending screen has descriptive indicators, an exportable editorial record, and a panel called Hold the editorial conference with five questions about the team's own page. The teacher guide has a separate set of six whole-class questions and a feedback rubric; students do not see those in the game.",
+      "tested_by": "agent"
     }
   ],
   "provenance_note": "Built from a single newspaper, Philadelphia's Evening Public Ledger, October 3 to 12, 1918, via the Library of Congress. Eighteen editorial readings and eight page crops are embedded. The readings are AI-assisted paraphrases, not diplomatic transcriptions; an audit against the crops corrected five numbers and the history bible says exactly which readings were checked and which were not. The newsroom, the column budget, the research checks, and the staged release of sources are teaching models, not a reconstruction of any editorial meeting.",
@@ -67,10 +70,10 @@
     "team play"
   ],
   "validation": {
-    "verdict": "needs-work",
-    "checked_at": "2026-09-14",
+    "verdict": "ready-for-your-tests",
+    "checked_at": "2026-09-24",
     "blocking": 0,
-    "warnings": 1,
-    "file_sha256": "eed1ea60dbd9f6f0102706939a5f82a9a167e9e53e75331f2182c65902bdfb63"
+    "warnings": 0,
+    "file_sha256": "b5390ac12b9aedef3f709fe17f7c3a6dc679a02c5d6ac5471ed77350856741f8"
   }
 }

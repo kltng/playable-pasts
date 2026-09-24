@@ -30,7 +30,7 @@
     <p class="lede">Four accounts of one event disagree. Students work out which statement the evidence can carry — and meet a round where the honest answer is that it cannot be settled.</p>
     <p class="game-meta">
       <span>Document mystery</span>
-      <span>10 minutes</span>
+      <span>25 minutes</span>
       <span>Individual copies, or pairs on one device</span>
       <span>Any — intro survey upwards</span>
       <span>Contributed by Playable Pasts (demonstration)</span>
@@ -42,30 +42,32 @@
   </section>
 
   <div class="note">
-    <p><strong>Before you teach with it:</strong> this file passed every automated check on the day it was added.
-    That is a statement about the <em>file</em> — self-contained, accessible, honest about its
-    sources. Whether the history is right and the lesson works is yours to judge. Read
+    <p><strong>Before you teach with it:</strong> when the automated check was run on 2026-09-24, this file passed every automated check.
+    That is a statement about the <em>file</em> — self-contained, free of the faults a machine
+    can spot, with a sources screen in place. Whether the history is right and the lesson works
+    is yours to judge. Read
     <em>Sources &amp; evidence</em> below, then
     <a href="../../check/">re-check the file</a> yourself.</p>
   </div>
 
-  <div class="tabs" role="tablist">
-    <button role="tab" id="tab-play" aria-controls="panel-play" aria-selected="true">Play</button>
-    <button role="tab" id="tab-guide" aria-controls="panel-guide" aria-selected="false">Teacher guide</button>
-    <button role="tab" id="tab-bible" aria-controls="panel-bible" aria-selected="false">Sources & evidence</button>
-    <button role="tab" id="tab-ledger" aria-controls="panel-ledger" aria-selected="false">What was tested</button>
+  <div class="tabs" role="tablist" aria-label="About this game">
+    <button type="button" role="tab" id="tab-play" aria-controls="panel-play" aria-selected="true">Play</button>
+    <button type="button" role="tab" id="tab-guide" aria-controls="panel-guide" aria-selected="false" tabindex="-1">Teacher guide</button>
+    <button type="button" role="tab" id="tab-bible" aria-controls="panel-bible" aria-selected="false" tabindex="-1">Sources &amp; evidence</button>
+    <button type="button" role="tab" id="tab-ledger" aria-controls="panel-ledger" aria-selected="false" tabindex="-1">What was tested</button>
   </div>
 
   <div class="tabpanel" role="tabpanel" id="panel-play" aria-labelledby="tab-play">
     <iframe class="play-frame" src="game.html" title="The Grain Shipment"
-      sandbox="allow-scripts allow-downloads"></iframe>
-    <p class="small">Running in a sandbox with no network access and no storage — the same
-    conditions as a locked-down classroom laptop.</p>
+      sandbox="allow-scripts allow-downloads allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
+    <p class="small">The game runs here walled off from this website, and it cannot keep saved
+    progress between visits. This page does not switch off the internet, though. To see the
+    game as a classroom with no wifi would, download it and open it with the wifi off.</p>
   </div>
   <div class="tabpanel" role="tabpanel" id="panel-guide" aria-labelledby="tab-guide" hidden>
     <div class="prose" style="max-width:44rem">
 <h2>Teacher guide — The Grain Shipment</h2>
-<p><strong>One file. Ten minutes. No accounts, no wifi needed.</strong></p>
+<p><strong>One file. About ten minutes of play, twenty-five minutes with the briefing and debrief. No accounts, no wifi needed.</strong></p>
 <h3>What the game argues</h3>
 <p>That the reliability of a source depends on who made it, when, for whom, and what they needed the reader to believe — and that a well-run enquiry sometimes ends in &quot;the evidence cannot settle this.&quot;</p>
 <p>The second point is the one students resist. Round two is built so that every confident answer is wrong.</p>
@@ -113,36 +115,43 @@
   <div class="tabpanel" role="tabpanel" id="panel-ledger" aria-labelledby="tab-ledger" hidden>
     <div class="prose" style="max-width:44rem">
 <h2>Test ledger — The Grain Shipment</h2>
-<p>Artifact: <code>game.html</code>, 22 KB, version 1, 2026-09-10.</p>
+<p>Artifact: <code>game.html</code>, 24 KB, version 2, 2026-09-24 (version 1 was 2026-09-10). Rows 1–17 below were run on version 1. What was re-run on version 2 is listed under &quot;Re-check after the 2026-09-24 fixes&quot; at the end.</p>
 <p>Statuses: <strong>passed</strong> (the check was run and it passed), <strong>untested</strong> (not run — not a pass), <strong>not applicable</strong> (with a reason).</p>
-<div class="table-scroll"><table><thead><tr><th>#</th><th>Check</th><th>Method and environment</th><th>Result</th><th>Evidence</th><th>Tester</th></tr></thead><tbody><tr><td>1</td><td>Self-contained: no external scripts, styles, fonts, or images</td><td>Static analysis, <code>tools/validate.mjs</code></td><td>passed</td><td>0 blocking, 0 warnings</td><td>Agent</td></tr><tr><td>2</td><td>No network requests during play</td><td>Static analysis for network APIs and remote URLs</td><td>passed</td><td>No fetch, XHR, WebSocket, EventSource, or remote URL in the file</td><td>Agent</td></tr><tr><td>3</td><td>No network requests during play</td><td>Live: loaded through the site's checker in Chrome 141 under a Content-Security-Policy of <code>default-src 'none'</code></td><td>passed</td><td>Zero CSP violations reported; the checker's live pass returned &quot;Nothing was fetched from outside&quot;</td><td>Agent</td></tr><tr><td>4</td><td>Runs from disk</td><td>Opened as a <code>file://</code> URL in Chrome; full play-through driven to the ending screen</td><td>passed</td><td><code>performance.getEntriesByType('resource')</code> returned an empty list — the page loaded nothing beyond itself</td><td>Agent</td></tr><tr><td>5</td><td>No AI model or API key dependency</td><td>Static analysis and source read</td><td>passed</td><td>No provider endpoint, SDK, or key present</td><td>Agent</td></tr><tr><td>6</td><td>Sources &amp; assumptions screen present and reachable</td><td>Played to the screen from the footer and the ending</td><td>passed</td><td>Reachable from every screen</td><td>Agent</td></tr><tr><td>7</td><td>Invented content labelled as invented</td><td>Read the screen against the game content</td><td>passed</td><td>Stated in a notice before play, on the Sources screen, and in the ledger table</td><td>Agent</td></tr><tr><td>8</td><td>Keyboard operation and visible focus</td><td>Focused and activated each control without a pointer, checking the computed outline at every step</td><td>passed</td><td>All five controls on the round screen reachable and operable; a visible outline on each. Focus moves to the new question after each choice and to the Next control after answering</td><td>Agent</td></tr><tr><td>9</td><td>No console errors</td><td>Browser console during a full play-through</td><td>passed</td><td>Console clean</td><td>Agent</td></tr><tr><td>10</td><td>Restart works and clears state</td><td>Pressed &quot;Play again&quot; mid-round and after the ending</td><td>passed</td><td>Returns to intro with score reset</td><td>Agent</td></tr><tr><td>11</td><td>Phone-width layout</td><td>Rendered at 390 px wide</td><td>passed</td><td>No horizontal scrolling; controls remain full-width and tappable</td><td>Agent</td></tr><tr><td>12</td><td>Full play-through fits the stated 10 minutes</td><td><strong>Estimated from word count, not timed with a player</strong></td><td><strong>untested</strong></td><td>557 words on one path through, 936 with every explanation read: roughly 3–5 minutes of reading, so 10 minutes is a safe allowance. No person has played it against a clock</td><td>—</td></tr><tr><td>13</td><td>Debrief questions delivered</td><td>Ending screen</td><td>passed</td><td>Five questions present</td><td>Agent</td></tr><tr><td>14</td><td>Reduced-motion preference respected</td><td>Static review of the stylesheet</td><td>passed</td><td>The only transitions in the file sit inside a <code>@media (prefers-reduced-motion: no-preference)</code> block, so they cannot apply when reduced motion is requested</td><td>Agent</td></tr><tr><td>15</td><td>Screen-reader play-through</td><td>—</td><td><strong>untested</strong></td><td>No screen reader was run. Semantic buttons and a live region are used, but that is a static observation, not a test</td><td>—</td></tr><tr><td>16</td><td>Opens on the instructor's classroom computer and LMS</td><td>—</td><td><strong>untested</strong></td><td>Cannot be run from here. This is the instructor's five-minute rehearsal</td><td>—</td></tr><tr><td>17</td><td>Historical accuracy of sources</td><td>—</td><td>not applicable</td><td>The game uses no real sources. See <code>history-bible.md</code></td><td>—</td></tr></tbody></table></div>
+<div class="table-scroll"><table><thead><tr><th>#</th><th>Check</th><th>Method and environment</th><th>Result</th><th>Evidence</th><th>Tester</th></tr></thead><tbody><tr><td>1</td><td>Self-contained: no external scripts, styles, fonts, or images</td><td>Static analysis, <code>tools/validate.mjs</code></td><td>passed</td><td>0 blocking, 0 warnings</td><td>Agent</td></tr><tr><td>2</td><td>No network requests during play</td><td>Static analysis for network APIs and remote URLs</td><td>passed</td><td>No fetch, XHR, WebSocket, EventSource, or remote URL in the file</td><td>Agent</td></tr><tr><td>3</td><td>No network requests during play</td><td>Live: loaded through the site's checker in Chrome 141 under a Content-Security-Policy of <code>default-src 'none'</code></td><td>passed</td><td>Zero CSP violations reported; the checker's live pass returned &quot;Nothing was fetched from outside&quot;</td><td>Agent</td></tr><tr><td>4</td><td>Runs from disk</td><td>Opened as a <code>file://</code> URL in Chrome; full play-through driven to the ending screen</td><td>passed</td><td><code>performance.getEntriesByType('resource')</code> returned an empty list — the page loaded nothing beyond itself</td><td>Agent</td></tr><tr><td>5</td><td>No AI model or API key dependency</td><td>Static analysis and source read</td><td>passed</td><td>No provider endpoint, SDK, or key present</td><td>Agent</td></tr><tr><td>6</td><td>Sources &amp; assumptions screen present and reachable</td><td>Played to the screen from the footer and the ending</td><td>passed</td><td>Reachable from every screen</td><td>Agent</td></tr><tr><td>7</td><td>Invented content labelled as invented</td><td>Read the screen against the game content</td><td>passed</td><td>Stated in a notice before play, on the Sources screen, and in the ledger table</td><td>Agent</td></tr><tr><td>8</td><td>Keyboard operation and visible focus</td><td>Focused and activated each control without a pointer, checking the computed outline at every step</td><td>passed</td><td>All five controls on the round screen reachable and operable; a visible outline on each. Focus moves to the new question after each choice and to the Next control after answering</td><td>Agent</td></tr><tr><td>9</td><td>No console errors</td><td>Browser console during a full play-through</td><td>passed</td><td>Console clean</td><td>Agent</td></tr><tr><td>10</td><td>Restart works and clears state</td><td>Pressed &quot;Play again&quot; mid-round and after the ending</td><td>passed</td><td>Returns to intro with score reset</td><td>Agent</td></tr><tr><td>11</td><td>Phone-width layout</td><td>Rendered at 390 px wide</td><td>passed</td><td>No horizontal scrolling; controls remain full-width and tappable</td><td>Agent</td></tr><tr><td>12</td><td>Full play-through fits the 10 minutes of play in the 25-minute session plan</td><td><strong>Estimated from word count, not timed with a player</strong></td><td><strong>untested</strong></td><td>557 words on one path through, 936 with every explanation read: roughly 3–5 minutes of reading, so 10 minutes is a safe allowance. No person has played it against a clock</td><td>—</td></tr><tr><td>13</td><td>Debrief questions delivered</td><td>Ending screen</td><td>passed</td><td>Five questions present</td><td>Agent</td></tr><tr><td>14</td><td>Reduced-motion preference respected</td><td>Static review of the stylesheet</td><td>passed</td><td>The only transitions in the file sit inside a <code>@media (prefers-reduced-motion: no-preference)</code> block, so they cannot apply when reduced motion is requested</td><td>Agent</td></tr><tr><td>15</td><td>Screen-reader play-through</td><td>—</td><td><strong>untested</strong></td><td>No screen reader was run. Semantic buttons and a live region are used, but that is a static observation, not a test. (In version 1 the &quot;live region&quot; was the whole <code>&lt;main&gt;</code>; version 2 replaces it with a small status region, see below)</td><td>—</td></tr><tr><td>16</td><td>Opens on the instructor's classroom computer and LMS</td><td>—</td><td><strong>untested</strong></td><td>Cannot be run from here. This is the instructor's five-minute rehearsal</td><td>—</td></tr><tr><td>17</td><td>Historical accuracy of sources</td><td>—</td><td>not applicable</td><td>The game uses no real sources. See <code>history-bible.md</code></td><td>—</td></tr></tbody></table></div>
 <h3>Fixed during testing</h3>
 <p>Running the keyboard pass found that focus dropped to <code>&lt;body&gt;</code> every time a screen changed, so a keyboard or screen-reader user was returned to the top of the document after every choice. Each screen now moves focus to its own heading. Row 8 was re-run after the fix.</p>
 <h3>Notes</h3>
 <p>Row 12 is an honest downgrade. An earlier draft of this ledger recorded a timed play-through that had not happened. The word count supports the ten-minute figure, but a word count is not a clock, and nobody has watched a student play this.</p>
 <p>Rows 15 and 16 are the ones that matter to anyone adopting this game. Semantic HTML is a good sign, not a screen-reader test, and nothing here can tell you how your lecture-hall machine will behave.</p>
 <p>Re-run rows 1–14 after any edit to <code>game.html</code>. Editing only the text inside <code>GAME_DATA</code> cannot break rows 1–5, but it can break row 12.</p>
+<h3>Re-check after the 2026-09-24 fixes</h3>
+<p>What changed in version 2:</p>
+<ul><li><strong>Document headings</strong> read &quot;AHarbour tally&quot; because the letter tag and the label had no space between them. A space is now added, as in <em>The Mill Fire</em>.</li><li><strong>Button fonts.</strong> <code>font: … inherit</code> is not valid CSS, so browsers dropped the whole rule and buttons fell back to about 13 px. Replaced with <code>font-family: inherit</code> and <code>font-size: 1rem</code> (16 px).</li><li><strong>Screen-reader announcements.</strong> <code>&lt;main&gt;</code> had <code>aria-live=&quot;polite&quot;</code>, so a screen reader would read the whole screen on every change, on top of focus moving to the heading. That is removed. A small hidden status region now announces only &quot;Well judged.&quot; or &quot;Not quite.&quot; after an answer.</li><li><strong>Contrast.</strong> The faint text colour went from #8d8574 (3.3:1 on the page) to #6b6353 (5.4:1 on the page, 5.8:1 on a card, 4.86:1 on the notice). The dark-mode colour went from #8a8272 (4.4:1 on a card) to #9d9583 (5.65:1). Ratios computed with the WCAG formula.</li><li><strong>Wording.</strong> The progress line says &quot;Round n of 3&quot;, not &quot;Document n of 3&quot;, and the button says &quot;Next round&quot;. The merchant explanation no longer says &quot;in another town&quot;, which no document says. The Baron explanation no longer says &quot;unfalsifiable&quot; twice.</li><li><strong>Sources screen.</strong> &quot;Back to the game&quot; now returns to the screen the student left, with their progress. The footer &quot;Play again&quot; is now &quot;Restart from the beginning&quot;.</li><li><strong>Session length.</strong> <code>session_minutes</code> is now 25 (the teacher guide's plan with debrief), to match how the other gallery games use it. The 10 minutes is labelled as play time.</li></ul>
+<div class="table-scroll"><table><thead><tr><th>#</th><th>Check</th><th>Method and environment</th><th>Result</th><th>Evidence</th><th>Tester</th></tr></thead><tbody><tr><td>R1</td><td>Validator</td><td><code>node tools/validate.mjs</code>, run against both the committed validator and the working copy</td><td>passed</td><td>0 blocking, 0 warnings. (One run of the working-copy validator, while another agent was editing it, reported an internal &quot;stripJsComments is not defined&quot; error for every game; a later run was clean)</td><td>Agent</td></tr><tr><td>R2</td><td>Button font size</td><td>Chrome via DevTools over <code>http://localhost</code>; <code>getComputedStyle</code></td><td>passed</td><td>Every button 16 px, system-ui family, including the answer buttons (checked while focused)</td><td>Agent</td></tr><tr><td>R3</td><td>Headings and progress text</td><td>Read in the page</td><td>passed</td><td>&quot;A Harbour tally, kept by the port clerk&quot;, &quot;B Letter…&quot;, &quot;C City chronicle&quot;; progress &quot;Round 1 of 3&quot;</td><td>Agent</td></tr><tr><td>R4</td><td>Live region</td><td>DOM read</td><td>passed</td><td><code>&lt;main&gt;</code> has no <code>aria-live</code>; the status region read &quot;Not quite. The explanation is above the Next round button.&quot; after a wrong answer. This is a DOM read, not a screen-reader session (row 15 stays untested)</td><td>Agent</td></tr><tr><td>R5</td><td>Faint text colour applied</td><td><code>getComputedStyle</code> on the document-type line</td><td>passed</td><td>rgb(107, 99, 83), that is #6b6353. Dark mode was not rendered</td><td>Agent</td></tr><tr><td>R6</td><td>Keyboard path through round one</td><td>Tab and Enter only</td><td>passed</td><td>Tab to &quot;Open the first file&quot;, Enter; focus on the question heading; Tab twice to the second answer (visible outline), Enter; focus moved to &quot;Next round&quot;; the new merchant explanation shown</td><td>Agent</td></tr><tr><td>R7</td><td>Sources, then Back, keeps progress</td><td>Keyboard: Tab to the footer &quot;Sources &amp; assumptions&quot;, Enter, Tab to &quot;Back to the game&quot;, Enter</td><td>passed</td><td>Returned to the answered round one (&quot;Not quite&quot; still shown), focus on the question heading</td><td>Agent</td></tr><tr><td>R8</td><td>Sources from the ending, then Back; restart</td><td>Scripted clicks</td><td>passed</td><td>Back returned to the ending screen; &quot;Restart from the beginning&quot; returned to the intro</td><td>Agent</td></tr><tr><td>R9</td><td>Round two text</td><td>Scripted clicks, after a reload</td><td>passed</td><td>The Baron explanation shows the new wording</td><td>Agent</td></tr><tr><td>R10</td><td>No network requests</td><td><code>performance.getEntriesByType('resource')</code></td><td>passed</td><td>Empty list</td><td>Agent</td></tr><tr><td>R11</td><td>Rows 3, 4, 9, 11, 14, 15 on version 2 (live CSP pass, file://, console, phone width, reduced motion, screen reader)</td><td>—</td><td><strong>untested</strong></td><td>Not re-run on version 2</td><td>—</td></tr><tr><td>R12</td><td>Timing</td><td>—</td><td><strong>untested</strong></td><td>Still not timed with a player</td><td>—</td></tr></tbody></table></div>
     </div>
   </div>
 
   <section>
-    <h2>Checks a person had to run</h2>
-    <p class="prose">A validator reads a file; it cannot play a game or stand in a classroom.
-    This is what the contributor reported, in their words.</p>
+    <h2>Checks the automated checker cannot make</h2>
+    <p class="prose">The checker reads a file; it cannot play a game or stand in a classroom.
+    These six checks need someone to actually do them. This is what the contributor reported,
+    in their words. Where they said who did the testing, the status says so: a check run by an
+    agent or a script is not the same as a person trying it. A check they did not report is
+    shown as untested.</p>
     <div class="table-scroll"><table>
       <thead><tr><th>Check</th><th>Status</th><th>What they said</th></tr></thead>
       <tbody><tr>
       <td>Runs with the wifi off</td>
-      <td><span class="badge ok">Tested</span></td>
+      <td><span class="badge ok">Tested by an agent</span></td>
       <td>Opened as a file:// URL and played to the ending; the page loaded no resources beyond itself.</td>
     </tr><tr>
       <td>Playable by keyboard alone</td>
-      <td><span class="badge ok">Tested</span></td>
-      <td>Every control focused and activated without a pointer, with a visible focus outline at each step.</td>
+      <td><span class="badge ok">Tested by an agent</span></td>
+      <td>Every control focused and activated without a pointer, with a visible focus outline at each step. Re-run on 2026-09-24 after the fixes for round one and the Sources screen round trip, with Tab and Enter only in Chrome. An agent ran these, not a person.</td>
     </tr><tr>
       <td>Fits the stated session length</td>
       <td><span class="badge warn">Untested</span></td>
-      <td>Estimated at 3-5 minutes of reading from a 557-word path, not timed with a player.</td>
+      <td>Estimated at 3-5 minutes of reading from a 557-word path, not timed with a player. session_minutes (25) is the full plan with briefing and debrief.</td>
     </tr><tr>
       <td>Opened on a real classroom setup</td>
       <td><span class="badge warn">Untested</span></td>
@@ -153,7 +162,7 @@
       <td>There are no real sources to check against. The game states this on its Sources &amp; assumptions screen.</td>
     </tr><tr>
       <td>Debrief questions delivered</td>
-      <td><span class="badge ok">Tested</span></td>
+      <td><span class="badge ok">Tested by an agent</span></td>
       <td>Five debrief questions ship on the ending screen.</td>
     </tr></tbody>
     </table></div>
@@ -210,10 +219,13 @@ actually ran and which I still need to run myself.</pre>
   tabs.forEach(function (tab, i) {
     tab.addEventListener('click', function () { select(tab); });
     tab.addEventListener('keydown', function (e) {
-      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d) return;
+      var next = null;
+      if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+      else if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (e.key === 'Home') next = tabs[0];
+      else if (e.key === 'End') next = tabs[tabs.length - 1];
+      if (!next) return;
       e.preventDefault();
-      var next = tabs[(i + d + tabs.length) % tabs.length];
       select(next);
       next.focus();
     });

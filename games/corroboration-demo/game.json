@@ -10,7 +10,7 @@
   "region": "Not place-specific",
   "language": "en",
   "level": "Any — intro survey upwards",
-  "session_minutes": 10,
+  "session_minutes": 25,
   "social_topology": "Individual copies, or pairs on one device",
   "players_per_instance": 1,
   "contributor": "Playable Pasts (demonstration)",
@@ -25,26 +25,28 @@
   },
   "validation": {
     "verdict": "ready-for-your-tests",
-    "checked_at": "2026-09-14",
+    "checked_at": "2026-09-24",
     "blocking": 0,
     "warnings": 0,
-    "file_sha256": "8aebcde8de7a7e1ad3c9e8b8fbf32f8879cf024a28b7eff3d400135524980a21"
+    "file_sha256": "7b94b3768857fb241a69f945a7f017717167f100e085903f7036e690d07ca1d1"
   },
   "human_tests": [
     {
       "id": "manual-offline",
       "status": "passed",
-      "note": "Opened as a file:// URL and played to the ending; the page loaded no resources beyond itself."
+      "note": "Opened as a file:// URL and played to the ending; the page loaded no resources beyond itself.",
+      "tested_by": "agent"
     },
     {
       "id": "manual-keyboard",
       "status": "passed",
-      "note": "Every control focused and activated without a pointer, with a visible focus outline at each step."
+      "note": "Every control focused and activated without a pointer, with a visible focus outline at each step. Re-run on 2026-09-24 after the fixes for round one and the Sources screen round trip, with Tab and Enter only in Chrome. An agent ran these, not a person.",
+      "tested_by": "agent"
     },
     {
       "id": "manual-timing",
       "status": "untested",
-      "note": "Estimated at 3-5 minutes of reading from a 557-word path, not timed with a player."
+      "note": "Estimated at 3-5 minutes of reading from a 557-word path, not timed with a player. session_minutes (25) is the full plan with briefing and debrief."
     },
     {
       "id": "manual-classroom-setup",
@@ -59,7 +61,8 @@
     {
       "id": "manual-debrief",
       "status": "passed",
-      "note": "Five debrief questions ship on the ending screen."
+      "note": "Five debrief questions ship on the ending screen.",
+      "tested_by": "agent"
     }
   ],
   "provenance_note": "This game uses no historical sources at all. Every document in it is invented to demonstrate the format and to carry a specific source-criticism problem. It is a method exercise, not a history lesson.",
@@ -68,6 +71,6 @@
     "warm-up",
     "no sources needed",
     "demonstration",
-    "10 minutes"
+    "25 minutes"
   ]
 }

@@ -46,7 +46,7 @@ No row is *directly attested*, *derived*, *contested*, *counterfactual*, or *mod
 | Safeguard | How it is handled |
 |---|---|
 | Synthetic-source confusion | The largest risk here. Addressed three times: a notice before play, the Sources & assumptions screen, and this file. |
-| False precision | Scoring implies these questions have right answers. Named as an assumption (C008) and put to students in the debrief. Ordering rounds give partial credit per card, so a near-miss is not marked the same as a guess. |
+| False precision | Scoring implies these questions have right answers. Named as an assumption (C008) and put to students in the debrief. An ordering round scores a point only when every card is in the right place. After checking, each card is still marked right or wrong, so a student can see that a near-miss was a near-miss, but it earns no point. |
 | Archive bias | Present by design: the only papers written to explain the fire are the two least reliable. The game makes that the finding. |
 | Teleology | Not applicable. No historical outcome is modelled. |
 | Presentism | Documents avoid period-specific institutions and prices are kept vague, so no modern category is smuggled in. |
@@ -57,5 +57,10 @@ No row is *directly attested*, *derived*, *contested*, *counterfactual*, or *mod
 - Round three rewards "probably". Some instructors will want a version where the honest answer
   is again "cannot be settled", to stop students learning that the middle option is always
   right. Editing the third option's `correct` flag and its explanation would do it.
+- Round one was edited on 2026-09-24 because it had two valid orders: the bill and the lease
+  both said "this spring", so either could come first. The bill now says it is "not yet paid"
+  and that "whoever takes the mill" should be told, and the lease says "the carpenter paid for
+  it". Only the order A, B, C, D now fits. In round two the petition now says "half a wheel",
+  to agree with the letter in round one. All of this is still invented (C001).
 - Would replacing round one with four undated documents from the instructor's own unit be
   strictly better? Probably yes. The teacher guide recommends exactly that edit.
