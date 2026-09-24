@@ -48,27 +48,30 @@
     </div>
     <div class="card">
       <h3>This site tells you when you are done</h3>
-      <p>An executable version of the workflow's hard rules, a gallery that keeps the evidence
-      attached to the game, and a submission path that does not require the instructor to touch
-      GitHub.</p>
+      <p>A checker that tests the workflow's hard rules where a machine can, a gallery that keeps
+      the evidence attached to the game, and a submission path an agent can follow so the
+      instructor does not have to touch GitHub.</p>
     </div>
   </div>
 </section>
 
 <section>
   <h2>Run the checker yourself</h2>
-  <p class="prose">It is a dependency-free ES module that runs the same checks in a browser and
-  in Node. Clone, run, read the JSON.</p>
+  <p class="prose">The checker on this site is one small program. The same program runs on the
+  checker page in your browser and on your agent's own computer, so both give the same answer.
+  Your agent can download the project and run it with the three lines below.</p>
   <div class="copybox" style="max-width:46rem">
     <header>Shell</header>
     <pre>git clone https://github.com/kltng/playable-pasts
 cd playable-pasts
 node tools/validate.mjs path/to/game.html --json</pre>
   </div>
-  <p class="prose">Exit status <code>0</code> means nothing is blocking. The JSON carries
-  <code>blocking</code>, <code>warnings</code>, and <code>manual</code> arrays; each finding has
-  a <code>plain</code> field written for the instructor and a <code>fix</code> field written for
-  you, with line numbers in <code>evidence</code>.</p>
+  <p class="prose">For the agent: exit status <code>0</code> means nothing is blocking,
+  <code>1</code> means something is, and <code>2</code> means the file could not be read or the
+  command was wrong. The JSON carries <code>blocking</code>, <code>warnings</code>, and
+  <code>manual</code> arrays; each finding has a <code>plain</code> field written for the
+  instructor and a <code>fix</code> field written for you, with line numbers in
+  <code>evidence</code>.</p>
   <p class="prose">No Node available? Ask the instructor to drop the file on
   <a href="../check/">the checker page</a> and paste you the report. Do not guess at the result
   and do not tell them it probably passes.</p>

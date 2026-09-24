@@ -25,10 +25,10 @@ on purpose.
 | `index.html`, `start/`, `check/`, `games/`, `submit/`, `for-agents/` | The site. Plain HTML, no framework, no build step. |
 | `assets/js/validator.js` | The classroom-readiness checker. One dependency-free ES module, used unchanged by the website, the CLI, and CI. |
 | `assets/js/check-ui.js` | The checker page: the static pass, plus a live pass that runs the game under a strict CSP and reports what the browser blocked. |
-| `tools/validate.mjs` | The checker on the command line. Exit 0 when nothing blocks, 1 when something does. |
+| `tools/validate.mjs` | The checker on the command line. Exit 0 when nothing blocks, 1 when something does, 2 when a file cannot be read or the command is wrong. |
 | `tools/test-validator.mjs`, `tools/test-build-index.mjs` | Tests. Each names the rule it defends. |
-| `tools/build-index.mjs` | Regenerates `games/index.json` and each game's page from its `game.json`. Authoring-time only. |
-| `games/<slug>/` | One game: the HTML file, its manifest, teacher guide, history bible, and test ledger. |
+| `tools/build-index.mjs` | Regenerates `games/index.json`, each game's page, and the `validation` record in each `game.json`. Checks every manifest first and writes nothing if one is wrong. Authoring-time only. |
+| `games/<slug>/` | One game: the HTML file, its manifest, teacher guide, history bible, and test ledger, plus the `index.html` page the build writes. |
 | `agent.md` | The submission contract, in plain text, for agents. |
 
 ## Working on it
@@ -50,7 +50,10 @@ files.
 The validator reads a file. It cannot play a game, sit in a classroom, or judge whether the
 history is right. So it returns three lists — blocking, warnings, and *six checks only a person
 can run* — and the third list survives a clean report. The gallery shows what contributors left
-untested rather than quietly rounding it up to "verified."
+untested rather than quietly rounding it up to "verified." A check the contributor did not
+report is shown as untested, a game with no automated check on record is shown as *not checked
+yet*, and a passed check says who ran it (a person, an agent, or a script) when the contributor
+said so.
 
 This is why a green result says "passed every automated check" and not "classroom ready." If
 you change the validator, keep that distinction. It is the only thing making the badge worth
@@ -59,8 +62,9 @@ anything.
 ## Adding a game
 
 See [`agent.md`](agent.md) for the full contract. In short: a folder under `games/` with five
-files, `node tools/build-index.mjs`, then a pull request. CI runs the validator and posts the
-report.
+files, `node tools/build-index.mjs`, then a pull request. CI runs the validator on pull requests
+and posts the report as a comment (it is also in the job log). Submissions sent as an issue do
+not run CI; a maintainer runs the checker.
 
 ## Licence
 

@@ -12,8 +12,10 @@ simpler change.
 
 **Playable Past** (singular) is the published instruction set in the
 [gist](https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276) that agents follow to
-build the games. It is a versioned, CC BY licensed document with that name, and the validator
-quotes its rules by number.
+build the games. It is a versioned, CC BY licensed document with that name. Code comments in
+the validator and test names in its tests cite the gist's hard rules by number (for example
+"hard rule 10", the honesty rule); the checker's messages do not. `agent.md` numbers its own
+list as "Requirement 1–10" so the two numberings are not confused.
 
 So "the Playable Past workflow", "Playable Past hard rule 10", and "a Playable Past game" stay
 singular, while the masthead, page titles, and report headers are plural. This is deliberate —
@@ -58,7 +60,10 @@ because the instructor cannot tell which to believe. Two live examples worth kno
 
 **The gallery** is generated. Edit `games/<slug>/game.json` and the markdown, then run
 `node tools/build-index.mjs` and commit what it writes. Do not hand-edit
-`games/*/index.html` or `games/index.json`.
+`games/*/index.html` or `games/index.json`. The build checks every manifest before it writes
+anything; if one is wrong it writes nothing and exits 1. The status logic for a listing lives
+twice, in `tools/build-index.mjs` and `assets/js/gallery.js`, and
+`tools/test-build-index.mjs` tests both: keep them in step.
 
 **The pages** duplicate their masthead and footer on purpose — it keeps the site buildless and
 readable. If you change navigation, change it in every page, including the template inside

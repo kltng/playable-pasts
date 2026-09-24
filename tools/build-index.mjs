@@ -7,16 +7,20 @@
  * Reads every games/<slug>/game.json and writes:
  *   - games/index.json      the list the gallery page fetches
  *   - games/<slug>/index.html   that game's page
+ *   - games/<slug>/game.json    with its `validation` record brought up to date
+ *
+ * Every manifest is checked before anything is written. If one is unusable,
+ * the build writes nothing and exits 1.
  *
  * This runs at authoring time, not when anyone visits: the published site is
  * plain static HTML with no build step. Re-run it after adding or editing a
  * game, and commit what it writes.
  */
 import { readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import { join, dirname, resolve, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { validate } from '../assets/js/validator.js';
+import { validate, MANUAL_CHECKS } from '../assets/js/validator.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gamesDir = join(root, 'games');
@@ -27,16 +31,111 @@ const gamesDir = join(root, 'games');
  * ------------------------------------------------------------------ */
 
 function escapeHtml(s) {
+  // Every attribute this file writes is double-quoted, so these four are enough.
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
-function inline(text) {
-  return escapeHtml(text)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
+/**
+ * Only these link targets become live links: web pages, email, a spot on the
+ * same page, or a path relative to this one. Anything else, including
+ * `javascript:` and `data:`, is shown as plain text. Control characters and
+ * spaces are refused outright, because browsers strip them before reading the
+ * scheme, so "\x01javascript:" would otherwise slip through as "relative".
+ */
+export function safeHref(url) {
+  if (typeof url !== 'string' || !url || /[\x00-\x20\x7f\\]/.test(url)) return null;
+  if (/^(?:https?:|mailto:)/i.test(url)) return url;
+  if (url.startsWith('#')) return url;
+  if (url.startsWith('//')) return null; // another site, with the scheme left implicit
+  // relative: no scheme before the first / ? or #
+  const head = url.split(/[/?#]/)[0];
+  if (head.includes(':')) return null;
+  return url;
+}
+
+const TOKEN_OPEN = '';
+const TOKEN_CLOSE = '';
+
+/** Reads `[label](url)` starting at `start`. Parentheses inside the URL may nest. */
+function readLink(text, start) {
+  const close = text.indexOf(']', start + 1);
+  if (close < 0 || text[close + 1] !== '(') return null;
+  const label = text.slice(start + 1, close);
+  if (!label || label.includes('[')) return null;
+  let i = close + 2;
+  while (text[i] === ' ') i++;
+  let url = '';
+  if (text[i] === '<') {
+    const end = text.indexOf('>', i);
+    if (end < 0) return null;
+    url = text.slice(i + 1, end).replace(/ /g, '%20'); // <...> may hold spaces
+    i = end + 1;
+  } else {
+    let depth = 0;
+    const from = i;
+    for (; i < text.length; i++) {
+      const c = text[i];
+      if (/\s/.test(c)) break;
+      if (c === '(') depth++;
+      else if (c === ')') { if (depth === 0) break; depth--; }
+    }
+    url = text.slice(from, i);
+  }
+  if (url.includes(TOKEN_OPEN)) return null;
+  while (text[i] === ' ') i++;
+  // an optional "title", ignored
+  if (text[i] === '"') {
+    const end = text.indexOf('"', i + 1);
+    if (end < 0) return null;
+    i = end + 1;
+    while (text[i] === ' ') i++;
+  }
+  if (text[i] !== ')') return null;
+  return { label, url, end: i + 1, raw: text.slice(start, i + 1) };
+}
+
+function emphasis(escaped) {
+  return escaped
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
     .replace(/(^|[\s(])_([^_\n]+)_/g, '$1<em>$2</em>');
+}
+
+/**
+ * Inline Markdown: `code`, [links](url), **bold**, *italic*, _italic_.
+ * Code spans are cut out first so that link syntax inside them stays literal;
+ * links are cut out next so their URLs never meet the emphasis rules. Both are
+ * put back after the surrounding text has been escaped.
+ */
+export function inline(text) {
+  const tokens = [];
+  const hold = (html) => `${TOKEN_OPEN}${tokens.push(html) - 1}${TOKEN_CLOSE}`;
+  const restore = (s) => s.replace(new RegExp(`${TOKEN_OPEN}(\\d+)${TOKEN_CLOSE}`, 'g'), (_, n) => tokens[Number(n)]);
+
+  let src = String(text).replace(/[]/g, '');
+  src = src.replace(/`([^`]+)`/g, (_, code) => hold(`<code>${escapeHtml(code)}</code>`));
+
+  let out = '';
+  for (let i = 0; i < src.length;) {
+    if (src[i] === '[') {
+      const link = readLink(src, i);
+      if (link) {
+        const label = emphasis(escapeHtml(link.label));
+        const href = safeHref(link.url);
+        out += hold(href
+          ? `<a href="${escapeHtml(href)}">${label}</a>`
+          : `${label} (${escapeHtml(link.url)})`);
+        i = link.end;
+        continue;
+      }
+    }
+    out += src[i];
+    i++;
+  }
+  // tokens can nest (a code span inside a link label), so restore until stable
+  let html = emphasis(escapeHtml(out));
+  for (let n = 0; n < 3 && html.includes(TOKEN_OPEN); n++) html = restore(html);
+  return html;
 }
 
 function markdown(src) {
@@ -153,12 +252,12 @@ const footer = (up) => `<footer class="site-footer">
   </div>
 </footer>`;
 
-const TEST_STATUS = {
-  passed: ['ok', 'Tested'],
-  untested: ['warn', 'Untested'],
-  failed: ['block', 'Failed'],
-  'not-applicable': ['quiet', 'Not applicable'],
-};
+/* ------------------------------------------------------------------ *
+ * What the listing may claim
+ * ------------------------------------------------------------------ */
+
+/** The six checks only a person can make, in the order the checker lists them. */
+export const MANUAL_IDS = MANUAL_CHECKS.map((c) => c.id);
 
 const MANUAL_TITLES = {
   'manual-offline': 'Runs with the wifi off',
@@ -169,13 +268,151 @@ const MANUAL_TITLES = {
   'manual-debrief': 'Debrief questions delivered',
 };
 
+export const TEST_STATUSES = ['passed', 'untested', 'failed', 'not-applicable'];
+
+/** Who ran a check the contributor reports as passed. Optional. */
+export const TESTERS = {
+  person: 'Tested by a person',
+  agent: 'Tested by an agent',
+  'automated script': 'Tested by a script',
+};
+
+/**
+ * One row per manual check, always all six. A check the manifest does not
+ * mention is shown as untested: silence is not a pass.
+ */
+export function humanTestRows(game) {
+  const reported = new Map();
+  for (const t of Array.isArray(game.human_tests) ? game.human_tests : []) {
+    if (t && typeof t === 'object' && !reported.has(t.id)) reported.set(t.id, t);
+  }
+  return MANUAL_IDS.map((id) => {
+    const t = reported.get(id);
+    const title = MANUAL_TITLES[id] || MANUAL_CHECKS.find((c) => c.id === id).title;
+    if (!t) {
+      return { id, title, kind: 'warn', label: 'Untested', note: 'The contributor did not report this check.' };
+    }
+    const note = typeof t.note === 'string' ? t.note : '';
+    switch (t.status) {
+      case 'passed':
+        return { id, title, kind: 'ok', label: TESTERS[t.tested_by] || 'Tested (tester not stated)', note };
+      case 'failed':
+        return { id, title, kind: 'block', label: 'Failed', note };
+      case 'not-applicable':
+        return { id, title, kind: 'quiet', label: 'Not applicable', note };
+      default:
+        return { id, title, kind: 'warn', label: 'Untested', note };
+    }
+  });
+}
+
+/**
+ * What the automated check found, read strictly. A manifest with no
+ * validation record, or one that does not hold real counts, was not checked,
+ * and must never be shown as passing.
+ */
+export function validationState(v) {
+  if (!v || typeof v !== 'object'
+    || !Number.isInteger(v.blocking) || v.blocking < 0
+    || !Number.isInteger(v.warnings) || v.warnings < 0) {
+    return { state: 'not-checked', kind: 'quiet', label: 'Not checked yet' };
+  }
+  const date = typeof v.checked_at === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v.checked_at) ? v.checked_at : '';
+  if (v.blocking > 0) {
+    return { state: 'blocked', kind: 'block', label: `${v.blocking} blocking finding${v.blocking === 1 ? '' : 's'}`, date };
+  }
+  if (v.warnings > 0) {
+    return { state: 'warnings', kind: 'warn', label: `${v.warnings} open finding${v.warnings === 1 ? '' : 's'}`, date };
+  }
+  return { state: 'clean', kind: 'ok', label: 'File checks passed', date };
+}
+
+/**
+ * Everything the build needs from a manifest, checked before anything is
+ * written. Returns a list of problems in plain words; empty means usable.
+ */
+export function manifestProblems(game, folder) {
+  const problems = [];
+  const where = `${folder}/game.json`;
+  if (!game || typeof game !== 'object' || Array.isArray(game)) {
+    return [`${where} must be a JSON object`];
+  }
+  const text = (field) => typeof game[field] === 'string' && game[field].trim() !== '';
+
+  if (!text('slug')) problems.push(`${where} is missing "slug"`);
+  else if (game.slug !== folder) problems.push(`${where} says slug "${game.slug}" — it must match the folder name "${folder}"`);
+  else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(game.slug)) problems.push(`${where}: slug "${game.slug}" must be lowercase letters, numbers, and hyphens`);
+
+  for (const field of ['title', 'summary']) {
+    if (!text(field)) problems.push(`${where} is missing "${field}" (a non-empty piece of text)`);
+  }
+  if (typeof game.session_minutes !== 'number' || !Number.isFinite(game.session_minutes) || game.session_minutes <= 0) {
+    problems.push(`${where}: "session_minutes" must be a number of minutes, like 50`);
+  }
+
+  for (const field of ['subtitle', 'emoji', 'learning_mode', 'game_form', 'period', 'region', 'language',
+    'level', 'social_topology', 'contributor', 'contributed_at', 'license', 'sources_rights', 'provenance_note']) {
+    if (game[field] !== undefined && typeof game[field] !== 'string') {
+      problems.push(`${where}: "${field}" must be text if it is given`);
+    }
+  }
+  if (game.tags !== undefined && !(Array.isArray(game.tags) && game.tags.every((t) => typeof t === 'string'))) {
+    problems.push(`${where}: "tags" must be a list of text labels`);
+  }
+
+  const f = game.files;
+  if (!f || typeof f !== 'object' || Array.isArray(f)) {
+    problems.push(`${where} is missing "files" (game, teacher_guide, history_bible, test_ledger)`);
+  } else {
+    for (const key of ['game', 'teacher_guide', 'history_bible', 'test_ledger']) {
+      const name = f[key];
+      if (typeof name !== 'string' || !name) {
+        problems.push(`${where}: "files.${key}" is missing`);
+      } else if (!/^[A-Za-z0-9._-]+$/.test(name) || name.startsWith('.')) {
+        problems.push(`${where}: "files.${key}" must be a plain file name in the game's own folder, not "${name}"`);
+      }
+    }
+  }
+
+  if (game.human_tests !== undefined) {
+    if (!Array.isArray(game.human_tests)) {
+      problems.push(`${where}: "human_tests" must be a list`);
+    } else {
+      const seen = new Set();
+      game.human_tests.forEach((t, i) => {
+        const at = `${where}: human_tests[${i}]`;
+        if (!t || typeof t !== 'object') { problems.push(`${at} must be an object with "id" and "status"`); return; }
+        if (!MANUAL_IDS.includes(t.id)) {
+          problems.push(`${at} has unknown id "${t.id}" — use one of ${MANUAL_IDS.join(', ')}`);
+        } else if (seen.has(t.id)) {
+          problems.push(`${at} repeats "${t.id}" — report each check once`);
+        }
+        seen.add(t.id);
+        if (!TEST_STATUSES.includes(t.status)) {
+          problems.push(`${at} has unknown status "${t.status}" — use one of ${TEST_STATUSES.join(', ')}`);
+        }
+        if (t.tested_by !== undefined && !Object.hasOwn(TESTERS, t.tested_by)) {
+          problems.push(`${at} has unknown tested_by "${t.tested_by}" — use one of ${Object.keys(TESTERS).join(', ')}`);
+        }
+        if (t.note !== undefined && typeof t.note !== 'string') problems.push(`${at}: "note" must be text`);
+      });
+    }
+  }
+  return problems;
+}
+
+/* ------------------------------------------------------------------ *
+ * Page assembly
+ * ------------------------------------------------------------------ */
+
 function docPanel(dir, file, id, label) {
+  if (!file) return null;
   const path = join(dir, file);
-  if (!file || !existsSync(path)) return null;
+  if (!existsSync(path)) return null;
   return { id, label, html: markdown(readFileSync(path, 'utf8')) };
 }
 
-function gamePage(game, dir) {
+export function gamePage(game, dir) {
   const f = game.files || {};
   const panels = [
     { id: 'play', label: 'Play', html: null },
@@ -184,18 +421,23 @@ function gamePage(game, dir) {
     docPanel(dir, f.test_ledger, 'ledger', 'What was tested'),
   ].filter(Boolean);
 
-  const tested = (game.human_tests || []).map((t) => {
-    const [kind, label] = TEST_STATUS[t.status] || ['quiet', t.status];
-    return `<tr>
-      <td>${escapeHtml(MANUAL_TITLES[t.id] || t.id)}</td>
-      <td><span class="badge ${kind}">${label}</span></td>
-      <td>${escapeHtml(t.note || '')}</td>
-    </tr>`;
-  }).join('');
+  const tested = humanTestRows(game).map((r) => `<tr>
+      <td>${escapeHtml(r.title)}</td>
+      <td><span class="badge ${r.kind}">${escapeHtml(r.label)}</span></td>
+      <td>${escapeHtml(r.note)}</td>
+    </tr>`).join('');
 
   const up = '../../'; // games/<slug>/index.html is two levels below the root
-  const v = game.validation || {};
-  const clean = (v.blocking || 0) === 0 && (v.warnings || 0) === 0;
+  const vs = validationState(game.validation);
+  const on = vs.date ? ` on ${vs.date}` : '';
+  const verdict = {
+    'not-checked': 'this file has not been through the automated check yet, so nothing about it has been confirmed.',
+    blocked: `when the automated check was run${on}, it found ${escapeHtml(vs.label)} — problems that will stop the game working in a classroom.`,
+    warnings: `when the automated check was run${on}, it found ${escapeHtml(vs.label)}. None of them stops the game running.`,
+    clean: `when the automated check was run${on}, this file passed every automated check.`,
+  }[vs.state];
+  const minutes = Number(game.session_minutes);
+  const gameHref = escapeHtml(f.game || 'game.html');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -218,44 +460,47 @@ ${nav('games', up)}
     <p class="lede">${escapeHtml(game.summary)}</p>
     <p class="game-meta">
       <span>${escapeHtml(game.game_form || '')}</span>
-      <span>${game.session_minutes} minutes</span>
+      <span>${Number.isFinite(minutes) ? escapeHtml(String(minutes)) : 'Unstated'} minutes</span>
       <span>${escapeHtml(game.social_topology || '')}</span>
       <span>${escapeHtml(game.level || '')}</span>
       <span>Contributed by ${escapeHtml(game.contributor || 'anonymous')}</span>
     </p>
     <div class="btn-row">
-      <a class="btn" href="${escapeHtml(f.game)}" download>Download the game file</a>
-      <a class="btn secondary" href="${escapeHtml(f.game)}">Open it full screen</a>
+      <a class="btn" href="${gameHref}" download>Download the game file</a>
+      <a class="btn secondary" href="${gameHref}">Open it full screen</a>
     </div>
   </section>
 
   <div class="note">
-    <p><strong>Before you teach with it:</strong> ${clean
-      ? 'this file passed every automated check on the day it was added.'
-      : 'this file has open findings from the automated check.'}
-    That is a statement about the <em>file</em> — self-contained, accessible, honest about its
-    sources. Whether the history is right and the lesson works is yours to judge. Read
+    <p><strong>Before you teach with it:</strong> ${verdict}
+    That is a statement about the <em>file</em> — self-contained, free of the faults a machine
+    can spot, with a sources screen in place. Whether the history is right and the lesson works
+    is yours to judge. Read
     <em>Sources &amp; evidence</em> below, then
     <a href="${up}check/">re-check the file</a> yourself.</p>
   </div>
 
-  <div class="tabs" role="tablist">
-${panels.map((p, i) => `    <button role="tab" id="tab-${p.id}" aria-controls="panel-${p.id}" aria-selected="${i === 0}">${p.label}</button>`).join('\n')}
+  <div class="tabs" role="tablist" aria-label="About this game">
+${panels.map((p, i) => `    <button type="button" role="tab" id="tab-${p.id}" aria-controls="panel-${p.id}" aria-selected="${i === 0}"${i === 0 ? '' : ' tabindex="-1"'}>${escapeHtml(p.label)}</button>`).join('\n')}
   </div>
 
 ${panels.map((p, i) => `  <div class="tabpanel" role="tabpanel" id="panel-${p.id}" aria-labelledby="tab-${p.id}"${i === 0 ? '' : ' hidden'}>
 ${p.id === 'play'
-    ? `    <iframe class="play-frame" src="${escapeHtml(f.game)}" title="${escapeHtml(game.title)}"
-      sandbox="allow-scripts allow-downloads"></iframe>
-    <p class="small">Running in a sandbox with no network access and no storage — the same
-    conditions as a locked-down classroom laptop.</p>`
+    ? `    <iframe class="play-frame" src="${gameHref}" title="${escapeHtml(game.title)}"
+      sandbox="allow-scripts allow-downloads allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
+    <p class="small">The game runs here walled off from this website, and it cannot keep saved
+    progress between visits. This page does not switch off the internet, though. To see the
+    game as a classroom with no wifi would, download it and open it with the wifi off.</p>`
     : `    <div class="prose" style="max-width:44rem">\n${p.html}\n    </div>`}
   </div>`).join('\n')}
 
   <section>
-    <h2>Checks a person had to run</h2>
-    <p class="prose">A validator reads a file; it cannot play a game or stand in a classroom.
-    This is what the contributor reported, in their words.</p>
+    <h2>Checks the automated checker cannot make</h2>
+    <p class="prose">The checker reads a file; it cannot play a game or stand in a classroom.
+    These six checks need someone to actually do them. This is what the contributor reported,
+    in their words. Where they said who did the testing, the status says so: a check run by an
+    agent or a script is not the same as a person trying it. A check they did not report is
+    shown as untested.</p>
     <div class="table-scroll"><table>
       <thead><tr><th>Check</th><th>Status</th><th>What they said</th></tr></thead>
       <tbody>${tested}</tbody>
@@ -306,10 +551,13 @@ ${footer(up)}
   tabs.forEach(function (tab, i) {
     tab.addEventListener('click', function () { select(tab); });
     tab.addEventListener('keydown', function (e) {
-      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d) return;
+      var next = null;
+      if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+      else if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (e.key === 'Home') next = tabs[0];
+      else if (e.key === 'End') next = tabs[tabs.length - 1];
+      if (!next) return;
       e.preventDefault();
-      var next = tabs[(i + d + tabs.length) % tabs.length];
       select(next);
       next.focus();
     });
@@ -365,12 +613,25 @@ export function nextValidation(previous, report, fileHash, today) {
 export const sha256 = (buf) => createHash('sha256').update(buf).digest('hex');
 const today = () => new Date().toISOString().slice(0, 10);
 
-export function build() {
+/**
+ * Works out every file the build would write, without writing any.
+ *
+ * Two kinds of problem come back:
+ *   - `manifestProblems`: a game.json the build cannot trust. If there are any,
+ *     nothing at all should be written, so a half-finished gallery is never left
+ *     on disk.
+ *   - `fileProblems`: the manifest is fine but the game has open trouble — a
+ *     missing file, or blocking findings. The pages are still written, and say
+ *     so honestly; the build still exits 1.
+ */
+export function plan(gamesRoot, date = today()) {
+  const writes = [];
   const entries = [];
-  const problems = [];
+  const manifestIssues = [];
+  const fileIssues = [];
 
-  for (const slug of readdirSync(gamesDir)) {
-    const dir = join(gamesDir, slug);
+  for (const slug of readdirSync(gamesRoot).sort()) {
+    const dir = join(gamesRoot, slug);
     if (!statSync(dir).isDirectory()) continue;
     const manifestPath = join(dir, 'game.json');
     if (!existsSync(manifestPath)) continue;
@@ -379,46 +640,72 @@ export function build() {
     try {
       game = JSON.parse(readFileSync(manifestPath, 'utf8'));
     } catch (err) {
-      problems.push(`${slug}/game.json is not valid JSON: ${err.message}`);
+      manifestIssues.push(`${slug}/game.json is not valid JSON: ${err.message}`);
       continue;
     }
+    const issues = manifestProblems(game, slug);
+    if (issues.length) { manifestIssues.push(...issues); continue; }
 
-    for (const field of ['slug', 'title', 'summary', 'files']) {
-      if (!game[field]) problems.push(`${slug}/game.json is missing "${field}"`);
-    }
-    if (game.slug && game.slug !== slug) {
-      problems.push(`${slug}/game.json says slug "${game.slug}" — it must match the folder name`);
+    const f = game.files;
+    for (const key of ['teacher_guide', 'history_bible', 'test_ledger']) {
+      if (!existsSync(join(dir, f[key]))) fileIssues.push(`${slug}: ${f[key]} not found (files.${key})`);
     }
 
     // Never publish a listing that claims a check the file no longer passes.
-    const gamePath = join(dir, game.files?.game || 'game.html');
+    const gamePath = join(dir, f.game);
     if (existsSync(gamePath)) {
       const source = readFileSync(gamePath);
-      const report = validate(source.toString('utf8'), { filename: game.files.game, bytes: statSync(gamePath).size });
-      game.validation = nextValidation(game.validation, report, sha256(source), today());
+      const report = validate(source.toString('utf8'), { filename: f.game, bytes: statSync(gamePath).size });
+      game.validation = nextValidation(game.validation, report, sha256(source), date);
       if (report.blocking.length) {
-        problems.push(`${slug}: the game file has ${report.blocking.length} blocking finding(s) — `
-          + `run "node tools/validate.mjs ${gamePath}"`);
+        fileIssues.push(`${slug}: the game file has ${report.blocking.length} blocking finding(s) — `
+          + `run "node tools/validate.mjs ${join('games', slug, f.game)}"`);
       }
-      writeFileSync(manifestPath, JSON.stringify(game, null, 2) + '\n');
     } else {
-      problems.push(`${slug}: ${game.files?.game || 'game.html'} not found`);
+      // A result for a file that is not there describes nothing. Drop it.
+      delete game.validation;
+      fileIssues.push(`${slug}: ${f.game} not found (files.game)`);
     }
 
-    writeFileSync(join(dir, 'index.html'), gamePage(game, dir));
+    writes.push({ path: manifestPath, content: JSON.stringify(game, null, 2) + '\n' });
+    writes.push({ path: join(dir, 'index.html'), content: gamePage(game, dir) });
     entries.push(game);
-    console.log(`  built games/${slug}/index.html`);
   }
 
-  entries.sort((a, b) => String(b.contributed_at).localeCompare(String(a.contributed_at)));
-  writeFileSync(join(gamesDir, 'index.json'), JSON.stringify(entries, null, 2) + '\n');
-  console.log(`\ngames/index.json — ${entries.length} game${entries.length === 1 ? '' : 's'}`);
-
-  if (problems.length) {
-    console.error('\nProblems:');
-    problems.forEach((p) => console.error('  - ' + p));
-    process.exit(1);
-  }
+  entries.sort((a, b) => String(b.contributed_at).localeCompare(String(a.contributed_at))
+    || a.slug.localeCompare(b.slug));
+  writes.push({ path: join(gamesRoot, 'index.json'), content: JSON.stringify(entries, null, 2) + '\n' });
+  return { writes, entries, manifestProblems: manifestIssues, fileProblems: fileIssues };
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) build();
+export function build(gamesRoot = gamesDir) {
+  const result = plan(gamesRoot);
+
+  if (result.manifestProblems.length) {
+    console.error('Nothing was written. These game.json files need fixing first:');
+    result.manifestProblems.forEach((p) => console.error('  - ' + p));
+    if (result.fileProblems.length) {
+      console.error('\nAlso found:');
+      result.fileProblems.forEach((p) => console.error('  - ' + p));
+    }
+    return 1;
+  }
+
+  for (const w of result.writes) {
+    // Only touch files whose contents change, so a rebuild is quiet in git.
+    if (existsSync(w.path) && readFileSync(w.path, 'utf8') === w.content) continue;
+    writeFileSync(w.path, w.content);
+    console.log(`  wrote ${relative(root, w.path)}`);
+  }
+  const n = result.entries.length;
+  console.log(`\n${relative(root, join(gamesRoot, 'index.json'))} — ${n} game${n === 1 ? '' : 's'}`);
+
+  if (result.fileProblems.length) {
+    console.error('\nProblems:');
+    result.fileProblems.forEach((p) => console.error('  - ' + p));
+    return 1;
+  }
+  return 0;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) process.exitCode = build();

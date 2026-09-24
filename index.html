@@ -74,39 +74,54 @@
 
 <section class="wrap">
   <h2>What makes a game belong here</h2>
-  <p class="lede">Five rules, and the checker enforces them. They come from the
-  <a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">Playable Past instructions</a> that the agents follow.</p>
+  <p class="lede">Six things we look for. They come from the
+  <a href="https://gist.github.com/kltng/2a2b26a8817540531f3191412c308276">Playable Past instructions</a> that the agents follow.
+  The checker can test some of them by reading the file. The rest need a person, and they are on
+  the list of checks every report ends with.</p>
   <div class="grid three" style="margin-top:2rem">
     <div class="card">
       <h3>It works with the wifi off</h3>
       <p>Everything is inside the one file. Nothing is fetched while students play, so a filtered
       school network or a dead lecture-hall connection cannot break your class.</p>
+      <p class="small"><strong>Checker:</strong> looks for anything the file would load from the
+      internet. Opening it with the wifi off is still on your list.</p>
     </div>
     <div class="card">
       <h3>It does not need an AI to run</h3>
       <p>The agent builds the game and then leaves. No API keys, no accounts, no monthly bill,
       nothing that stops working when a subscription lapses.</p>
+      <p class="small"><strong>Checker:</strong> looks for calls to AI services and for secret
+      keys written into the file.</p>
     </div>
     <div class="card">
       <h3>It shows its evidence</h3>
       <p>Every game has a <em>Sources &amp; assumptions</em> screen: what is attested, what is
       interpretation, what the agent invented to join things up. Students can tell the
       difference. So can you.</p>
+      <p class="small"><strong>Checker:</strong> confirms the screen exists. Only you can confirm
+      that what it says is true.</p>
     </div>
     <div class="card">
       <h3>It can be used by every student</h3>
       <p>Real buttons, keyboard operation, readable type, no colour-only signals. A student who
       cannot use a mouse can still play.</p>
+      <p class="small"><strong>Checker:</strong> flags things like clickable areas that are not
+      real buttons and pictures with no text description. It cannot judge colour, type size, or
+      whether you can see where the keyboard is. Playing it by keyboard is on your list.</p>
     </div>
     <div class="card">
       <h3>It ends in an argument</h3>
       <p>Every game comes with debrief questions that invite students to attack it as an
       interpretation of the past. That is the point of the exercise, not an afterthought.</p>
+      <p class="small"><strong>Checker:</strong> cannot test this. Checking you have the debrief
+      questions is on your list.</p>
     </div>
     <div class="card">
       <h3>You own it</h3>
       <p>It is your file. Edit the text yourself, keep it for next year, hand it to a colleague.
       Nothing here holds your game hostage.</p>
+      <p class="small"><strong>Checker:</strong> not something to test. It follows from the game
+      being one file with no account behind it.</p>
     </div>
   </div>
 </section>
@@ -115,7 +130,8 @@
   <h2>What this is not</h2>
   <div class="prose">
     <p>It is not an arcade and it does not rank AI models. A game passing the checker means the
-    <em>file</em> is sound: self-contained, accessible, honest about its sources. It does not
+    <em>file</em> is sound: self-contained, free of the accessibility faults a machine can spot,
+    and with a sources screen in place. It does not
     mean the history is right or the lesson works.</p>
     <p>Only you can judge that, which is why every report ends with six checks the machine
     refuses to fake — and why the gallery records what was tested and what was not.</p>

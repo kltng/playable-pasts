@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Share your game — Playable Pasts</title>
-<meta name="description" content="Add your classroom history game to the gallery. Your agent does the submitting; you do not need a GitHub account or any technical knowledge.">
+<meta name="description" content="Add your classroom history game to the gallery. Your agent can do the submitting, or you can do it yourself with a free GitHub account. No technical knowledge needed.">
 <link rel="stylesheet" href="../assets/css/site.css">
 </head>
 <body>
@@ -28,9 +28,12 @@
 <section>
   <p class="eyebrow">Open to any instructor</p>
   <h1>Add your game to the gallery.</h1>
-  <p class="lede">There is no upload form and no account to create, because there is no server
-  here — this site is static files. Submitting means opening a request on the project
-  repository, and that is a job for your agent, not for you.</p>
+  <p class="lede">This site has no upload form. It is a set of plain pages with nothing behind
+  them to receive files. Instead, games are sent to the project's shared folder on GitHub, a
+  website for sharing project files. That is a job your agent can do for you.</p>
+  <p class="prose">To send it, your agent needs to be able to use a GitHub account. If it
+  cannot, you can send the files yourself with a free GitHub account — see
+  <a href="#by-hand">doing it by hand</a> below.</p>
 </section>
 
 <section>
@@ -84,9 +87,11 @@ Before you submit:
   <ol class="steps" style="max-width:46rem">
     <li>
       <h3>The checker runs automatically</h3>
-      <p>The same validator you can run here runs on the submission and posts its report. A game
-      with blocking findings is not merged — but the report says exactly what to fix, and your
-      agent can fix it and push again.</p>
+      <p>When your agent sends the game as a pull request (GitHub's name for a proposed
+      change), the same checker you can run here runs on it by itself, and its report is posted
+      on the request. If you send the files by hand instead, a maintainer runs the checker. A
+      game with blocking findings is not added — but the report says exactly what to fix, and
+      your agent can fix it and send it again.</p>
     </li>
     <li>
       <h3>A person reads the history bible</h3>
@@ -114,7 +119,8 @@ Before you submit:
       <h3>Sources you cannot redistribute</h3>
       <p>Licensed database content, archival material under permission, unpublished work,
       anything about living people who did not agree. Use it to build your game; keep it out of
-      the file you publish, and keep the game behind your LMS instead.</p>
+      the file you publish, and share that version only through your course website (Canvas,
+      Moodle, Blackboard, or similar) instead.</p>
     </div>
     <div class="card">
       <h3>Invented evidence presented as real</h3>
@@ -131,10 +137,11 @@ Before you submit:
 </section>
 
 <section>
-  <h2>If you would rather do it by hand</h2>
-  <p class="prose">You do not need an agent. With a GitHub account you can
+  <h2 id="by-hand">If you would rather do it by hand</h2>
+  <p class="prose">You do not need an agent. With a free GitHub account you can
   <a href="https://github.com/kltng/playable-pasts/issues/new?template=submit-game.yml">open a submission yourself</a> and attach
-  the five files by dragging them into the form. Everything after that is the same.</p>
+  the five files by dragging them into the form. A maintainer then runs the checker and moves
+  the game in, and everything after that is the same.</p>
   <div class="btn-row">
     <a class="btn secondary" href="../check/">Check your file first</a>
     <a class="btn secondary" href="../for-agents/">Read the contract your agent follows</a>
