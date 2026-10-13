@@ -80,5 +80,5 @@ python3 -m http.server 8765
 
 For anything visual or interactive, open it in a browser and drive it. Contrast, focus order,
 and whether the live CSP pass actually fires are not things you can tell by reading the source —
-a real keyboard pass on the demo game is what found that focus was being dropped on every
+a real keyboard pass on a published game is what found that focus was being dropped on every
 screen change.

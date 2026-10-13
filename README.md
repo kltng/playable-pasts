@@ -62,7 +62,9 @@ anything.
 ## Adding a game
 
 See [`agent.md`](agent.md) for the full contract. In short: a folder under `games/` with five
-files, `node tools/build-index.mjs`, then a pull request. CI runs the validator on pull requests
+files, `node tools/build-index.mjs`, then a pull request. A game too big for one file can be
+listed by its web address instead (`hosted_url` in `game.json`); the checker cannot see such a
+game, so the gallery marks it *hosted elsewhere, not checked*. CI runs the validator on pull requests
 and posts the report as a comment (it is also in the job log). Submissions sent as an issue do
 not run CI; a maintainer runs the checker.
 
