@@ -223,15 +223,6 @@ test('the verdict tracks the worst finding', () => {
   assert.equal(run('<div>x</div>').verdict, 'blocked');
 });
 
-test('the published demo game passes its own gate', (t) => {
-  const path = new URL('../games/corroboration-demo/game.html', import.meta.url);
-  if (!existsSync(path)) return t.skip('demo game not present');
-  const src = readFileSync(path, 'utf8');
-  const r = validate(src, { filename: 'game.html' });
-  assert.deepEqual(r.blocking, [], `demo game is blocking on: ${ids(r.blocking)}`);
-  assert.deepEqual(r.warnings, [], `demo game warns on: ${ids(r.warnings)}`);
-});
-
 /* ------------------------------------------------------------------ *
  * Helpers for the cases below
  * ------------------------------------------------------------------ */
@@ -502,7 +493,7 @@ test('OpenAI, Google, and GitHub keys are caught and never echoed back', () => {
 
 test('real games in the gallery pass without new findings', (t) => {
   // Any new finding on a published game is a false positive until proven otherwise.
-  for (const slug of ['chronology-demo', 'corroboration-demo', 'influenza-front-page']) {
+  for (const slug of ['influenza-front-page', 'many-centres-one-world']) {
     const path = new URL(`../games/${slug}/game.html`, import.meta.url);
     if (!existsSync(path)) { t.diagnostic(`${slug} not present`); continue; }
     const r = validate(readFileSync(path, 'utf8'), { filename: 'game.html' });

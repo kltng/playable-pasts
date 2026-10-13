@@ -33,6 +33,20 @@ the game's page in the gallery. It also writes a `validation` record into `game.
 write either of those by hand. The five files must sit directly in the folder, and `game.html`
 must not load any other file from it (see requirement 1).
 
+**A game that cannot be one file.** Some games are too big for one HTML file, for example a
+game made with a game engine. These can be listed as *hosted* games: the game stays on its own
+website, and the folder holds only `game.json`, `teacher-guide.md`, `history-bible.md`, and
+`test-ledger.md`. In `game.json`, give `hosted_url` (the game's `https://` address) and leave
+`files.game` out. Know what this costs before you choose it, and tell the instructor:
+
+- The checker never sees a hosted game. The gallery shows it as *Hosted elsewhere, not
+  checked*, never as passing.
+- Students need the internet for the whole session, so `manual-offline` is `failed`.
+- The gallery page links to the game. It cannot offer a download or play it inside the page.
+- The other website can change or remove the game, and the gallery will not know.
+
+If the game can be made into one file, do that instead. A hosted listing is the exception.
+
 ## 2. Requirements for `game.html`
 
 The checker tests these where a machine can, and each finding has one of two strengths:
@@ -178,12 +192,15 @@ missing or wrong:
 - `session_minutes`: a number, like `50` — not `"50"` and not `"50 minutes"`.
 - `files`: an object with `game`, `teacher_guide`, `history_bible`, and `test_ledger`, each a
   plain file name in the game's own folder.
+- For a hosted game only (§1): `hosted_url`, a full `https://` address, and no `files.game`.
+  Giving both is an error.
 
 **Optional.** Every other field above. If given, text fields must be text and `tags` must be a
 list of text. `learning_mode` should be one of the ten in `3-design.md` of the workflow.
 
 `validation` is written by the build tool — do not fill it in yourself. A game with no
-`validation` record is shown in the gallery as *not checked yet*, never as passing.
+`validation` record is shown in the gallery as *not checked yet*, never as passing. A hosted game
+never gets one.
 
 **`human_tests`** takes the six manual check IDs: `manual-offline`, `manual-keyboard`,
 `manual-timing`, `manual-classroom-setup`, `manual-provenance-accuracy`, `manual-debrief`.

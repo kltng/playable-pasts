@@ -309,9 +309,13 @@ export function humanTestRows(game) {
 /**
  * What the automated check found, read strictly. A manifest with no
  * validation record, or one that does not hold real counts, was not checked,
- * and must never be shown as passing.
+ * and must never be shown as passing. A hosted game lives on another website,
+ * so the checker never sees it: whatever its record says, it is not checked.
  */
-export function validationState(v) {
+export function validationState(v, hosted = false) {
+  if (hosted) {
+    return { state: 'hosted', kind: 'warn', label: 'Hosted elsewhere, not checked' };
+  }
   if (!v || typeof v !== 'object'
     || !Number.isInteger(v.blocking) || v.blocking < 0
     || !Number.isInteger(v.warnings) || v.warnings < 0) {
@@ -325,6 +329,21 @@ export function validationState(v) {
     return { state: 'warnings', kind: 'warn', label: `${v.warnings} open finding${v.warnings === 1 ? '' : 's'}`, date };
   }
   return { state: 'clean', kind: 'ok', label: 'File checks passed', date };
+}
+
+/**
+ * A game too big or too complex for one file can be listed by its web address
+ * instead. Only https, with no spaces or quote marks, and no user name or
+ * password in it.
+ */
+export function isHostedUrl(url) {
+  if (typeof url !== 'string' || !/^https:\/\/[^\s"'<>\\]+$/.test(url)) return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && !!u.hostname && !u.username && !u.password;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -364,7 +383,12 @@ export function manifestProblems(game, folder) {
   if (!f || typeof f !== 'object' || Array.isArray(f)) {
     problems.push(`${where} is missing "files" (game, teacher_guide, history_bible, test_ledger)`);
   } else {
+    const hosted = game.hosted_url !== undefined;
+    if (hosted && f.game !== undefined) {
+      problems.push(`${where} has both "hosted_url" and "files.game" — give one or the other`);
+    }
     for (const key of ['game', 'teacher_guide', 'history_bible', 'test_ledger']) {
+      if (key === 'game' && hosted) continue;
       const name = f[key];
       if (typeof name !== 'string' || !name) {
         problems.push(`${where}: "files.${key}" is missing`);
@@ -372,6 +396,10 @@ export function manifestProblems(game, folder) {
         problems.push(`${where}: "files.${key}" must be a plain file name in the game's own folder, not "${name}"`);
       }
     }
+  }
+
+  if (game.hosted_url !== undefined && !isHostedUrl(game.hosted_url)) {
+    problems.push(`${where}: "hosted_url" must be a full https:// web address, not "${game.hosted_url}"`);
   }
 
   if (game.human_tests !== undefined) {
@@ -428,16 +456,20 @@ export function gamePage(game, dir) {
     </tr>`).join('');
 
   const up = '../../'; // games/<slug>/index.html is two levels below the root
-  const vs = validationState(game.validation);
+  const hosted = game.hosted_url !== undefined;
+  const vs = validationState(game.validation, hosted);
   const on = vs.date ? ` on ${vs.date}` : '';
   const verdict = {
     'not-checked': 'this file has not been through the automated check yet, so nothing about it has been confirmed.',
     blocked: `when the automated check was run${on}, it found ${escapeHtml(vs.label)} — problems that will stop the game working in a classroom.`,
     warnings: `when the automated check was run${on}, it found ${escapeHtml(vs.label)}. None of them stops the game running.`,
     clean: `when the automated check was run${on}, this file passed every automated check.`,
+    hosted: 'this game lives on another website, not on this one, so the automated check has '
+      + 'not been run on it and cannot be. It needs the internet to play, and that website can '
+      + 'change the game without this page knowing.',
   }[vs.state];
   const minutes = Number(game.session_minutes);
-  const gameHref = escapeHtml(f.game || 'game.html');
+  const gameHref = escapeHtml(hosted ? game.hosted_url : (f.game || 'game.html'));
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -466,18 +498,25 @@ ${nav('games', up)}
       <span>Contributed by ${escapeHtml(game.contributor || 'anonymous')}</span>
     </p>
     <div class="btn-row">
-      <a class="btn" href="${gameHref}" download>Download the game file</a>
-      <a class="btn secondary" href="${gameHref}">Open it full screen</a>
+${hosted
+    ? `      <a class="btn" href="${gameHref}" rel="noopener">Play it on its own website</a>`
+    : `      <a class="btn" href="${gameHref}" download>Download the game file</a>
+      <a class="btn secondary" href="${gameHref}">Open it full screen</a>`}
     </div>
   </section>
 
   <div class="note">
     <p><strong>Before you teach with it:</strong> ${verdict}
-    That is a statement about the <em>file</em> — self-contained, free of the faults a machine
+${hosted
+    ? `    So nothing about the game itself has been confirmed here. Whether it runs on your
+    classroom setup, whether the history is right, and whether the lesson works is yours to
+    judge. Read <em>Sources &amp; evidence</em> below, and try the game on the classroom computer
+    well before class.</p>`
+    : `    That is a statement about the <em>file</em> — self-contained, free of the faults a machine
     can spot, with a sources screen in place. Whether the history is right and the lesson works
     is yours to judge. Read
     <em>Sources &amp; evidence</em> below, then
-    <a href="${up}check/">re-check the file</a> yourself.</p>
+    <a href="${up}check/">re-check the file</a> yourself.</p>`}
   </div>
 
   <div class="tabs" role="tablist" aria-label="About this game">
@@ -485,7 +524,11 @@ ${panels.map((p, i) => `    <button type="button" role="tab" id="tab-${p.id}" ar
   </div>
 
 ${panels.map((p, i) => `  <div class="tabpanel" role="tabpanel" id="panel-${p.id}" aria-labelledby="tab-${p.id}"${i === 0 ? '' : ' hidden'}>
-${p.id === 'play'
+${p.id === 'play' && hosted
+    ? `    <p class="prose">This game is too large to keep on this website as one file, so it is not
+    shown here. <a href="${gameHref}" rel="noopener">Open it on its own website</a>. You will need
+    the internet for the whole session.</p>`
+    : p.id === 'play'
     ? `    <iframe class="play-frame" src="${gameHref}" title="${escapeHtml(game.title)}"
       sandbox="allow-scripts allow-downloads allow-modals allow-popups allow-popups-to-escape-sandbox"></iframe>
     <p class="small">The game runs here walled off from this website, and it cannot keep saved
@@ -515,7 +558,7 @@ ${p.id === 'play'
     </div>
   </section>
 
-  <section>
+${hosted ? '' : `  <section>
     <h2>Make it yours</h2>
     <div class="prose">
       <p>Download the file and hand it to your own agent with something like this:</p>
@@ -533,7 +576,7 @@ Update the history bible and the test ledger to match, and tell me plainly which
 actually ran and which I still need to run myself.</pre>
     </div>
   </section>
-</div>
+`}</div>
 </main>
 ${footer(up)}
 <script>
@@ -565,7 +608,7 @@ ${footer(up)}
   select(tabs[0]);
 
   var copy = document.getElementById('copy-remix');
-  copy.addEventListener('click', function () {
+  if (copy) copy.addEventListener('click', function () {
     var pre = document.getElementById('remix-prompt');
     navigator.clipboard.writeText(pre.textContent).then(function () {
       copy.textContent = 'Copied';
@@ -652,8 +695,11 @@ export function plan(gamesRoot, date = today()) {
     }
 
     // Never publish a listing that claims a check the file no longer passes.
-    const gamePath = join(dir, f.game);
-    if (existsSync(gamePath)) {
+    const gamePath = f.game === undefined ? null : join(dir, f.game);
+    if (game.hosted_url !== undefined) {
+      // The checker never sees a hosted game, so no result may be kept for it.
+      delete game.validation;
+    } else if (existsSync(gamePath)) {
       const source = readFileSync(gamePath);
       const report = validate(source.toString('utf8'), { filename: f.game, bytes: statSync(gamePath).size });
       game.validation = nextValidation(game.validation, report, sha256(source), date);

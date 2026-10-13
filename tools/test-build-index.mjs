@@ -12,6 +12,8 @@
  *     checks are always shown, and a missing one is "Untested".
  *   - Nothing from a contributor's files reaches the page as live markup.
  *   - A bad manifest stops the build before it writes anything.
+ *   - A hosted game (one listed by web address, not as a file) is never shown
+ *     as checked: the checker cannot see it.
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -22,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import {
   nextValidation, sha256, inline, safeHref, validationState, humanTestRows,
-  manifestProblems, gamePage, plan, build, MANUAL_IDS,
+  manifestProblems, gamePage, plan, build, MANUAL_IDS, isHostedUrl,
 } from './build-index.mjs';
 import { MANUAL_CHECKS } from '../assets/js/validator.js';
 
@@ -331,4 +333,66 @@ test('fields from game.json are escaped on a gallery card', () => {
   assert.doesNotMatch(html, /<img/);
   assert.doesNotMatch(html, /<b>5/);
   assert.doesNotMatch(html, /<script>/);
+});
+
+/* ---------------- hosted games ---------------- */
+
+function hostedGame(extra = {}) {
+  const { game, ...docs } = sampleGame().files;
+  return sampleGame({ files: docs, hosted_url: 'https://example.org/game/', ...extra });
+}
+
+test('a hosted game is accepted in place of a game file, but not alongside one', () => {
+  assert.deepEqual(manifestProblems(hostedGame(), 'sample'), []);
+  const both = manifestProblems(hostedGame({ files: sampleGame().files }), 'sample');
+  assert.ok(both.some((p) => /both "hosted_url" and "files\.game"/.test(p)));
+});
+
+test('only a plain https address is accepted as hosted_url', () => {
+  for (const url of ['http://example.org/', 'javascript:alert(1)', '//example.org/', 'https://', 'https://a b.org/',
+    'https://user:pw@example.org/', 'https://example.org/"onmouseover="x', 42, '']) {
+    assert.equal(isHostedUrl(url), false, String(url));
+    assert.ok(manifestProblems(hostedGame({ hosted_url: url }), 'sample').some((p) => /hosted_url/.test(p)), String(url));
+  }
+  assert.equal(isHostedUrl('https://kltng.github.io/yuhang-case-web/'), true);
+});
+
+test('a hosted game is never shown as checked, whatever its record says (honesty rule)', () => {
+  const v = { blocking: 0, warnings: 0, checked_at: '2026-09-14' };
+  assert.equal(validationState(v, true).state, 'hosted');
+
+  const html = gamePage(hostedGame({ validation: v }), '/nonexistent');
+  assert.doesNotMatch(html, /passed every automated check/);
+  assert.match(html, /automated check has\s+not been run on it/);
+  assert.match(html, /needs the internet/);
+
+  const { card } = loadGallery();
+  const listing = card(hostedGame({ validation: v }));
+  assert.match(listing, /Hosted elsewhere, not checked/);
+  assert.doesNotMatch(listing, /File checks passed/);
+});
+
+test('a hosted game page links out, with no download, frame, or remix prompt', () => {
+  const html = gamePage(hostedGame(), '/nonexistent');
+  assert.match(html, /href="https:\/\/example\.org\/game\/" rel="noopener">Play it on its own website/);
+  assert.doesNotMatch(html, /download>/);
+  assert.doesNotMatch(html, /<iframe/);
+  assert.doesNotMatch(html, /id="remix-prompt"/);
+  assert.match(html, /if \(copy\)/, 'the copy button is optional, so the script must not assume it');
+});
+
+test('the build drops a validation record from a hosted game and does not ask for a game file', () => {
+  const g = scratchGallery();
+  try {
+    g.write('sample', 'game.json', JSON.stringify(hostedGame({
+      validation: { verdict: 'ready-for-your-tests', checked_at: '2026-09-01', blocking: 0, warnings: 0 },
+    })));
+    for (const f of ['teacher-guide.md', 'history-bible.md', 'test-ledger.md']) g.write('sample', f, '# x\n');
+    const result = plan(g.games, '2026-09-24');
+    assert.deepEqual(result.manifestProblems, []);
+    assert.deepEqual(result.fileProblems, []);
+    assert.equal(result.entries[0].validation, undefined);
+  } finally {
+    g.done();
+  }
 });

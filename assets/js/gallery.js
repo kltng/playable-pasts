@@ -68,8 +68,12 @@ function render() {
 const MANUAL_IDS = ['manual-offline', 'manual-keyboard', 'manual-timing',
   'manual-classroom-setup', 'manual-provenance-accuracy', 'manual-debrief'];
 
-/** No validation record, or one without real counts, was never checked. */
-function validationBadge(v) {
+/**
+ * No validation record, or one without real counts, was never checked. A
+ * hosted game lives on another website, so the checker never sees it.
+ */
+function validationBadge(v, hosted) {
+  if (hosted) return '<span class="badge warn">Hosted elsewhere, not checked</span>';
   if (!v || typeof v !== 'object'
     || !Number.isInteger(v.blocking) || v.blocking < 0
     || !Number.isInteger(v.warnings) || v.warnings < 0) {
@@ -112,7 +116,7 @@ function card(g) {
         ${escapeHtml(g.level || '')}</p>
       <p class="desc">${escapeHtml(g.summary)}</p>
       <p class="meta">
-        ${validationBadge(g.validation)}
+        ${validationBadge(g.validation, g.hosted_url !== undefined)}
         ${tally.untested ? `<span class="badge warn">${tally.untested} of ${MANUAL_IDS.length} hands-on checks untested</span>` : ''}
         ${tally.failed ? `<span class="badge block">${tally.failed} hands-on check${tally.failed === 1 ? '' : 's'} failed</span>` : ''}
       </p>
