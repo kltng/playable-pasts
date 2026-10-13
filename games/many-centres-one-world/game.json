@@ -1,0 +1,77 @@
+{
+  "slug": "many-centres-one-world",
+  "title": "Many Centres, One World",
+  "subtitle": "A map quiz of the great voyages, c. 1400–1600",
+  "emoji": "🧭",
+  "summary": "Students find 24 ports, mines and capitals on a world map, from Zheng He's fleet at Liujiagang to the silver mountain at Potosí, then trace five trade connections. The rounds start in East Asia, not Lisbon, and the game ends by asking why the usual 'Age of Discovery' story starts in Europe.",
+  "learning_mode": "Spatial history",
+  "game_form": "Map quiz: four pins per question, five rounds",
+  "period": "c. 1400–1600",
+  "region": "World: East Asia, Indian Ocean, Southeast Asia, Mediterranean, Atlantic, Africa, the Americas",
+  "language": "en",
+  "level": "Intro world-history survey (undergraduate)",
+  "session_minutes": 25,
+  "social_topology": "Individual copies on students' own laptops",
+  "players_per_instance": 1,
+  "contributor": "Kwok-leong Tang",
+  "contributed_at": "2026-10-13",
+  "license": "The instructor owns the game. Cited sources keep their own terms.",
+  "sources_rights": "No source text is reproduced beyond short facts; every explanation is written new and cites its sources. The world outline is Natural Earth (public domain). Wikipedia is cited by fixed article versions (CC BY-SA). Britannica and UNESCO pages are cited, not copied.",
+  "files": {
+    "game": "game.html",
+    "teacher_guide": "teacher-guide.md",
+    "history_bible": "history-bible.md",
+    "test_ledger": "test-ledger.md"
+  },
+  "human_tests": [
+    {
+      "id": "manual-offline",
+      "status": "passed",
+      "tested_by": "agent",
+      "note": "An agent opened the file from disk in headless Chromium with the network switched off and played all 29 questions to the end. No network request was made and no error appeared. No person has tried it with the wifi off."
+    },
+    {
+      "id": "manual-keyboard",
+      "status": "passed",
+      "tested_by": "agent",
+      "note": "An agent played the whole game with Tab and Enter only, from the opening screen to the final map, and checked where the focus went after every screen change. Visible focus was checked in screenshots, not by a person. No screen reader was tried."
+    },
+    {
+      "id": "manual-timing",
+      "status": "untested",
+      "note": "Nobody has timed a real play-through. There are 29 questions; the game says 'about 15 minutes'. The 25 minutes includes a short briefing and the debrief, and is an estimate."
+    },
+    {
+      "id": "manual-classroom-setup",
+      "status": "untested",
+      "note": "Not opened on a classroom computer, a projector or through an LMS."
+    },
+    {
+      "id": "manual-provenance-accuracy",
+      "status": "untested",
+      "note": "An agent found and read every source and spot-checked five facts again, but no historian has checked the 29 answers against the sources. Eight items rest on Wikipedia alone; the History Bible lists them."
+    },
+    {
+      "id": "manual-debrief",
+      "status": "passed",
+      "tested_by": "agent",
+      "note": "Five debrief questions are shown on the final screen and in the teacher guide. They ask students to criticise the game itself: its choice of places, its round order, its map centre, what a point rewards, and whose experience a map of ports leaves out. No instructor has used them yet."
+    }
+  ],
+  "provenance_note": "Built with an AI agent (Claude) on 13 October 2026 for an instructor who asked the agent to find the sources. The agent read about 59 sources (Ming History biography of Zheng He, UNESCO World Heritage pages, Britannica, and fixed versions of Wikipedia articles) and wrote every question and explanation from them, citing each. Nothing is invented. Three items are marked contested (Malindi, Columbus's landfall, how much silver reached China). Eight items rest on Wikipedia alone. No historian has checked it yet.",
+  "tags": [
+    "age of discovery",
+    "Zheng He",
+    "Indian Ocean",
+    "silver",
+    "map",
+    "15 minutes"
+  ],
+  "validation": {
+    "verdict": "ready-for-your-tests",
+    "checked_at": "2026-10-13",
+    "blocking": 0,
+    "warnings": 0,
+    "file_sha256": "5eb6c565ab4d707b19ec305897c334d733403de8e92d27ef24d3dd1672997823"
+  }
+}

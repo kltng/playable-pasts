@@ -322,7 +322,7 @@ actually ran and which I still need to run myself.</pre>
   select(tabs[0]);
 
   var copy = document.getElementById('copy-remix');
-  copy.addEventListener('click', function () {
+  if (copy) copy.addEventListener('click', function () {
     var pre = document.getElementById('remix-prompt');
     navigator.clipboard.writeText(pre.textContent).then(function () {
       copy.textContent = 'Copied';
