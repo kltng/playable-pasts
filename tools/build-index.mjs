@@ -478,6 +478,7 @@ export function gamePage(game, dir) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(game.title)} — Playable Pasts</title>
 <meta name="description" content="${escapeHtml(game.summary)}">
+<link rel="icon" href="${up}assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${up}assets/css/site.css">
 </head>
 <body>

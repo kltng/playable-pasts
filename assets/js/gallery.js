@@ -111,7 +111,7 @@ function card(g) {
   return `<li class="game-card">
     <div class="thumb" aria-hidden="true">${escapeHtml(g.emoji || '🎲')}</div>
     <div class="body">
-      <h3><a href="${escapeHtml(encodeURIComponent(g.slug))}/">${escapeHtml(g.title)}</a></h3>
+      <h2><a href="${escapeHtml(encodeURIComponent(g.slug))}/">${escapeHtml(g.title)}</a></h2>
       <p class="meta">${escapeHtml(g.learning_mode || '')} · ${Number.isFinite(minutes) ? escapeHtml(String(minutes)) : '?'} min ·
         ${escapeHtml(g.level || '')}</p>
       <p class="desc">${escapeHtml(g.summary)}</p>

@@ -5,6 +5,8 @@ Artifact: `game.html`, 2.88 MB (2,879,667 bytes), gallery revision of 2026-09-24
 the source project's `influenza-front-page-v2.html` (SHA-256 begins `eed1ea60dbd9f6f0`). The
 2026-09-24 revision recompressed the images and changed some text, so it is **no longer identical**
 to that file. Rows 1–16 were run on the earlier file; see "Re-check after the 2026-09-24 changes".
+On 2026-10-15 two text colours were darkened (SHA-256 now begins `07d0eac687ef`, same size); see
+"Re-check after the 2026-10-15 colour change".
 
 Statuses: **passed** (the check was run and it passed), **untested** (not run — not a pass),
 **not applicable** (with a reason).
@@ -90,3 +92,23 @@ What changed:
 | R9 | No network requests | `performance.getEntriesByType('resource')` over `file://` | passed | Empty list; no console messages over `http://` | Agent |
 | R10 | Full play-through, reveal, debrief, exports, print on the new file | — | **untested** | Stages 3 to 5 were not played on the recompressed file | — |
 
+## Re-check after the 2026-10-15 colour change
+
+What changed: two greys were too light to read easily on the game's pale grey panels. An
+automated accessibility scan (axe-core 4.10) measured them below the 4.5 to 1 contrast that the
+WCAG AA standard asks for small text.
+
+- **Labels of the stages not yet reached** (top of the game): `#657780` to `#56676f`. Contrast on
+  the pale grey `#e9eef0` went from 3.98 to 5.04.
+- **The game's general muted grey** (`--muted`, used for help lines and secondary text):
+  `#60717b` to `#56676f`. Contrast on the same grey went from 4.33 to 5.04.
+
+Nothing else in the file changed. It is still 2,879,667 bytes.
+
+| # | Check | Method and environment | Result | Evidence | Tester |
+|---|---|---|---|---|---|
+| C1 | Validator | `node tools/validate.mjs` | passed | 0 blocking, 0 warnings | Script |
+| C2 | Contrast scan | axe-core 4.10 (WCAG 2 A and AA rules) in headless Chromium 1228, light and dark colour schemes, on the first screen after "Enter the newsroom" | passed | No findings. Before the change, the same scan found 5 stage labels at 3.98 and the help line at 4.33. Only that screen was scanned; dialogs and later stages were not | Agent |
+| C3 | Full play-through to the debrief | A Playwright script with headless Chromium 1228 (1280 px wide, network off) and WebKit 26 (Safari's engine, not Safari itself; 1280 px and 390 px, dark scheme). It started, pulled three leads, placed stories, set six column units, wrote the reasoning and the lead's claim, locked the page, chose "affirm" on revision, and submitted | passed | All three runs reached "The page is an argument." Refresh in stage 1 kept the place. The text export downloaded (9,771 bytes). No console errors, no network requests, no sideways scrolling. This was scripted clicks and typed text, not the keyboard alone and not a person. It also covers stages 3 to 5, which row R10 left untested | Agent |
+| C4 | Print view and JSON checkpoint on this file | — | **untested** | Not run | — |
+| C5 | A person looking at the new greys on a projector | — | **untested** | Not run | — |

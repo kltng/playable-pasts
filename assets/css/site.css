@@ -566,9 +566,9 @@ hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
   border-bottom: 1px solid var(--rule-soft);
 }
 .game-card .body { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-.game-card h3 { margin: 0; font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
-.game-card h3 a { color: var(--ink); text-decoration: none; }
-.game-card h3 a:hover { color: var(--accent); }
+.game-card h2 { margin: 0; font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
+.game-card h2 a { color: var(--ink); text-decoration: none; }
+.game-card h2 a:hover { color: var(--accent); }
 .game-card .meta { font-size: 0.82rem; color: var(--ink-faint); }
 .game-card .desc { font-size: 0.93rem; color: var(--ink-soft); margin: 0; }
 .game-card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
